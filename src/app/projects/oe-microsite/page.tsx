@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const serif = { fontFamily: "Georgia, serif" };
@@ -14,12 +16,12 @@ const manualSteps = [
 ];
 
 const oeSteps = [
-  { num: 1, name: "OE Central", tag: "Command Center", desc: "360° organizer dashboard — tracking, scheduling, collaboration" },
-  { num: 2, name: "OE Passport", tag: "Participant Hub", desc: "Branded attendee microsite — agendas, one-click access, materials" },
-  { num: 3, name: "OE Stream", tag: "Webcasting", desc: "HD 1080p live + on-demand — translation, transcription, captioning" },
-  { num: 4, name: "OE Podium", tag: "Presenter Panel", desc: "Backstage portal — slide control, private chat, Q&A" },
-  { num: 5, name: "OE Integrations", tag: "API Layer", desc: "Salesforce, marketing automation, analytics — data flows automatically" },
-  { num: 6, name: "Zoom Services", tag: "Partnership", desc: "Managed Zoom Webinars + Events — rehearsals, live execution" },
+  { num: 1, slug: "oe-central", name: "OE Central", tag: "Command Center", desc: "360° organizer dashboard — tracking, scheduling, collaboration" },
+  { num: 2, slug: "oe-passport", name: "OE Passport", tag: "Participant Hub", desc: "Branded attendee microsite — agendas, one-click access, materials" },
+  { num: 3, slug: "oe-stream", name: "OE Stream", tag: "Webcasting", desc: "HD 1080p live + on-demand — translation, transcription, captioning" },
+  { num: 4, slug: "oe-podium", name: "OE Podium", tag: "Presenter Panel", desc: "Backstage portal — slide control, private chat, Q&A" },
+  { num: 5, slug: "oe-integrations", name: "OE Integrations", tag: "API Layer", desc: "Salesforce, marketing automation, analytics — data flows automatically" },
+  { num: 6, slug: "zoom-services", name: "Zoom Services", tag: "Partnership", desc: "Managed Zoom Webinars + Events — rehearsals, live execution" },
 ];
 
 const pillars = [
@@ -177,13 +179,19 @@ export default function OEMicrosite() {
           {/* Product pipeline */}
           <div style={{ display: "flex", flexDirection: "column", gap: 3, padding: "0 4px 4px" }}>
             {oeSteps.map((step, i) => (
-              <div
+              <Link
                 key={step.name}
+                href={`/projects/oe-microsite/${step.slug}`}
                 style={{
+                  display: "block",
                   background: "#fff",
                   borderRadius: 10,
                   padding: "12px 16px",
+                  transition: "all 0.15s ease",
+                  border: "1px solid transparent",
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.border = "1px solid #008285"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,130,133,0.1)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.border = "1px solid transparent"; e.currentTarget.style.boxShadow = "none"; }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   {/* Step number */}
@@ -219,6 +227,7 @@ export default function OEMicrosite() {
                       >
                         {step.tag}
                       </span>
+                      <span style={{ fontSize: 11, color: "#a7f3d0", marginLeft: "auto" }}>→</span>
                     </div>
                     <p style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.4, marginTop: 2 }}>
                       {step.desc}
@@ -231,7 +240,7 @@ export default function OEMicrosite() {
                     ↓
                   </div>
                 )}
-              </div>
+              </Link>
             ))}
 
             {/* Result */}

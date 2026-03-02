@@ -4,10 +4,10 @@ const serif = { fontFamily: "Georgia, serif" };
 
 const projects = [
   {
-    slug: "oe-microsite",
-    title: "OE Product Microsite",
+    slug: "oe-value-calculator",
+    title: "OE Value Calculator",
     description:
-      "Side-by-side product & vertical microsite — manual process vs OE end-to-end solution with 4 vertical pillars.",
+      "Interactive ROI calculator — compare DIY event costs vs OpenExchange platform with 3-year projections and per-product pricing.",
     badge: "Platform",
   },
   {

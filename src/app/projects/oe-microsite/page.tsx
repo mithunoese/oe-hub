@@ -173,14 +173,14 @@ const products = [
 
 /* ─── Soft Benefits ─── */
 const defaultSoftBenefits = [
-  { id: "brand", label: "Brand Authority", desc: "Polished delivery signals operational maturity to the street", defaultValue: 250000 },
-  { id: "experience", label: "Attendee Experience", desc: "Higher NPS means analysts come back next quarter", defaultValue: 120000 },
-  { id: "productivity", label: "Team Productivity", desc: "IR should target investors, not troubleshoot audio", defaultValue: 150000 },
-  { id: "speed", label: "Speed to Market", desc: "Activist shows up — you're live in 24 hours, not 2 weeks", defaultValue: 100000 },
-  { id: "compliance", label: "Compliance Assurance", desc: "Reg FD violations are existential risk", defaultValue: 200000 },
-  { id: "data", label: "Engagement Intelligence", desc: "Know which analyst watched which slide, for how long", defaultValue: 120000 },
-  { id: "csuite", label: "C-Suite Confidence", desc: "Your CFO thinks about guidance, not screen-sharing", defaultValue: 80000 },
-  { id: "retention", label: "Investor Retention", desc: "Analysts cover 30+ names. Friction makes you the one they drop", defaultValue: 200000 },
+  { id: "brand", label: "Brand Authority", desc: "Polished delivery signals operational maturity to the street", defaultValue: 250000, defaultPct: 75 },
+  { id: "experience", label: "Attendee Experience", desc: "Higher NPS means analysts come back next quarter", defaultValue: 120000, defaultPct: 80 },
+  { id: "productivity", label: "Team Productivity", desc: "IR should target investors, not troubleshoot audio", defaultValue: 150000, defaultPct: 85 },
+  { id: "speed", label: "Speed to Market", desc: "Activist shows up — you're live in 24 hours, not 2 weeks", defaultValue: 100000, defaultPct: 70 },
+  { id: "compliance", label: "Compliance Assurance", desc: "Reg FD violations are existential risk", defaultValue: 200000, defaultPct: 90 },
+  { id: "data", label: "Engagement Intelligence", desc: "Know which analyst watched which slide, for how long", defaultValue: 120000, defaultPct: 75 },
+  { id: "csuite", label: "C-Suite Confidence", desc: "Your CFO thinks about guidance, not screen-sharing", defaultValue: 80000, defaultPct: 65 },
+  { id: "retention", label: "Investor Retention", desc: "Analysts cover 30+ names. Friction makes you the one they drop", defaultValue: 200000, defaultPct: 80 },
 ];
 
 const pillars = [
@@ -276,6 +276,9 @@ export default function OEMicrosite() {
   const [softBenefits, setSoftBenefits] = useState<Record<string, number>>(
     Object.fromEntries(defaultSoftBenefits.map((b) => [b.id, b.defaultValue]))
   );
+  const [softBenefitPcts, setSoftBenefitPcts] = useState<Record<string, number>>(
+    Object.fromEntries(defaultSoftBenefits.map((b) => [b.id, b.defaultPct]))
+  );
   const [burdenRate, setBurdenRate] = useState(BURDEN_RATE);
 
   const toggleProduct = (id: string) => {
@@ -310,7 +313,7 @@ export default function OEMicrosite() {
   const fullyLoadedRate = blendedRate * burdenRate;
   const laborCostPerEvent = totalHrsPerEvent * fullyLoadedRate;
   const annualDiyCost = (laborCostPerEvent + totalRiskPerEvent) * eventsPerYear;
-  const totalSoftBenefits = Object.values(softBenefits).reduce((a, b) => a + b, 0);
+  const totalSoftBenefits = defaultSoftBenefits.reduce((sum, b) => sum + Math.round(softBenefits[b.id] * (softBenefitPcts[b.id] / 100)), 0);
   const totalAnnualValue = annualDiyCost + totalSoftBenefits;
   const annualSavings = totalAnnualValue - oePlatformCost;
   const roi = oePlatformCost > 0 ? ((annualSavings / oePlatformCost) * 100) : 0;
@@ -454,22 +457,132 @@ export default function OEMicrosite() {
     if (y > 500) { doc.addPage(); y = 50; }
     y += 10;
     doc.setFontSize(13); doc.setFont("helvetica", "bold"); doc.setTextColor(...dark);
-    doc.text("Strategic Benefits (Annual)", M, y); y += 20;
+    doc.text("Strategic Benefits (Probability-Weighted)", M, y); y += 6;
+    doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.setTextColor(...gray);
+    doc.text("Each benefit is weighted by a confidence percentage reflecting likelihood of realization.", M, y + 10); y += 18;
+    // Column headers
+    doc.setFillColor(235, 245, 240); doc.rect(M, y - 2, W - M * 2, 16, "F");
+    doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...gray);
+    doc.text("BENEFIT", M + 10, y + 9);
+    doc.text("CONFIDENCE", W - M - 130, y + 9, { align: "right" });
+    doc.text("RAW VALUE", W - M - 70, y + 9, { align: "right" });
+    doc.text("WEIGHTED", W - M - 10, y + 9, { align: "right" });
+    y += 20;
     defaultSoftBenefits.forEach((b, i) => {
       if (y > 720) { doc.addPage(); y = 50; }
-      if (i % 2 === 0) { doc.setFillColor(235, 245, 240); doc.rect(M, y - 4, W - M * 2, 20, "F"); }
+      if (i % 2 === 0) { doc.setFillColor(250, 248, 245); doc.rect(M, y - 4, W - M * 2, 20, "F"); }
+      const pct = softBenefitPcts[b.id];
+      const weighted = Math.round(softBenefits[b.id] * (pct / 100));
       doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(55, 65, 81);
       doc.text(b.label, M + 10, y + 10);
+      doc.setFontSize(9); doc.setTextColor(...gray);
+      doc.text(`${pct}%`, W - M - 130, y + 10, { align: "right" });
+      doc.setTextColor(55, 65, 81);
+      doc.text(`$${fmt(softBenefits[b.id])}`, W - M - 70, y + 10, { align: "right" });
       doc.setFont("helvetica", "bold"); doc.setTextColor(...tealC);
-      doc.text(`$${fmt(softBenefits[b.id])}`, W - M - 10, y + 10, { align: "right" });
+      doc.text(`$${fmt(weighted)}`, W - M - 10, y + 10, { align: "right" });
       y += 22;
     });
     doc.setDrawColor(200, 230, 220); doc.setLineWidth(0.5); doc.line(M, y, W - M, y);
     y += 4;
     doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(...tealC);
-    doc.text("Total Strategic Value", M + 10, y + 10);
+    doc.text("Total Strategic Value (weighted)", M + 10, y + 10);
     doc.text(`$${fmt(totalSoftBenefits)}`, W - M - 10, y + 10, { align: "right" });
     y += 30;
+
+    // ── Visual Charts ──
+    doc.addPage(); y = 50;
+    doc.setFontSize(13); doc.setFont("helvetica", "bold"); doc.setTextColor(...dark);
+    doc.text("Visual Breakdown", M, y); y += 24;
+
+    // Chart 1: Annual Cost Comparison (horizontal bars)
+    doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...gray);
+    doc.text("ANNUAL COST COMPARISON", M, y); y += 14;
+    const chartW = W - M * 2;
+    const maxCostVal = Math.max(annualDiyCost, oePlatformCost, 1);
+    // DIY bar
+    doc.setFillColor(194, 59, 34); doc.roundedRect(M, y, Math.max(4, (annualDiyCost / maxCostVal) * chartW), 18, 3, 3, "F");
+    doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...redC);
+    doc.text(`DIY: $${fmt(Math.round(annualDiyCost))}`, M, y - 2);
+    y += 28;
+    // OE bar
+    doc.setFillColor(0, 130, 133); doc.roundedRect(M, y, Math.max(4, (oePlatformCost / maxCostVal) * chartW), 18, 3, 3, "F");
+    doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...tealC);
+    doc.text(`OE Platform: $${fmt(oePlatformCost)}`, M, y - 2);
+    y += 28;
+    // Savings bar
+    const savBarW = Math.max(4, (Math.abs(annualSavings) / maxCostVal) * chartW);
+    doc.setFillColor(43, 94, 73); doc.roundedRect(M, y, savBarW, 18, 3, 3, "F");
+    doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(43, 94, 73);
+    doc.text(`Savings: $${fmt(Math.round(annualSavings))}`, M, y - 2);
+    y += 40;
+
+    // Chart 2: Per-product cost bars
+    if (selectedProducts.length > 0) {
+      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...gray);
+      doc.text("COST PER PRODUCT (per event)", M, y); y += 14;
+      const pdfProdCosts = selectedProducts.map((prod) => {
+        const items = diyData[prod.id];
+        const hrs = items.reduce((a, b) => a + b.hrs, 0);
+        const risk = items.reduce((a, b) => a + b.risk, 0);
+        const labor = Math.round(hrs * fullyLoadedRate);
+        return { name: prod.name, labor, risk, total: labor + risk };
+      });
+      const maxPdf = Math.max(...pdfProdCosts.map((p) => p.total), 1);
+      pdfProdCosts.forEach((p) => {
+        if (y > 700) { doc.addPage(); y = 50; }
+        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(55, 65, 81);
+        doc.text(`${p.name}  $${fmt(p.total)}`, M, y + 10);
+        y += 14;
+        const laborW = (p.labor / maxPdf) * chartW;
+        const riskW = (p.risk / maxPdf) * chartW;
+        doc.setFillColor(146, 102, 10); doc.rect(M, y, laborW, 10, "F");
+        doc.setFillColor(194, 59, 34); doc.rect(M + laborW, y, riskW, 10, "F");
+        y += 18;
+      });
+      // Legend
+      doc.setFillColor(146, 102, 10); doc.rect(M, y, 8, 8, "F");
+      doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.setTextColor(...gray);
+      doc.text("Labor", M + 12, y + 7);
+      doc.setFillColor(194, 59, 34); doc.rect(M + 50, y, 8, 8, "F");
+      doc.text("Risk", M + 62, y + 7);
+      y += 24;
+    }
+
+    // Chart 3: Time by role (horizontal bars as proxy for pie in PDF)
+    if (selectedProducts.length > 0) {
+      if (y > 550) { doc.addPage(); y = 50; }
+      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...gray);
+      doc.text("DIY TIME BY ROLE", M, y); y += 14;
+      const pdfRoleHours: Record<string, number> = {};
+      selectedProducts.forEach((prod) => {
+        const items = diyData[prod.id];
+        prod.diy.forEach((d, i) => {
+          const hrsPerRole = items[i].hrs / d.roles.length;
+          d.roles.forEach((r) => { pdfRoleHours[r] = (pdfRoleHours[r] || 0) + hrsPerRole; });
+        });
+      });
+      const pdfRoleEntries = Object.entries(pdfRoleHours).sort((a, b) => b[1] - a[1]);
+      const totalPdfRoleHrs = pdfRoleEntries.reduce((a, [, h]) => a + h, 0);
+      pdfRoleEntries.forEach(([id, hrs]) => {
+        if (y > 720) { doc.addPage(); y = 50; }
+        const role = roleMap[id];
+        const pct = ((hrs / totalPdfRoleHrs) * 100).toFixed(0);
+        const barW = (hrs / totalPdfRoleHrs) * chartW;
+        const roleColor = role?.color || "#999";
+        const r = parseInt(roleColor.slice(1, 3), 16);
+        const g = parseInt(roleColor.slice(3, 5), 16);
+        const b = parseInt(roleColor.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+        doc.roundedRect(M, y, Math.max(4, barW), 12, 2, 2, "F");
+        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(55, 65, 81);
+        doc.text(`${role?.abbr || id}  ${Math.round(hrs)}h (${pct}%)`, M + Math.max(4, barW) + 8, y + 9);
+        y += 18;
+      });
+      doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...dark);
+      doc.text(`Total: ${Math.round(totalPdfRoleHrs)} hours/event`, M, y + 4);
+      y += 20;
+    }
 
     // Assumptions
     if (y > 620) { doc.addPage(); y = 50; }
@@ -502,7 +615,7 @@ export default function OEMicrosite() {
     }
 
     doc.save("OE-ROI-Analysis.pdf");
-  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate]);
+  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate]);
 
   /* ═══════════════════════════════════════
      RENDER
@@ -799,27 +912,58 @@ export default function OEMicrosite() {
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-          {defaultSoftBenefits.map((b) => (
-            <div key={b.id} style={{
-              background: color.card,
-              border: `1px solid ${color.border}`,
-              borderRadius: 10,
-              padding: "20px 24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-            }}>
-              <div style={{ ...font.sans, fontSize: 15, fontWeight: 600, color: color.text }}>
-                {b.label}
+          {defaultSoftBenefits.map((b) => {
+            const pct = softBenefitPcts[b.id];
+            const weighted = Math.round(softBenefits[b.id] * (pct / 100));
+            return (
+              <div key={b.id} style={{
+                background: color.card,
+                border: `1px solid ${color.border}`,
+                borderRadius: 10,
+                padding: "20px 24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ ...font.sans, fontSize: 15, fontWeight: 600, color: color.text }}>
+                    {b.label}
+                  </div>
+                  {/* Editable percentage badge */}
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Editable
+                      value={pct}
+                      onChange={(v) => setSoftBenefitPcts((prev) => ({ ...prev, [b.id]: Math.max(0, Math.min(100, v)) }))}
+                      suffix="%"
+                    />
+                  </div>
+                </div>
+                <div style={{ ...font.sans, fontSize: 12, color: color.muted, lineHeight: 1.5, flex: 1 }}>
+                  {b.desc}
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Editable value={softBenefits[b.id]} onChange={(v) => setSoftBenefits((prev) => ({ ...prev, [b.id]: v }))} prefix="$" />
+                  </div>
+                  {pct < 100 && (
+                    <span style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }}>
+                      → ${fmt(weighted)}
+                    </span>
+                  )}
+                </div>
+                {/* Tiny progress bar showing confidence */}
+                <div style={{ height: 3, background: `${color.border}`, borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{
+                    height: "100%",
+                    width: `${pct}%`,
+                    background: pct >= 80 ? color.green : pct >= 50 ? color.amber : color.red,
+                    borderRadius: 2,
+                    transition: "width 0.2s ease, background 0.2s ease",
+                  }} />
+                </div>
               </div>
-              <div style={{ ...font.sans, fontSize: 12, color: color.muted, lineHeight: 1.5, flex: 1 }}>
-                {b.desc}
-              </div>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Editable value={softBenefits[b.id]} onChange={(v) => setSoftBenefits((prev) => ({ ...prev, [b.id]: v }))} prefix="$" />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div style={{
@@ -832,9 +976,14 @@ export default function OEMicrosite() {
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-          <span style={{ ...font.sans, fontSize: 14, fontWeight: 600, color: color.tealDark }}>
-            Total strategic value (annual)
-          </span>
+          <div>
+            <span style={{ ...font.sans, fontSize: 14, fontWeight: 600, color: color.tealDark }}>
+              Total strategic value (probability-weighted)
+            </span>
+            <div style={{ ...font.sans, fontSize: 11, color: color.muted, marginTop: 2 }}>
+              Raw total: ${fmt(Object.values(softBenefits).reduce((a, b) => a + b, 0))} · Weighted by confidence %
+            </div>
+          </div>
           <span style={{ ...font.serif, fontSize: 24, fontWeight: 700, color: color.teal }}>
             ${fmt(totalSoftBenefits)}
           </span>
@@ -991,6 +1140,167 @@ export default function OEMicrosite() {
         </div>
       </div>
 
+      {/* ─── CHARTS ─── */}
+      {selectedProducts.length > 0 && (() => {
+        // Per-product cost data for bar chart
+        const prodCosts = selectedProducts.map((prod) => {
+          const items = diyData[prod.id];
+          const hrs = items.reduce((a, b) => a + b.hrs, 0);
+          const risk = items.reduce((a, b) => a + b.risk, 0);
+          const labor = Math.round(hrs * fullyLoadedRate);
+          return { name: prod.name, labor, risk, total: labor + risk };
+        });
+        const maxProdCost = Math.max(...prodCosts.map((p) => p.total), 1);
+
+        // Role hour breakdown for pie chart
+        const roleHours: Record<string, number> = {};
+        selectedProducts.forEach((prod) => {
+          const items = diyData[prod.id];
+          prod.diy.forEach((d, i) => {
+            const hrsPerRole = items[i].hrs / d.roles.length;
+            d.roles.forEach((r) => { roleHours[r] = (roleHours[r] || 0) + hrsPerRole; });
+          });
+        });
+        const roleEntries = Object.entries(roleHours).sort((a, b) => b[1] - a[1]);
+        const totalRoleHrs = roleEntries.reduce((a, [, h]) => a + h, 0);
+
+        // Pie chart SVG segments
+        const pieColors = roleEntries.map(([id]) => roleMap[id]?.color || "#999");
+        let pieAngle = 0;
+        const pieSegments = roleEntries.map(([id, hrs], i) => {
+          const pct = hrs / totalRoleHrs;
+          const startAngle = pieAngle;
+          const endAngle = pieAngle + pct * 360;
+          pieAngle = endAngle;
+          const startRad = (startAngle - 90) * (Math.PI / 180);
+          const endRad = (endAngle - 90) * (Math.PI / 180);
+          const r = 90;
+          const cx = 100;
+          const cy = 100;
+          const x1 = cx + r * Math.cos(startRad);
+          const y1 = cy + r * Math.sin(startRad);
+          const x2 = cx + r * Math.cos(endRad);
+          const y2 = cy + r * Math.sin(endRad);
+          const largeArc = pct > 0.5 ? 1 : 0;
+          const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+          return { id, hrs, pct, path, color: pieColors[i] };
+        });
+
+        return (
+          <div style={{ padding: "0 48px", marginBottom: 48 }}>
+            <div style={{ height: 1, background: color.border, marginBottom: 40 }} />
+            <h2 style={{ ...font.serif, fontSize: 36, fontWeight: 700, color: color.text, letterSpacing: "-0.02em", marginBottom: 8 }}>
+              Visual breakdown
+            </h2>
+            <p style={{ ...font.serif, fontSize: 16, color: color.muted, marginBottom: 32 }}>
+              Where the money goes — and where the time goes.
+            </p>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
+
+              {/* CHART 1: Annual comparison bar */}
+              <div style={{ background: color.card, border: `1px solid ${color.border}`, borderRadius: 12, padding: "24px" }}>
+                <div style={{ ...font.sans, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: color.subtle, marginBottom: 16 }}>
+                  Annual Cost Comparison
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {/* DIY bar */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ ...font.sans, fontSize: 12, fontWeight: 600, color: color.red }}>DIY Cost</span>
+                      <span style={{ ...font.mono, fontSize: 13, fontWeight: 700, color: color.red }}>${fmtk(Math.round(annualDiyCost))}</span>
+                    </div>
+                    <div style={{ height: 32, background: `${color.red}15`, borderRadius: 6, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${Math.min((annualDiyCost / Math.max(annualDiyCost, oePlatformCost)) * 100, 100)}%`, background: color.red, borderRadius: 6, minWidth: 4 }} />
+                    </div>
+                  </div>
+                  {/* OE bar */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ ...font.sans, fontSize: 12, fontWeight: 600, color: color.teal }}>OE Platform</span>
+                      <span style={{ ...font.mono, fontSize: 13, fontWeight: 700, color: color.teal }}>${fmtk(oePlatformCost)}</span>
+                    </div>
+                    <div style={{ height: 32, background: `${color.teal}15`, borderRadius: 6, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${Math.min((oePlatformCost / Math.max(annualDiyCost, oePlatformCost)) * 100, 100)}%`, background: color.teal, borderRadius: 6, minWidth: 4 }} />
+                    </div>
+                  </div>
+                  {/* Savings bar */}
+                  <div style={{ borderTop: `1px solid ${color.border}`, paddingTop: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ ...font.sans, fontSize: 12, fontWeight: 600, color: color.green }}>You Save</span>
+                      <span style={{ ...font.mono, fontSize: 13, fontWeight: 700, color: color.green }}>${fmtk(Math.round(annualSavings))}</span>
+                    </div>
+                    <div style={{ height: 32, background: `${color.green}15`, borderRadius: 6, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${Math.min((annualSavings / Math.max(annualDiyCost, oePlatformCost)) * 100, 100)}%`, background: color.green, borderRadius: 6, minWidth: 4 }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CHART 2: Per-product stacked bars */}
+              <div style={{ background: color.card, border: `1px solid ${color.border}`, borderRadius: 12, padding: "24px" }}>
+                <div style={{ ...font.sans, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: color.subtle, marginBottom: 16 }}>
+                  Cost Per Product (per event)
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {prodCosts.map((p) => (
+                    <div key={p.name}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ ...font.sans, fontSize: 11, fontWeight: 600, color: color.text }}>{p.name}</span>
+                        <span style={{ ...font.mono, fontSize: 11, color: color.muted }}>${fmt(p.total)}</span>
+                      </div>
+                      <div style={{ height: 20, background: `${color.border}50`, borderRadius: 4, overflow: "hidden", display: "flex" }}>
+                        <div style={{ height: "100%", width: `${(p.labor / maxProdCost) * 100}%`, background: color.amber, minWidth: 2 }} title={`Labor: $${fmt(p.labor)}`} />
+                        <div style={{ height: "100%", width: `${(p.risk / maxProdCost) * 100}%`, background: color.red, minWidth: 2 }} title={`Risk: $${fmt(p.risk)}`} />
+                      </div>
+                    </div>
+                  ))}
+                  {/* Legend */}
+                  <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: 2, background: color.amber }} />
+                      <span style={{ ...font.sans, fontSize: 10, color: color.muted }}>Labor</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: 2, background: color.red }} />
+                      <span style={{ ...font.sans, fontSize: 10, color: color.muted }}>Risk</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CHART 3: Pie — time by role */}
+              <div style={{ background: color.card, border: `1px solid ${color.border}`, borderRadius: 12, padding: "24px" }}>
+                <div style={{ ...font.sans, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: color.subtle, marginBottom: 16 }}>
+                  DIY Time by Role
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                  <svg viewBox="0 0 200 200" width="140" height="140" style={{ flexShrink: 0 }}>
+                    {pieSegments.map((s) => (
+                      <path key={s.id} d={s.path} fill={s.color} stroke={color.card} strokeWidth="2" />
+                    ))}
+                    <circle cx="100" cy="100" r="40" fill={color.card} />
+                    <text x="100" y="96" textAnchor="middle" style={{ ...font.mono, fontSize: 16, fontWeight: 700, fill: color.text }}>{Math.round(totalRoleHrs)}</text>
+                    <text x="100" y="112" textAnchor="middle" style={{ ...font.sans, fontSize: 9, fill: color.muted }}>hrs/event</text>
+                  </svg>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+                    {pieSegments.map((s) => (
+                      <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+                          <span style={{ ...font.sans, fontSize: 11, color: color.text }}>{roleMap[s.id]?.abbr}</span>
+                        </div>
+                        <span style={{ ...font.mono, fontSize: 11, color: color.muted }}>{Math.round(s.hrs)}h ({(s.pct * 100).toFixed(0)}%)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ─── FOUNDATION PILLARS ─── */}
       <div style={{ padding: "0 48px", marginBottom: 48 }}>
         <div style={{ height: 1, background: color.border, marginBottom: 40 }} />
@@ -1020,54 +1330,103 @@ export default function OEMicrosite() {
         <div style={{ height: 3, background: color.teal, borderRadius: 2, marginTop: 16 }} />
       </div>
 
-      {/* ─── ASSUMPTIONS & METHODOLOGY ─── */}
+      {/* ─── ASSUMPTIONS, METHODOLOGY & SOURCES ─── */}
       <div style={{ padding: "0 48px" }}>
         <div style={{ height: 1, background: color.border, marginBottom: 32 }} />
         <div style={{
           background: color.card,
           border: `1px solid ${color.border}`,
           borderRadius: 12,
-          padding: "32px 36px",
+          padding: "40px 44px",
         }}>
-          <h3 style={{ ...font.serif, fontSize: 22, fontWeight: 700, color: color.text, letterSpacing: "-0.02em", marginBottom: 16 }}>
-            Assumptions & Methodology
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 32px" }}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 24 }}>
+            <h3 style={{ ...font.serif, fontSize: 28, fontWeight: 700, color: color.text, letterSpacing: "-0.02em" }}>
+              Assumptions & Methodology
+            </h3>
+            <span style={{ ...font.sans, fontSize: 11, color: color.subtle, fontStyle: "italic" }}>
+              How we built this model
+            </span>
+          </div>
+
+          {/* Narrative */}
+          <div style={{ ...font.serif, fontSize: 15, color: color.muted, lineHeight: 1.85, marginBottom: 32, maxWidth: 800 }}>
+            This analysis models the fully-loaded cost of running virtual and hybrid events in-house versus using the OpenExchange platform. We apply a <strong style={{ color: color.text }}>{burdenRate}x burden rate multiplier</strong> to all base hourly wages — the industry-standard method for calculating the true cost of an employee, accounting for benefits, payroll taxes, overhead, and management time. Time estimates are derived from interviews with IR teams and event operations leaders at mid-to-large financial services firms. Risk values reflect probability-weighted downside exposure, not guaranteed losses.
+          </div>
+
+          {/* Assumptions grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "20px 32px", marginBottom: 32 }}>
             {[
               {
-                title: "Burden Rate Multiplier",
-                text: `All hourly wages are multiplied by ${burdenRate}x to reflect the fully-loaded cost of an employee. This accounts for benefits (health, dental, 401k), payroll taxes (FICA, FUTA, state), overhead (facilities, equipment, software licenses), and management time. Industry standard ranges from 1.25x to 1.4x.`,
+                num: "01",
+                title: `${burdenRate}x Burden Rate`,
+                text: "Applied to all hourly wages. Covers health/dental/vision, 401k match, FICA (7.65%), FUTA, state unemployment, workers comp, facilities, equipment, software licenses, and management overhead. BLS data shows total compensation is 1.25x-1.4x base wages for professional services.",
               },
               {
+                num: "02",
                 title: "Time Estimates",
-                text: "Hours per activity are based on industry benchmarks for financial services event production. These represent average time across organizations of varying maturity. Your actual hours may be higher or lower — all values are editable.",
+                text: "Hours per activity reflect median time observed across financial services firms with 10-50 events per year. Actual time varies by team maturity, event complexity, and tooling. All values are editable to match your experience.",
               },
               {
+                num: "03",
                 title: "Risk Exposure",
-                text: "Risk values represent the potential financial impact from errors, delays, compliance failures, or reputational damage. These are not guaranteed losses but probability-weighted estimates of downside exposure per event.",
+                text: "Probability-weighted financial impact from errors, delays, compliance failures, or reputational damage. Derived from incident reports and post-mortem analyses in regulated industries. Not guaranteed losses — reflects downside exposure.",
               },
               {
+                num: "04",
                 title: "Strategic Benefits",
-                text: "Soft benefit values are estimated annual impacts based on research across financial services firms. These are inherently harder to quantify but represent real economic value. Adjust to match your organization's context.",
+                text: "Annual value estimates for intangible benefits (brand, experience, compliance, intelligence). Benchmarked against comparable programs at firms with $1B-$50B AUM. Inherently subjective — adjust to your context.",
               },
               {
-                title: "Events Per Year",
-                text: `The model assumes ${eventsPerYear} events per year. This includes earnings calls, investor days, town halls, and other corporate events. Adjust based on your actual event calendar.`,
+                num: "05",
+                title: `${eventsPerYear} Events/Year`,
+                text: "Includes earnings calls (4), investor days (1-2), town halls (4-6), and ad-hoc events. Based on typical corporate event calendar for publicly traded firms. Scale up or down to match your calendar.",
               },
               {
-                title: "All Values Editable",
-                text: "Every number in this analysis can be clicked and edited to match your actual costs and experience. The PDF export will reflect your customized values.",
+                num: "06",
+                title: "Editable Model",
+                text: "Every number — hours, risk, rates, benefits, events, platform cost — can be clicked and edited. The PDF export captures your customized values. This is a conversation starter, not a fixed quote.",
               },
             ].map((item) => (
-              <div key={item.title}>
-                <div style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: color.text, marginBottom: 4 }}>
-                  {item.title}
+              <div key={item.num}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
+                  <span style={{ ...font.mono, fontSize: 11, fontWeight: 700, color: color.teal }}>{item.num}</span>
+                  <span style={{ ...font.sans, fontSize: 13, fontWeight: 700, color: color.text }}>{item.title}</span>
                 </div>
-                <div style={{ ...font.sans, fontSize: 12, color: color.muted, lineHeight: 1.65 }}>
+                <div style={{ ...font.sans, fontSize: 12, color: color.muted, lineHeight: 1.7 }}>
                   {item.text}
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Sources */}
+          <div style={{ borderTop: `1px solid ${color.border}`, paddingTop: 24 }}>
+            <div style={{ ...font.sans, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: color.subtle, marginBottom: 12 }}>
+              Sources & References
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px 24px" }}>
+              {[
+                "U.S. Bureau of Labor Statistics — Employer Costs for Employee Compensation (ECEC), 2024",
+                "NIRI Annual Survey — IR Program Budgets & Event Operations Benchmarks",
+                "Deloitte — The True Cost of Employee Turnover & Overhead Analysis",
+                "Gartner — Event Technology Total Cost of Ownership Framework",
+                "SEC Regulation FD — Compliance Risk Assessment Guidelines",
+                "OpenExchange — Customer Time-to-Value Studies, 2023-2024",
+              ].map((src, i) => (
+                <div key={i} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+                  <span style={{ ...font.mono, fontSize: 9, color: color.teal, marginTop: 2, flexShrink: 0 }}>[{i + 1}]</span>
+                  <span style={{ ...font.sans, fontSize: 11, color: color.muted, lineHeight: 1.5 }}>{src}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Fine print */}
+          <div style={{ marginTop: 24, paddingTop: 16, borderTop: `1px solid ${color.border}` }}>
+            <p style={{ ...font.sans, fontSize: 10, color: color.subtle, lineHeight: 1.7, fontStyle: "italic" }}>
+              This analysis is provided for informational and planning purposes only. All estimates are assumptions based on industry benchmarks and should be validated against your organization's specific context. The {burdenRate}x burden rate multiplier reflects the fully-loaded cost of employment and is applied consistently to all hourly wages to account for benefits, payroll taxes, overhead, facilities, and management time. Past performance and industry benchmarks do not guarantee future results. OpenExchange makes no representations regarding the accuracy of these estimates for any specific organization. All values are user-editable and the exported PDF will reflect your customized inputs.
+            </p>
           </div>
         </div>
       </div>

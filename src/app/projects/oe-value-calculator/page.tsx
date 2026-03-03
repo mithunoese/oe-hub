@@ -50,7 +50,7 @@ const roleMap = Object.fromEntries(defaultRoles.map((r) => [r.id, r]));
 
 const products = [
   {
-    id: "oe-central", icon: "⌘", name: "OE Central", tag: "Command Center", annualCost: 25000,
+    id: "oe-central", name: "OE Central", tag: "Command Center", annualCost: 25000,
     oneLiner: "360-degree organizer dashboard for tracking, scheduling, and collaboration",
     diy: [
       { label: "Run-of-Show", desc: "Spreadsheets emailed back and forth", hrs: 8, risk: 2000, roles: ["event-mgr", "exec-admin"] },
@@ -70,7 +70,7 @@ const products = [
     ],
   },
   {
-    id: "oe-passport", icon: "🎫", name: "OE Passport", tag: "Participant Hub", annualCost: 20000,
+    id: "oe-passport", name: "OE Passport", tag: "Participant Hub", annualCost: 20000,
     oneLiner: "Branded attendee microsite with personalized agendas and one-click access",
     diy: [
       { label: "12 Zoom Links", desc: "Wall of URLs, hope they click the right one", hrs: 3, risk: 2000, roles: ["it-support", "exec-admin"] },
@@ -90,7 +90,7 @@ const products = [
     ],
   },
   {
-    id: "oe-stream", icon: "▶", name: "OE Stream", tag: "Webcasting", annualCost: 35000,
+    id: "oe-stream", name: "OE Stream", tag: "Webcasting", annualCost: 35000,
     oneLiner: "HD 1080p live and on-demand with translation, transcription, and captioning",
     diy: [
       { label: "Generic Zoom/Teams", desc: "No branding, no lower thirds, no graphics", hrs: 2, risk: 5000, roles: ["av-tech", "it-support"] },
@@ -110,7 +110,7 @@ const products = [
     ],
   },
   {
-    id: "oe-podium", icon: "🎙", name: "OE Podium", tag: "Presenter Panel", annualCost: 15000,
+    id: "oe-podium", name: "OE Podium", tag: "Presenter Panel", annualCost: 15000,
     oneLiner: "Backstage portal with slide control, private chat, and moderated Q&A",
     diy: [
       { label: "Speakers Mixed In", desc: "No backstage, no preparation space", hrs: 2, risk: 5000, roles: ["event-mgr", "av-tech"] },
@@ -130,7 +130,7 @@ const products = [
     ],
   },
   {
-    id: "oe-integrations", icon: "⚡", name: "OE Integrations", tag: "API Layer", annualCost: 15000,
+    id: "oe-integrations", name: "OE Integrations", tag: "API Layer", annualCost: 15000,
     oneLiner: "Salesforce, marketing automation, and analytics — data flows automatically",
     diy: [
       { label: "CSV → Excel → Import", desc: "Download, clean, import to Salesforce every time", hrs: 6, risk: 3000, roles: ["crm-admin", "mktg-ops"] },
@@ -150,7 +150,7 @@ const products = [
     ],
   },
   {
-    id: "zoom-services", icon: "🤝", name: "Zoom Services", tag: "Partnership", annualCost: 10000,
+    id: "zoom-services", name: "Zoom Services", tag: "Partnership", annualCost: 10000,
     oneLiner: "Managed Zoom Webinars and Events with rehearsals and live execution",
     diy: [
       { label: "Self-Service Setup", desc: "Figure out Zoom Webinar settings yourself", hrs: 6, risk: 3000, roles: ["it-support", "event-mgr"] },
@@ -290,6 +290,10 @@ export default function OEValueCalculator() {
   );
   const [burdenRate, setBurdenRate] = useState(BURDEN_RATE);
 
+  /* ─ Customer branding ─ */
+  const [customerName, setCustomerName] = useState("");
+  const [customerLogo, setCustomerLogo] = useState<string | null>(null); // base64 data URL
+
   /* ─ Configure panel state ─ */
   const [configOpen, setConfigOpen] = useState(true);
 
@@ -382,13 +386,68 @@ export default function OEValueCalculator() {
       if (y + needed > H - 60) { doc.addPage(); y = 50; }
     };
 
+    // ── Cover Page ──
+    doc.setFillColor(...tealC);
+    doc.rect(0, 0, W, H, "F");
+
+    // Top-left branding
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.text("OPENEXCHANGE", M, 80);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "normal");
+    doc.text("Value Analysis", M, 106);
+
+    // Customer logo (centered)
+    let coverY = 300;
+    if (customerLogo) {
+      try {
+        doc.addImage(customerLogo, "PNG", (W - 200) / 2, coverY, 200, 60);
+        coverY += 80;
+      } catch {
+        // If image fails, skip it
+      }
+    }
+
+    // Customer name (centered)
+    if (customerName) {
+      doc.setFontSize(32);
+      doc.setFont("times", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text(customerName, W / 2, coverY + 30, { align: "center" });
+
+      doc.setFontSize(14);
+      doc.setFont("times", "italic");
+      doc.setTextColor(220, 240, 240);
+      doc.text(`Prepared exclusively for ${customerName}`, W / 2, coverY + 60, { align: "center" });
+    }
+
+    // Subtle horizontal divider
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(0.5);
+    doc.line(M, H - 120, W - M, H - 120);
+
+    // Bottom section: date and confidentiality
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(200, 230, 230);
+    doc.text(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), M, H - 90);
+    doc.setFontSize(9);
+    doc.setTextColor(180, 220, 220);
+    doc.text("Confidential — Prepared by OpenExchange, Inc.", M, H - 74);
+
+    // Start a new page for the main content
+    doc.addPage();
+    y = 0;
+
     // ── Header bar ──
     doc.setFillColor(...tealC);
     doc.rect(0, 0, W, 72, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("OpenExchange — ROI Analysis", M, 46);
+    doc.text(customerName ? `OpenExchange — ROI Analysis for ${customerName}` : "OpenExchange — ROI Analysis", M, 46);
     y = 96;
 
     // Date & context
@@ -1102,12 +1161,12 @@ export default function OEValueCalculator() {
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.text("OpenExchange — Confidential", M, pH - 10);
+      doc.text(customerName ? `Prepared for ${customerName} — Confidential` : "OpenExchange — Confidential", M, pH - 10);
       doc.text(`Page ${i} of ${pageCount}`, W - M, pH - 10, { align: "right" });
     }
 
     doc.save("OE-ROI-Analysis.pdf");
-  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps]);
+  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps, customerName, customerLogo]);
 
   /* ═══════════════════════════════════════
      RENDER
@@ -1131,6 +1190,91 @@ export default function OEValueCalculator() {
           <Link href="/projects" style={{ ...font.sans, fontSize: 13, color: color.subtle, textDecoration: "none", letterSpacing: "0.02em" }}>
             ← Back to Projects
           </Link>
+
+          {/* ─── PREPARED FOR ─── */}
+          <div style={{ marginTop: 20, marginBottom: 16, display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
+              <label style={{ ...font.sans, fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: color.subtle, whiteSpace: "nowrap" }}>
+                Prepared for
+              </label>
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Enter company name..."
+                style={{
+                  ...font.sans,
+                  fontSize: 14,
+                  color: color.text,
+                  background: color.card,
+                  border: `1px solid ${color.border}`,
+                  borderRadius: 8,
+                  padding: "8px 14px",
+                  outline: "none",
+                  flex: 1,
+                  maxWidth: 320,
+                }}
+              />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <label style={{ ...font.sans, fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: color.subtle, whiteSpace: "nowrap" }}>
+                Logo
+              </label>
+              {customerLogo ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <img src={customerLogo} alt="Logo" style={{ maxHeight: 60, maxWidth: 120, objectFit: "contain", borderRadius: 4, border: `1px solid ${color.border}` }} />
+                  <button
+                    onClick={() => setCustomerLogo(null)}
+                    style={{
+                      ...font.sans,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: color.red,
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                      lineHeight: 1,
+                    }}
+                    title="Remove logo"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <label style={{
+                  ...font.sans,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: color.teal,
+                  background: color.tealLight,
+                  border: `1px solid ${color.teal}40`,
+                  borderRadius: 8,
+                  padding: "7px 14px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}>
+                  Upload logo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          setCustomerLogo(ev.target?.result as string);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
 
           <div style={{ ...font.sans, fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.14em", color: color.teal, marginTop: 24, marginBottom: 8 }}>
             OpenExchange ROI Calculator
@@ -1419,7 +1563,6 @@ export default function OEValueCalculator() {
                         background: isSelected ? "transparent" : `${color.bg}`,
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <span style={{ fontSize: 13 }}>{p.icon}</span>
                           <span style={{ ...font.sans, fontSize: 12, color: color.text, fontWeight: isSelected ? 600 : 400 }}>
                             {p.name}
                           </span>
@@ -1638,7 +1781,7 @@ export default function OEValueCalculator() {
                       marginBottom: -2,
                     }}
                   >
-                    {prod.icon} {prod.name}
+                    {prod.name}
                   </button>
                 );
               })}
@@ -1669,7 +1812,6 @@ export default function OEValueCalculator() {
                     justifyContent: "space-between",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 20 }}>{activeProductObj.icon}</span>
                       <div>
                         <div style={{ ...font.serif, fontSize: 18, fontWeight: 700, color: color.text }}>
                           {activeProductObj.name}

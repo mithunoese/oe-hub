@@ -19,13 +19,26 @@ export default function VideoMigration() {
         Automated pipeline for migrating video content from Kaltura to Zoom via AWS S3.
         Handles bulk transfers, progress tracking, error recovery, and delivery confirmation.
       </p>
-      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e5e7eb", marginBottom: 32 }}>
-        <iframe
-          src="https://video-migration-tau.vercel.app"
-          style={{ width: "100%", height: "80vh", border: "none", display: "block" }}
-          title="VideoMigrate Dashboard"
-        />
-      </div>
+      <a
+        href="https://video-migration-tau.vercel.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "12px 24px",
+          background: "#008285",
+          color: "#fff",
+          borderRadius: 8,
+          fontSize: 14,
+          fontWeight: 600,
+          textDecoration: "none",
+          marginTop: 8,
+        }}
+      >
+        Open VideoMigrate Dashboard ↗
+      </a>
     </>
   );
 }

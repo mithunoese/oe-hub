@@ -14,20 +14,17 @@ export default function VideoMigration() {
       <span style={{ fontSize: 10, fontWeight: 600, color: "#008285", background: "#f0fafa", padding: "4px 10px", borderRadius: 20 }}>
         Engineering
       </span>
-      <div style={{ width: 40, height: 3, background: "#111827", borderRadius: 2, marginTop: 16, marginBottom: 32 }} />
-      <p style={{ ...serif, fontSize: 16, color: "#374151", lineHeight: 1.85 }}>
+      <div style={{ width: 40, height: 3, background: "#111827", borderRadius: 2, marginTop: 16, marginBottom: 24 }} />
+      <p style={{ ...serif, fontSize: 16, color: "#374151", lineHeight: 1.85, marginBottom: 24 }}>
         Automated pipeline for migrating video content from Kaltura to Zoom via AWS S3.
         Handles bulk transfers, progress tracking, error recovery, and delivery confirmation.
       </p>
-      <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "#9ca3af", marginTop: 32, marginBottom: 12 }}>
-        Pipeline
-      </p>
-      <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 14, color: "#374151" }}>
-        <span>Kaltura</span>
-        <span style={{ color: "#d1d5db" }}>→</span>
-        <span>AWS S3</span>
-        <span style={{ color: "#d1d5db" }}>→</span>
-        <span>Zoom</span>
+      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e5e7eb", marginBottom: 32 }}>
+        <iframe
+          src="https://video-migration.vercel.app"
+          style={{ width: "100%", height: "80vh", border: "none", display: "block" }}
+          title="VideoMigrate Dashboard"
+        />
       </div>
     </>
   );

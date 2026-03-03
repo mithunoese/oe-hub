@@ -547,7 +547,8 @@ function TextToSpeech() {
     setErrorMessage("");
 
     try {
-      const { KokoroTTS } = await import("kokoro-js");
+      // @ts-expect-error - kokoro-js is loaded dynamically at runtime via CDN/wasm
+      const { KokoroTTS } = await import(/* webpackIgnore: true */ "kokoro-js");
 
       if (!ttsInstanceRef.current) {
         ttsInstanceRef.current = await KokoroTTS.from_pretrained(

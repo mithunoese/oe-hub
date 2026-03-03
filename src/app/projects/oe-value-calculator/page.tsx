@@ -263,6 +263,7 @@ export default function OEValueCalculator() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [activeProduct, setActiveProduct] = useState<string | null>(null);
   const [projectionYears] = useState(3);
+  const [yearRamps, setYearRamps] = useState([75, 90, 100]); // adoption ramp % per year
 
   /* ─ Editable data ─ */
   const [rates, setRates] = useState<Record<string, number>>(
@@ -333,16 +334,30 @@ export default function OEValueCalculator() {
   const roi = oePlatformCost > 0 ? ((annualSavings / oePlatformCost) * 100) : 0;
   const costOfDelayPerMonth = annualSavings / 12;
 
-  // 3-Year Projection
-  const yearlyProjection = Array.from({ length: projectionYears }, (_, i) => {
-    const year = i + 1;
-    const diyCost = annualDiyCost * year;
-    const oeCost = oePlatformCost * year;
-    const cumulativeSavings = (annualDiyCost - oePlatformCost) * year;
-    const cumulativeSoftBenefits = totalSoftBenefits * year;
-    const totalValue = cumulativeSavings + cumulativeSoftBenefits;
-    return { year, diyCost, oeCost, cumulativeSavings, cumulativeSoftBenefits, totalValue };
-  });
+  // 3-Year Projection (with adoption ramp)
+  const yearlyProjection = (() => {
+    let cumDiy = 0, cumOe = 0, cumSavings = 0, cumSoft = 0;
+    return Array.from({ length: projectionYears }, (_, i) => {
+      const year = i + 1;
+      const ramp = (yearRamps[i] ?? 100) / 100;
+      const yearDiy = annualDiyCost; // DIY cost stays full regardless of ramp
+      const yearOe = oePlatformCost; // OE cost stays full (you pay full price)
+      const yearSavings = (annualDiyCost - oePlatformCost) * ramp;
+      const yearSoft = totalSoftBenefits * ramp;
+      cumDiy += yearDiy;
+      cumOe += yearOe;
+      cumSavings += yearSavings;
+      cumSoft += yearSoft;
+      return {
+        year, ramp: yearRamps[i] ?? 100,
+        yearDiy, yearOe, yearSavings, yearSoft,
+        diyCost: cumDiy, oeCost: cumOe,
+        cumulativeSavings: cumSavings,
+        cumulativeSoftBenefits: cumSoft,
+        totalValue: cumSavings + cumSoft,
+      };
+    });
+  })();
   const threeYearTotal = yearlyProjection[projectionYears - 1];
 
   // Auto-set active tab when selection changes
@@ -534,10 +549,11 @@ export default function OEValueCalculator() {
     doc.setTextColor(...gray);
     const cols3yr = [
       { label: "YEAR", x: M + 10, align: "left" as const },
-      { label: "DIY COST", x: M + 110, align: "right" as const },
-      { label: "OE COST", x: M + 200, align: "right" as const },
-      { label: "SAVINGS", x: M + 290, align: "right" as const },
-      { label: "SOFT BENEFITS", x: M + 390, align: "right" as const },
+      { label: "RAMP", x: M + 70, align: "left" as const },
+      { label: "DIY COST", x: M + 150, align: "right" as const },
+      { label: "OE COST", x: M + 230, align: "right" as const },
+      { label: "SAVINGS", x: M + 310, align: "right" as const },
+      { label: "SOFT BENEFITS", x: M + 400, align: "right" as const },
       { label: "TOTAL VALUE", x: W - M - 10, align: "right" as const },
     ];
     cols3yr.forEach((c) => doc.text(c.label, c.x, y + 9, { align: c.align }));
@@ -549,10 +565,13 @@ export default function OEValueCalculator() {
       doc.setFont("helvetica", "normal");
       doc.setTextColor(55, 65, 81);
       doc.text(`Year ${row.year}`, M + 10, y + 10);
-      doc.text(`$${fmt(Math.round(row.diyCost))}`, M + 110, y + 10, { align: "right" });
-      doc.text(`$${fmt(Math.round(row.oeCost))}`, M + 200, y + 10, { align: "right" });
-      doc.text(`$${fmt(Math.round(row.cumulativeSavings))}`, M + 290, y + 10, { align: "right" });
-      doc.text(`$${fmt(Math.round(row.cumulativeSoftBenefits))}`, M + 390, y + 10, { align: "right" });
+      doc.setTextColor(146, 102, 10);
+      doc.text(`${row.ramp}%`, M + 70, y + 10);
+      doc.setTextColor(55, 65, 81);
+      doc.text(`$${fmt(Math.round(row.diyCost))}`, M + 150, y + 10, { align: "right" });
+      doc.text(`$${fmt(Math.round(row.oeCost))}`, M + 230, y + 10, { align: "right" });
+      doc.text(`$${fmt(Math.round(row.cumulativeSavings))}`, M + 310, y + 10, { align: "right" });
+      doc.text(`$${fmt(Math.round(row.cumulativeSoftBenefits))}`, M + 400, y + 10, { align: "right" });
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...tealC);
       doc.text(`$${fmt(Math.round(row.totalValue))}`, W - M - 10, y + 10, { align: "right" });
@@ -570,10 +589,10 @@ export default function OEValueCalculator() {
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...dark);
     doc.text("3-Year Total", M + 10, y + 10);
-    doc.text(`$${fmt(Math.round(threeYearTotal.diyCost))}`, M + 110, y + 10, { align: "right" });
-    doc.text(`$${fmt(Math.round(threeYearTotal.oeCost))}`, M + 200, y + 10, { align: "right" });
-    doc.text(`$${fmt(Math.round(threeYearTotal.cumulativeSavings))}`, M + 290, y + 10, { align: "right" });
-    doc.text(`$${fmt(Math.round(threeYearTotal.cumulativeSoftBenefits))}`, M + 390, y + 10, { align: "right" });
+    doc.text(`$${fmt(Math.round(threeYearTotal.diyCost))}`, M + 150, y + 10, { align: "right" });
+    doc.text(`$${fmt(Math.round(threeYearTotal.oeCost))}`, M + 230, y + 10, { align: "right" });
+    doc.text(`$${fmt(Math.round(threeYearTotal.cumulativeSavings))}`, M + 310, y + 10, { align: "right" });
+    doc.text(`$${fmt(Math.round(threeYearTotal.cumulativeSoftBenefits))}`, M + 400, y + 10, { align: "right" });
     doc.setTextColor(...tealC);
     doc.text(`$${fmt(Math.round(threeYearTotal.totalValue))}`, W - M - 10, y + 10, { align: "right" });
     y += 32;
@@ -1088,7 +1107,7 @@ export default function OEValueCalculator() {
     }
 
     doc.save("OE-ROI-Analysis.pdf");
-  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits]);
+  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps]);
 
   /* ═══════════════════════════════════════
      RENDER
@@ -1844,17 +1863,66 @@ export default function OEValueCalculator() {
             <h2 style={{ ...font.serif, fontSize: 32, fontWeight: 700, color: color.text, letterSpacing: "-0.02em", marginBottom: 6 }}>
               3-Year Cost Projection
             </h2>
-            <p style={{ ...font.serif, fontSize: 15, color: color.muted, marginBottom: 24 }}>
-              Cumulative cost comparison and value creation over three years.
+            <p style={{ ...font.serif, fontSize: 15, color: color.muted, marginBottom: 20 }}>
+              Cumulative cost comparison and value creation over three years. Adjust adoption ramp to reflect realistic rollout.
             </p>
+
+            {/* Adoption Ramp Sliders */}
+            <div style={{
+              background: color.card,
+              border: `1px solid ${color.border}`,
+              borderRadius: 10,
+              padding: "20px 24px",
+              marginBottom: 16,
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: 24,
+            }}>
+              <div style={{ ...font.sans, fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: color.subtle, gridColumn: "1 / -1", marginBottom: -8 }}>
+                Adoption Ramp — % of value realized each year
+              </div>
+              {yearRamps.map((val, i) => (
+                <div key={i}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <span style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: color.text }}>Year {i + 1}</span>
+                    <span style={{ ...font.mono, fontSize: 15, fontWeight: 700, color: val === 100 ? color.green : val >= 75 ? color.teal : color.amber }}>{val}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={val}
+                    onChange={(e) => {
+                      const next = [...yearRamps];
+                      next[i] = Number(e.target.value);
+                      setYearRamps(next);
+                    }}
+                    style={{
+                      width: "100%",
+                      height: 6,
+                      borderRadius: 3,
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                      background: `linear-gradient(to right, ${color.teal} 0%, ${color.teal} ${val}%, ${color.border} ${val}%, ${color.border} 100%)`,
+                      outline: "none",
+                      cursor: "pointer",
+                    }}
+                  />
+                  <div style={{ ...font.sans, fontSize: 10, color: color.muted, marginTop: 4 }}>
+                    Savings: ${fmtk(Math.round((annualDiyCost - oePlatformCost) * val / 100))}
+                  </div>
+                </div>
+              ))}
+            </div>
 
             {/* Projection Table — full width */}
             <div style={{ background: color.card, border: `1px solid ${color.border}`, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse", ...font.mono, fontSize: 13 }}>
                 <thead>
                   <tr style={{ background: color.tealLight }}>
-                    {["Year", "DIY Cost", "OE Cost", "Savings", "Soft Benefits", "Total Value"].map((h) => (
-                      <th key={h} style={{ ...font.sans, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: color.tealDark, padding: "12px 16px", textAlign: h === "Year" ? "left" : "right", borderBottom: `1px solid ${color.border}` }}>
+                    {["Year", "Ramp", "DIY Cost", "OE Cost", "Savings", "Soft Benefits", "Total Value"].map((h) => (
+                      <th key={h} style={{ ...font.sans, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: color.tealDark, padding: "12px 16px", textAlign: (h === "Year" || h === "Ramp") ? "left" : "right", borderBottom: `1px solid ${color.border}` }}>
                         {h}
                       </th>
                     ))}
@@ -1864,6 +1932,7 @@ export default function OEValueCalculator() {
                   {yearlyProjection.map((row, i) => (
                     <tr key={row.year} style={{ background: i % 2 === 0 ? color.card : color.bg }}>
                       <td style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: color.text, padding: "12px 16px" }}>Year {row.year}</td>
+                      <td style={{ ...font.sans, fontSize: 12, padding: "12px 16px", color: row.ramp === 100 ? color.green : color.amber, fontWeight: 600 }}>{row.ramp}%</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", color: color.red }}>${fmt(Math.round(row.diyCost))}</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", color: color.teal }}>${fmt(Math.round(row.oeCost))}</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", color: color.green }}>${fmt(Math.round(row.cumulativeSavings))}</td>
@@ -1875,6 +1944,7 @@ export default function OEValueCalculator() {
                 <tfoot>
                   <tr style={{ background: color.tealLight, borderTop: `2px solid ${color.teal}` }}>
                     <td style={{ ...font.sans, fontSize: 13, fontWeight: 700, color: color.text, padding: "14px 16px" }}>3-Year Total</td>
+                    <td style={{ padding: "14px 16px" }}></td>
                     <td style={{ padding: "14px 16px", textAlign: "right", fontWeight: 700, color: color.red }}>${fmt(Math.round(threeYearTotal.diyCost))}</td>
                     <td style={{ padding: "14px 16px", textAlign: "right", fontWeight: 700, color: color.teal }}>${fmt(Math.round(threeYearTotal.oeCost))}</td>
                     <td style={{ padding: "14px 16px", textAlign: "right", fontWeight: 700, color: color.green }}>${fmt(Math.round(threeYearTotal.cumulativeSavings))}</td>

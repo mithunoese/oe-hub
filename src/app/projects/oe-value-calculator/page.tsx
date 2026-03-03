@@ -310,6 +310,10 @@ export default function OEValueCalculator() {
   /* ─ Configure panel state ─ */
   const [configOpen, setConfigOpen] = useState(true);
 
+  const [enabledMetrics, setEnabledMetrics] = useState<Set<string>>(new Set([
+    "payback", "npv", "irr", "costOfDelay", "breakEven", "fte"
+  ]));
+
   const toggleProduct = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -376,6 +380,35 @@ export default function OEValueCalculator() {
     });
   })();
   const threeYearTotal = yearlyProjection[projectionYears - 1];
+
+  // Advanced Financial Metrics
+  const paybackMonths = oePlatformCost > 0 ? Math.round((oePlatformCost / annualSavings) * 12) : 0;
+  const discountRate = 0.10; // 10% default for financial services
+  const npv3Year = yearlyProjection.reduce((sum, row) => {
+    const netCashFlow = (row.yearSavings + row.yearSoft) - (row.year === 1 ? oePlatformCost : 0);
+    return sum + netCashFlow / Math.pow(1 + discountRate, row.year);
+  }, 0);
+  const breakEvenEvents = annualSavings > 0 ? Math.ceil(oePlatformCost / ((annualDiyCost - oePlatformCost) / eventsPerYear)) : 0;
+  const fteEquivalent = (totalHrsPerEvent * eventsPerYear) / 2080;
+  // IRR calculation (Newton's method approximation)
+  const calcIRR = () => {
+    const cashFlows = [-oePlatformCost];
+    yearlyProjection.forEach((row) => cashFlows.push(row.yearSavings + row.yearSoft));
+    let rate = 0.1;
+    for (let iter = 0; iter < 100; iter++) {
+      let npvCalc = 0, dnpv = 0;
+      cashFlows.forEach((cf, t) => {
+        npvCalc += cf / Math.pow(1 + rate, t);
+        dnpv += (-t * cf) / Math.pow(1 + rate, t + 1);
+      });
+      if (Math.abs(dnpv) < 1e-10) break;
+      const newRate = rate - npvCalc / dnpv;
+      if (Math.abs(newRate - rate) < 1e-6) break;
+      rate = newRate;
+    }
+    return rate;
+  };
+  const irr = calcIRR();
 
   // Auto-set active tab when selection changes
   const effectiveActiveProduct = activeProduct && selected.has(activeProduct) ? activeProduct : selectedProducts[0]?.id || null;
@@ -536,7 +569,7 @@ export default function OEValueCalculator() {
     doc.text("Key Metrics", M, y);
     y += 18;
 
-    const metrics = [
+    const metrics: [string, string][] = [
       ["Hours per event (DIY)", `${totalHrsPerEvent} hrs`],
       ["Blended hourly rate (base)", `$${blendedRate.toFixed(0)}/hr`],
       [`Fully-loaded rate (${burdenRate}x)`, `$${fullyLoadedRate.toFixed(0)}/hr`],
@@ -548,7 +581,12 @@ export default function OEValueCalculator() {
       ["Strategic soft benefits", `$${fmt(totalSoftBenefits)}`],
       ["Net annual savings", `$${fmt(Math.round(annualSavings))}`],
       ["Return on investment", `${roi.toFixed(0)}%`],
-      ["Cost of delay (per month)", `$${fmt(Math.round(costOfDelayPerMonth))}`],
+      ...(enabledMetrics.has("costOfDelay") ? [["Cost of delay (per month)", `$${fmt(Math.round(costOfDelayPerMonth))}`] as [string, string]] : []),
+      ...(enabledMetrics.has("payback") ? [["Payback period", `${paybackMonths} months`] as [string, string]] : []),
+      ...(enabledMetrics.has("npv") ? [[`3-Year NPV (${(discountRate * 100).toFixed(0)}% rate)`, `$${fmt(Math.round(npv3Year))}`] as [string, string]] : []),
+      ...(enabledMetrics.has("irr") ? [["Internal rate of return (IRR)", `${(irr * 100).toFixed(0)}%`] as [string, string]] : []),
+      ...(enabledMetrics.has("breakEven") ? [["Break-even point", `${breakEvenEvents} events`] as [string, string]] : []),
+      ...(enabledMetrics.has("fte") ? [["FTE equivalent saved", `${fteEquivalent.toFixed(1)} FTEs (${Math.round(totalHrsPerEvent * eventsPerYear)} hrs/yr)`] as [string, string]] : []),
     ];
     metrics.forEach(([label, val], i) => {
       const rowY = y + i * 20;
@@ -865,110 +903,7 @@ export default function OEValueCalculator() {
     doc.text(`$${fmt(Math.round(annualSavings))}`, M + 8, y + 16);
     y += 40;
 
-    // Chart 2: Per-product cost bars
-    if (selectedProducts.length > 0) {
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(...gray);
-      doc.text("COST PER PRODUCT (per event)", M, y);
-      y += 14;
-      const pdfProdCosts = selectedProducts.map((prod) => {
-        const items = diyData[prod.id];
-        const hrs = items.reduce((a, b) => a + b.hrs, 0);
-        const risk = items.reduce((a, b) => a + b.risk, 0);
-        const labor = Math.round(hrs * fullyLoadedRate);
-        return { name: prod.name, labor, risk, total: labor + risk };
-      });
-      const maxPdf = Math.max(...pdfProdCosts.map((p) => p.total), 1);
-      pdfProdCosts.forEach((p) => {
-        checkPage(40);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(55, 65, 81);
-        doc.text(`${p.name}`, M, y + 10);
-        y += 14;
-        const laborW = Math.max(2, (p.labor / maxPdf) * chartW);
-        const riskW = Math.max(2, (p.risk / maxPdf) * chartW);
-        doc.setFillColor(146, 102, 10);
-        doc.rect(M, y, laborW, 16, "F");
-        doc.setFillColor(194, 59, 34);
-        doc.rect(M + laborW, y, riskW, 16, "F");
-        // Value label on bar
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(8);
-        doc.setFont("helvetica", "bold");
-        if (laborW > 40) {
-          doc.text(`$${fmt(p.labor)}`, M + 4, y + 11);
-        }
-        doc.setTextColor(55, 65, 81);
-        doc.setFontSize(8);
-        doc.text(`$${fmt(p.total)}`, M + laborW + riskW + 6, y + 11);
-        y += 24;
-      });
-      // Legend
-      doc.setFillColor(146, 102, 10);
-      doc.rect(M, y, 8, 8, "F");
-      doc.setFontSize(8);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(...gray);
-      doc.text("Labor", M + 12, y + 7);
-      doc.setFillColor(194, 59, 34);
-      doc.rect(M + 50, y, 8, 8, "F");
-      doc.text("Risk", M + 62, y + 7);
-      y += 24;
-    }
-
-    // Chart 3: Time by role
-    if (selectedProducts.length > 0) {
-      checkPage(180);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(...gray);
-      doc.text("DIY TIME BY ROLE", M, y);
-      y += 14;
-      const pdfRoleHours: Record<string, number> = {};
-      selectedProducts.forEach((prod) => {
-        const items = diyData[prod.id];
-        prod.diy.forEach((d, i) => {
-          const hrsPerRole = items[i].hrs / d.roles.length;
-          d.roles.forEach((r) => { pdfRoleHours[r] = (pdfRoleHours[r] || 0) + hrsPerRole; });
-        });
-      });
-      const pdfRoleEntries = Object.entries(pdfRoleHours).sort((a, b) => b[1] - a[1]);
-      const totalPdfRoleHrs = pdfRoleEntries.reduce((a, [, h]) => a + h, 0);
-      pdfRoleEntries.forEach(([id, hrs]) => {
-        checkPage(20);
-        const role = allRoleMap[id];
-        const pct = ((hrs / totalPdfRoleHrs) * 100).toFixed(0);
-        const barW = (hrs / totalPdfRoleHrs) * chartW;
-        const roleColor = role?.color || "#999";
-        const r = parseInt(roleColor.slice(1, 3), 16);
-        const g = parseInt(roleColor.slice(3, 5), 16);
-        const b = parseInt(roleColor.slice(5, 7), 16);
-        doc.setFillColor(r, g, b);
-        const roleBarW = Math.max(4, barW);
-        doc.roundedRect(M, y, roleBarW, 16, 2, 2, "F");
-        // Label on bar if wide enough
-        if (roleBarW > 30) {
-          doc.setTextColor(255, 255, 255);
-          doc.setFontSize(7);
-          doc.setFont("helvetica", "bold");
-          doc.text(`${Math.round(hrs)}h`, M + 4, y + 11);
-        }
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(55, 65, 81);
-        doc.text(`${role?.abbr || id}  ${Math.round(hrs)}h (${pct}%)`, M + roleBarW + 8, y + 12);
-        y += 22;
-      });
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(...dark);
-      doc.text(`Total: ${Math.round(totalPdfRoleHrs)} hours/event`, M, y + 4);
-      y += 24;
-    }
-
-    // ── Chart 4: 3-Year Projection (grouped bar chart) ──
+    // ── Chart 2: 3-Year Projection (grouped bar chart) ──
     doc.addPage();
     y = 50;
     doc.setFontSize(13);
@@ -1054,7 +989,7 @@ export default function OEValueCalculator() {
     doc.text("OE Platform", M + 79, y + 8);
     y += 30;
 
-    // ── Chart 5: Value Waterfall ──
+    // ── Chart 3: Value Waterfall ──
     checkPage(220);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
@@ -1099,6 +1034,39 @@ export default function OEValueCalculator() {
       y += wfBarH + 10;
     });
     y += 10;
+
+    // ── Chart 4: Cost of Delay Escalation ──
+    if (enabledMetrics.has("costOfDelay")) {
+      checkPage(200);
+      y += 10;
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...gray);
+      doc.text("COST OF DELAY — CUMULATIVE VALUE LOST", M, y);
+      y += 18;
+
+      const delayMonths = [1, 3, 6, 9, 12];
+      const delayMax = costOfDelayPerMonth * 12;
+      const delayBarH = 20;
+      delayMonths.forEach((mo) => {
+        checkPage(35);
+        const val = Math.round(costOfDelayPerMonth * mo);
+        const barW = Math.max(4, (val / delayMax) * contentW * 0.7);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...dark);
+        doc.text(`${mo} month${mo > 1 ? "s" : ""}`, M, y + 13);
+        doc.setFillColor(194, 59, 34);
+        doc.roundedRect(M + 80, y, barW, delayBarH, 2, 2, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "bold");
+        if (barW > 50) doc.text(`$${fmt(val)}`, M + 84, y + 13);
+        else { doc.setTextColor(...redC); doc.text(`$${fmt(val)}`, M + 84 + barW + 6, y + 13); }
+        y += delayBarH + 8;
+      });
+      y += 10;
+    }
 
     // ── Assumptions ──
     checkPage(120);
@@ -1182,7 +1150,7 @@ export default function OEValueCalculator() {
     }
 
     doc.save("OE-ROI-Analysis.pdf");
-  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps, customerName, customerLogo, customRoles, allRoles, allRoleMap]);
+  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps, customerName, customerLogo, customRoles, allRoles, allRoleMap, enabledMetrics, paybackMonths, npv3Year, discountRate, irr, breakEvenEvents, fteEquivalent]);
 
   /* ═══════════════════════════════════════
      RENDER
@@ -2096,6 +2064,67 @@ export default function OEValueCalculator() {
                   <span style={{ ...font.mono, fontSize: 14, fontWeight: 700, color: row.c }}>{row.value}</span>
                 </div>
               ))}
+            </div>
+
+            {/* Advanced Financial Metrics */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <div style={{ ...font.sans, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: color.subtle }}>
+                  Financial Intelligence
+                </div>
+                <button
+                  onClick={() => {
+                    if (enabledMetrics.size === 6) setEnabledMetrics(new Set());
+                    else setEnabledMetrics(new Set(["payback", "npv", "irr", "costOfDelay", "breakEven", "fte"]));
+                  }}
+                  style={{ ...font.sans, fontSize: 10, color: color.teal, background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}
+                >
+                  {enabledMetrics.size === 6 ? "Deselect All" : "Select All"}
+                </button>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                {[
+                  { id: "payback", label: "Payback Period", value: `${paybackMonths} mo`, sub: `Investment recovered in ${paybackMonths} months`, color: color.teal },
+                  { id: "npv", label: "3-Year NPV", value: `$${fmtk(Math.round(npv3Year))}`, sub: `At ${(discountRate * 100).toFixed(0)}% discount rate`, color: color.green },
+                  { id: "irr", label: "IRR", value: `${(irr * 100).toFixed(0)}%`, sub: "Internal rate of return", color: color.amber },
+                  { id: "costOfDelay", label: "Cost of Delay", value: `$${fmtk(Math.round(costOfDelayPerMonth))}/mo`, sub: "Value lost each month of inaction", color: color.red },
+                  { id: "breakEven", label: "Break-Even", value: `${breakEvenEvents} events`, sub: `Pays for itself after ${breakEvenEvents} events`, color: color.tealDark },
+                  { id: "fte", label: "FTE Equivalent", value: `${fteEquivalent.toFixed(1)} FTEs`, sub: `${Math.round(totalHrsPerEvent * eventsPerYear)} hours/year recovered`, color: color.text },
+                ].map((metric) => (
+                  <div
+                    key={metric.id}
+                    onClick={() => {
+                      const next = new Set(enabledMetrics);
+                      if (next.has(metric.id)) next.delete(metric.id);
+                      else next.add(metric.id);
+                      setEnabledMetrics(next);
+                    }}
+                    style={{
+                      background: enabledMetrics.has(metric.id) ? color.card : color.bg,
+                      border: `1.5px solid ${enabledMetrics.has(metric.id) ? metric.color + "40" : color.border}`,
+                      borderRadius: 10,
+                      padding: "16px 14px",
+                      cursor: "pointer",
+                      opacity: enabledMetrics.has(metric.id) ? 1 : 0.5,
+                      transition: "all 0.15s ease",
+                      position: "relative" as const,
+                    }}
+                  >
+                    <div style={{ position: "absolute" as const, top: 8, right: 10, width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${enabledMetrics.has(metric.id) ? metric.color : color.border}`, background: enabledMetrics.has(metric.id) ? metric.color : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {enabledMetrics.has(metric.id) && <span style={{ color: "#fff", fontSize: 10, fontWeight: 700 }}>&#10003;</span>}
+                    </div>
+                    <div style={{ ...font.sans, fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: metric.color, marginBottom: 4 }}>
+                      {metric.label}
+                    </div>
+                    <div style={{ ...font.serif, fontSize: 22, fontWeight: 700, color: enabledMetrics.has(metric.id) ? color.text : color.muted, marginBottom: 2 }}>
+                      {metric.value}
+                    </div>
+                    <div style={{ ...font.sans, fontSize: 10, color: color.subtle }}>
+                      {metric.sub}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Export PDF button */}

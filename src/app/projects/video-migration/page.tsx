@@ -21,7 +21,7 @@ export default function VideoMigration() {
       </p>
       <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e5e7eb", marginBottom: 32 }}>
         <iframe
-          src="https://video-migration.vercel.app"
+          src="https://video-migration-tau.vercel.app"
           style={{ width: "100%", height: "80vh", border: "none", display: "block" }}
           title="VideoMigrate Dashboard"
         />

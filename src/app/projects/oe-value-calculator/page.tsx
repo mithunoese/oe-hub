@@ -1114,9 +1114,12 @@ export default function OEValueCalculator() {
       `Labor costs include a ${burdenRate}x burden rate multiplier applied to base hourly wages to account for benefits, payroll taxes, overhead, and facilities.`,
       "Time estimates are based on industry benchmarks for financial services event production and may vary by organization.",
       "Risk exposure values represent potential financial impact from errors, delays, or reputational damage — not guaranteed losses.",
-      "Strategic soft benefits are estimated annual values and should be validated against your organization's specific context.",
-      "All values are editable — adjust to match your actual costs and experience.",
-    ];
+      "Strategic soft benefits are probability-weighted estimates — each benefit has a user-adjustable confidence percentage. Only enabled benefits are included in totals.",
+      `Adoption ramp: Year 1 at ${yearRamps[0]}%, Year 2 at ${yearRamps[1]}%, Year 3 at ${yearRamps[2]}%. Ramp applies to realized savings and soft benefits — platform costs remain at 100% regardless of adoption level.`,
+      "Per-product pricing shown is illustrative (list pricing) and editable. Actual contract pricing may differ based on volume, bundling, and negotiated terms.",
+      customRoles.length > 0 ? `This model includes ${customRoles.length} custom role(s) with user-defined hourly rates. These rates should reflect your organization's actual compensation data.` : null,
+      "All values are editable — adjust to match your actual costs and experience. The exported PDF captures your customized inputs at time of generation.",
+    ].filter(Boolean) as string[];
     assumptions.forEach((a) => {
       checkPage(30);
       const lines = doc.splitTextToSize(`  ${a}`, contentW - 20);
@@ -1131,7 +1134,7 @@ export default function OEValueCalculator() {
     doc.setFillColor(240, 240, 240);
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.5);
-    const disclaimerText = "This document is provided by OpenExchange, Inc. for informational purposes only and does not constitute a binding offer, guarantee, or warranty of any kind. All cost estimates, savings projections, and ROI calculations are based on assumptions, industry benchmarks, and user-provided inputs that may not reflect your organization\u2019s actual experience. Actual results will vary based on organizational complexity, team composition, event volume, vendor pricing, and market conditions. Strategic soft benefits are subjective estimates and should be validated by your finance and operations teams. Past performance indicators and industry benchmarks referenced herein do not guarantee future outcomes. This analysis is intended as a planning tool and conversation starter \u2014 not a contractual commitment. OpenExchange recommends that all purchasing decisions be made in consultation with appropriate internal stakeholders and subject to your organization\u2019s procurement policies. All figures are user-editable and the exported values reflect customized inputs at time of generation.";
+    const disclaimerText = `This document is provided by OpenExchange, Inc. for informational purposes only and does not constitute a binding offer, guarantee, or warranty of any kind. All cost estimates, savings projections, and ROI calculations are based on assumptions, industry benchmarks, and user-provided inputs that may not reflect your organization\u2019s actual experience. Actual results will vary based on organizational complexity, team composition, event volume, vendor pricing, and market conditions. Multi-year projections incorporate an adoption ramp (Year 1: ${yearRamps[0]}%, Year 2: ${yearRamps[1]}%, Year 3: ${yearRamps[2]}%) that adjusts realized savings and soft benefits \u2014 platform costs are not ramped. These ramp percentages are user-adjustable and reflect assumed adoption maturity, not guaranteed utilization. Per-product pricing shown is illustrative list pricing; actual contract terms, bundling discounts, and negotiated rates may differ materially.${customRoles.length > 0 ? ` This analysis includes ${customRoles.length} custom-defined role(s) with user-specified hourly rates that have not been independently verified.` : ""} Strategic soft benefits are probability-weighted estimates with user-adjustable confidence percentages; only benefits explicitly enabled by the user are included in totals. These values are inherently subjective and should be validated by your finance and operations teams. Past performance indicators and industry benchmarks referenced herein do not guarantee future outcomes. This analysis is intended as a planning tool and conversation starter \u2014 not a contractual commitment. OpenExchange recommends that all purchasing decisions be made in consultation with appropriate internal stakeholders and subject to your organization\u2019s procurement policies. All figures are user-editable and the exported values reflect customized inputs at time of generation.`;
     const disclaimerLines = doc.splitTextToSize(disclaimerText, contentW - 40);
     const disclaimerBoxH = disclaimerLines.length * 10 + 60;
 
@@ -2460,7 +2463,7 @@ export default function OEValueCalculator() {
 
             {/* Narrative */}
             <div style={{ ...font.serif, fontSize: 14, color: color.muted, lineHeight: 1.85, marginBottom: 28, maxWidth: 800 }}>
-              This analysis models the fully-loaded cost of running virtual and hybrid events in-house versus using the OpenExchange platform. We apply a <strong style={{ color: color.text }}>{burdenRate}x burden rate multiplier</strong> to all base hourly wages — the industry-standard method for calculating the true cost of an employee, accounting for benefits, payroll taxes, overhead, and management time. Time estimates are derived from interviews with IR teams and event operations leaders at mid-to-large financial services firms. Risk values reflect probability-weighted downside exposure, not guaranteed losses.
+              This analysis models the fully-loaded cost of running virtual and hybrid events in-house versus using the OpenExchange platform. We apply a <strong style={{ color: color.text }}>{burdenRate}x burden rate multiplier</strong> to all base hourly wages — the industry-standard method for calculating the true cost of an employee, accounting for benefits, payroll taxes, overhead, and management time. Time estimates are derived from interviews with IR teams and event operations leaders at mid-to-large financial services firms. Risk values reflect probability-weighted downside exposure, not guaranteed losses. Multi-year projections incorporate an <strong style={{ color: color.text }}>adoption ramp</strong> (Year 1: {yearRamps[0]}%, Year 2: {yearRamps[1]}%, Year 3: {yearRamps[2]}%) to model realistic value realization over time. Strategic soft benefits are <strong style={{ color: color.text }}>probability-weighted</strong> with adjustable confidence levels and can be individually toggled on or off. Per-product pricing is illustrative and editable — not a binding quote.
             </div>
 
             {/* Assumptions grid */}
@@ -2495,6 +2498,21 @@ export default function OEValueCalculator() {
                   num: "06",
                   title: "Editable Model",
                   text: "Every number — hours, risk, rates, benefits, events, platform cost — can be clicked and edited. The PDF export captures your customized values. This is a conversation starter, not a fixed quote.",
+                },
+                {
+                  num: "07",
+                  title: "Adoption Ramp",
+                  text: `Multi-year projections apply an adoption ramp — Year 1: ${yearRamps[0]}%, Year 2: ${yearRamps[1]}%, Year 3: ${yearRamps[2]}%. Ramp reduces realized savings and soft benefits to reflect real-world adoption curves. Platform costs are not ramped (you pay full price regardless of adoption level).`,
+                },
+                {
+                  num: "08",
+                  title: "Per-Product Pricing",
+                  text: "Product costs shown are illustrative list prices and are fully editable. Actual contract pricing may differ based on volume commitments, product bundling, multi-year terms, and negotiated discounts. Consult your OpenExchange representative for a formal quote.",
+                },
+                {
+                  num: "09",
+                  title: "Confidence Weighting",
+                  text: "Each strategic soft benefit has a user-adjustable confidence percentage (probability weighting). Benefits can be individually enabled or disabled. Only enabled benefits with their weighted values are included in ROI totals and the exported PDF.",
                 },
               ].map((item) => (
                 <div key={item.num}>
@@ -2534,7 +2552,7 @@ export default function OEValueCalculator() {
             {/* Fine print */}
             <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${color.border}` }}>
               <p style={{ ...font.sans, fontSize: 10, color: color.subtle, lineHeight: 1.7, fontStyle: "italic" }}>
-                This analysis is provided for informational and planning purposes only. All estimates are assumptions based on industry benchmarks and should be validated against your organization&apos;s specific context. The {burdenRate}x burden rate multiplier reflects the fully-loaded cost of employment and is applied consistently to all hourly wages to account for benefits, payroll taxes, overhead, facilities, and management time. Past performance and industry benchmarks do not guarantee future results. OpenExchange makes no representations regarding the accuracy of these estimates for any specific organization. All values are user-editable and the exported PDF will reflect your customized inputs.
+                This analysis is provided for informational and planning purposes only. All estimates are assumptions based on industry benchmarks and should be validated against your organization&apos;s specific context. The {burdenRate}x burden rate multiplier reflects the fully-loaded cost of employment and is applied consistently to all hourly wages to account for benefits, payroll taxes, overhead, facilities, and management time. Multi-year projections apply an adoption ramp (Year 1: {yearRamps[0]}%, Year 2: {yearRamps[1]}%, Year 3: {yearRamps[2]}%) to realized savings and strategic benefits — platform costs are charged at 100% regardless of adoption level. Strategic soft benefits are probability-weighted with user-adjustable confidence percentages; only benefits explicitly enabled are included in totals. Per-product pricing is illustrative list pricing — actual contract pricing may differ based on bundling, volume, and negotiated terms.{customRoles.length > 0 ? ` This model includes ${customRoles.length} custom role(s) with user-specified rates that have not been independently verified.` : ""} Past performance and industry benchmarks do not guarantee future results. OpenExchange makes no representations regarding the accuracy of these estimates for any specific organization. All values are user-editable and the exported PDF will reflect your customized inputs at the time of generation.
               </p>
             </div>
           </div>

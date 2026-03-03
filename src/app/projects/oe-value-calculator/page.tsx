@@ -196,8 +196,8 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 const fmtk = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(0)}k` : `${n}`;
 
 /* ─── Role pill badge ─── */
-function RolePill({ roleId }: { roleId: string }) {
-  const role = roleMap[roleId];
+function RolePill({ roleId, roles }: { roleId: string; roles?: Record<string, (typeof defaultRoles)[0]> }) {
+  const role = (roles || roleMap)[roleId];
   if (!role) return null;
   return (
     <span
@@ -289,6 +289,19 @@ export default function OEValueCalculator() {
     new Set(defaultSoftBenefits.map((b) => b.id))
   );
   const [burdenRate, setBurdenRate] = useState(BURDEN_RATE);
+
+  /* ─ Custom roles ─ */
+  const [customRoles, setCustomRoles] = useState<Array<{ id: string; title: string; abbr: string; defaultRate: number; color: string }>>([]);
+  const allRoles = [...defaultRoles, ...customRoles];
+  const allRoleMap: Record<string, (typeof defaultRoles)[0]> = Object.fromEntries(allRoles.map((r) => [r.id, r]));
+
+  /* ─ Add custom role form state ─ */
+  const [showAddRole, setShowAddRole] = useState(false);
+  const [newRoleTitle, setNewRoleTitle] = useState("");
+  const [newRoleAbbr, setNewRoleAbbr] = useState("");
+  const [newRoleRate, setNewRoleRate] = useState(60);
+  const [newRoleColorIdx, setNewRoleColorIdx] = useState(0);
+  const customRoleColors = ["#8B5CF6", "#EC4899", "#14B8A6", "#F97316", "#6366F1", "#84CC16"];
 
   /* ─ Customer branding ─ */
   const [customerName, setCustomerName] = useState("");
@@ -695,7 +708,7 @@ export default function OEValueCalculator() {
           doc.setFont("helvetica", "normal");
           doc.setTextColor(55, 65, 81);
           doc.text(prod.diy[i].label, M + 16, y + 10);
-          const roleLabels = prod.diy[i].roles.map((r) => roleMap[r]?.abbr || r).join(", ");
+          const roleLabels = prod.diy[i].roles.map((r) => allRoleMap[r]?.abbr || r).join(", ");
           doc.setTextColor(...gray);
           doc.setFontSize(8);
           doc.text(roleLabels, M + 200, y + 10);
@@ -731,14 +744,14 @@ export default function OEValueCalculator() {
     doc.setTextColor(...dark);
     doc.text("Staffing Rates", M, y);
     y += 20;
-    defaultRoles.forEach((role, i) => {
+    allRoles.forEach((role, i) => {
       if (i % 2 === 0) { doc.setFillColor(250, 248, 245); doc.rect(M, y - 4, contentW, 20, "F"); }
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(55, 65, 81);
       doc.text(`${role.title} (${role.abbr})`, M + 10, y + 10);
       doc.setFont("helvetica", "bold");
-      doc.text(`$${rates[role.id]}/hr  ->  $${Math.round(rates[role.id] * burdenRate)}/hr loaded`, W - M - 10, y + 10, { align: "right" });
+      doc.text(`$${rates[role.id] ?? role.defaultRate}/hr  ->  $${Math.round((rates[role.id] ?? role.defaultRate) * burdenRate)}/hr loaded`, W - M - 10, y + 10, { align: "right" });
       y += 22;
     });
     y += 10;
@@ -925,7 +938,7 @@ export default function OEValueCalculator() {
       const totalPdfRoleHrs = pdfRoleEntries.reduce((a, [, h]) => a + h, 0);
       pdfRoleEntries.forEach(([id, hrs]) => {
         checkPage(20);
-        const role = roleMap[id];
+        const role = allRoleMap[id];
         const pct = ((hrs / totalPdfRoleHrs) * 100).toFixed(0);
         const barW = (hrs / totalPdfRoleHrs) * chartW;
         const roleColor = role?.color || "#999";
@@ -1166,7 +1179,7 @@ export default function OEValueCalculator() {
     }
 
     doc.save("OE-ROI-Analysis.pdf");
-  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps, customerName, customerLogo]);
+  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits, yearRamps, customerName, customerLogo, customRoles, allRoles, allRoleMap]);
 
   /* ═══════════════════════════════════════
      RENDER
@@ -1391,9 +1404,9 @@ export default function OEValueCalculator() {
             <span style={{ ...font.sans, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: color.subtle }}>
               Roles
             </span>
-            {defaultRoles.map((r) => (
+            {allRoles.map((r) => (
               <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <RolePill roleId={r.id} />
+                <RolePill roleId={r.id} roles={allRoleMap} />
                 <span style={{ ...font.sans, fontSize: 11, color: color.muted }}>{r.title}</span>
               </div>
             ))}
@@ -1453,28 +1466,43 @@ export default function OEValueCalculator() {
                   Staffing Rates
                 </h4>
                 <div style={{ border: `1px solid ${color.border}`, borderRadius: 8, overflow: "hidden" }}>
-                  {defaultRoles.map((role, i) => (
-                    <div key={role.id} style={{
-                      padding: "10px 14px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderBottom: i < defaultRoles.length - 1 ? `1px solid ${color.border}` : "none",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <RolePill roleId={role.id} />
-                        <span style={{ ...font.sans, fontSize: 12, color: color.text }}>{role.title}</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <Editable value={rates[role.id]} onChange={(v) => setRates((prev) => ({ ...prev, [role.id]: v }))} prefix="$" suffix="/hr" />
+                  {allRoles.map((role, i) => {
+                    const isCustom = customRoles.some((cr) => cr.id === role.id);
+                    return (
+                      <div key={role.id} style={{
+                        padding: "10px 14px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        borderBottom: i < allRoles.length - 1 ? `1px solid ${color.border}` : "none",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <RolePill roleId={role.id} roles={allRoleMap} />
+                          <span style={{ ...font.sans, fontSize: 12, color: color.text }}>{role.title}</span>
+                          {isCustom && (
+                            <button
+                              onClick={() => {
+                                setCustomRoles((prev) => prev.filter((cr) => cr.id !== role.id));
+                                setRates((prev) => { const next = { ...prev }; delete next[role.id]; return next; });
+                              }}
+                              style={{ ...font.sans, fontSize: 11, color: color.red, background: "none", border: "none", cursor: "pointer", padding: "0 4px", lineHeight: 1 }}
+                              title="Remove custom role"
+                            >
+                              x
+                            </button>
+                          )}
                         </div>
-                        <span style={{ ...font.mono, fontSize: 10, color: color.subtle }} title={`${burdenRate}x loaded`}>
-                          → ${Math.round(rates[role.id] * burdenRate)}
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <Editable value={rates[role.id] ?? role.defaultRate} onChange={(v) => setRates((prev) => ({ ...prev, [role.id]: v }))} prefix="$" suffix="/hr" />
+                          </div>
+                          <span style={{ ...font.mono, fontSize: 10, color: color.subtle }} title={`${burdenRate}x loaded`}>
+                            → ${Math.round((rates[role.id] ?? role.defaultRate) * burdenRate)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 {/* Burden rate */}
                 <div style={{
@@ -1494,6 +1522,100 @@ export default function OEValueCalculator() {
                     <span style={{ ...font.sans, fontSize: 11, color: color.amber }}>({burdenRate}x)</span>
                   </div>
                 </div>
+                {/* Add custom role */}
+                {!showAddRole ? (
+                  <button
+                    onClick={() => setShowAddRole(true)}
+                    style={{
+                      marginTop: 8,
+                      width: "100%",
+                      padding: "8px 14px",
+                      ...font.sans,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: color.teal,
+                      background: color.tealLight,
+                      border: `1px dashed ${color.teal}60`,
+                      borderRadius: 8,
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Add Role
+                  </button>
+                ) : (
+                  <div style={{
+                    marginTop: 8,
+                    padding: "10px 12px",
+                    background: color.tealLight,
+                    border: `1px solid ${color.teal}40`,
+                    borderRadius: 8,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                  }}>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <input
+                        type="text"
+                        placeholder="Title"
+                        value={newRoleTitle}
+                        onChange={(e) => setNewRoleTitle(e.target.value)}
+                        style={{ ...font.sans, fontSize: 11, padding: "4px 8px", border: `1px solid ${color.border}`, borderRadius: 4, outline: "none", flex: 1, minWidth: 0 }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Abbr"
+                        value={newRoleAbbr}
+                        maxLength={4}
+                        onChange={(e) => setNewRoleAbbr(e.target.value.toUpperCase())}
+                        style={{ ...font.sans, fontSize: 11, padding: "4px 8px", border: `1px solid ${color.border}`, borderRadius: 4, outline: "none", width: 48 }}
+                      />
+                      <input
+                        type="number"
+                        placeholder="$/hr"
+                        value={newRoleRate}
+                        onChange={(e) => setNewRoleRate(Number(e.target.value) || 0)}
+                        style={{ ...font.mono, fontSize: 11, padding: "4px 8px", border: `1px solid ${color.border}`, borderRadius: 4, outline: "none", width: 52 }}
+                      />
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ ...font.sans, fontSize: 10, color: color.muted }}>Color:</span>
+                      {customRoleColors.map((c, ci) => (
+                        <button
+                          key={c}
+                          onClick={() => setNewRoleColorIdx(ci)}
+                          style={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: 3,
+                            background: c,
+                            border: ci === newRoleColorIdx ? "2px solid #333" : "2px solid transparent",
+                            cursor: "pointer",
+                            padding: 0,
+                          }}
+                        />
+                      ))}
+                      <div style={{ flex: 1 }} />
+                      <button
+                        onClick={() => { setShowAddRole(false); setNewRoleTitle(""); setNewRoleAbbr(""); setNewRoleRate(60); }}
+                        style={{ ...font.sans, fontSize: 11, color: color.muted, background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (!newRoleTitle.trim() || !newRoleAbbr.trim()) return;
+                          const id = `custom-${newRoleTitle.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
+                          setCustomRoles((prev) => [...prev, { id, title: newRoleTitle.trim(), abbr: newRoleAbbr.trim(), defaultRate: newRoleRate, color: customRoleColors[newRoleColorIdx] }]);
+                          setRates((prev) => ({ ...prev, [id]: newRoleRate }));
+                          setNewRoleTitle(""); setNewRoleAbbr(""); setNewRoleRate(60); setShowAddRole(false);
+                        }}
+                        style={{ ...font.sans, fontSize: 11, fontWeight: 600, color: "#fff", background: color.teal, border: "none", borderRadius: 4, padding: "4px 12px", cursor: "pointer" }}
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Column 2: Event Parameters */}
@@ -1880,7 +2002,7 @@ export default function OEValueCalculator() {
                           </div>
                           {/* Role pills */}
                           <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                            {d.roles.map((r) => <RolePill key={r} roleId={r} />)}
+                            {d.roles.map((r) => <RolePill key={r} roleId={r} roles={allRoleMap} />)}
                           </div>
                         </div>
                       ))}
@@ -2152,7 +2274,7 @@ export default function OEValueCalculator() {
           const totalRoleHrs = roleEntries.reduce((a, [, h]) => a + h, 0);
 
           // Pie chart SVG segments
-          const pieColors = roleEntries.map(([id]) => roleMap[id]?.color || "#999");
+          const pieColors = roleEntries.map(([id]) => allRoleMap[id]?.color || "#999");
           let pieAngle = 0;
           const pieSegments = roleEntries.map(([id, hrs], i) => {
             const pct = hrs / totalRoleHrs;
@@ -2275,7 +2397,7 @@ export default function OEValueCalculator() {
                         <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "space-between" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color, flexShrink: 0 }} />
-                            <span style={{ ...font.sans, fontSize: 11, color: color.text }}>{roleMap[s.id]?.abbr}</span>
+                            <span style={{ ...font.sans, fontSize: 11, color: color.text }}>{allRoleMap[s.id]?.abbr}</span>
                           </div>
                           <span style={{ ...font.mono, fontSize: 11, color: color.muted }}>{Math.round(s.hrs)}h ({(s.pct * 100).toFixed(0)}%)</span>
                         </div>

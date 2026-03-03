@@ -284,10 +284,13 @@ export default function OEValueCalculator() {
   const [softBenefitPcts, setSoftBenefitPcts] = useState<Record<string, number>>(
     Object.fromEntries(defaultSoftBenefits.map((b) => [b.id, b.defaultPct]))
   );
+  const [enabledBenefits, setEnabledBenefits] = useState<Set<string>>(
+    new Set(defaultSoftBenefits.map((b) => b.id))
+  );
   const [burdenRate, setBurdenRate] = useState(BURDEN_RATE);
 
   /* ─ Configure panel state ─ */
-  const [configOpen, setConfigOpen] = useState(false);
+  const [configOpen, setConfigOpen] = useState(true);
 
   const toggleProduct = (id: string) => {
     setSelected((prev) => {
@@ -324,7 +327,7 @@ export default function OEValueCalculator() {
   const fullyLoadedRate = blendedRate * burdenRate;
   const laborCostPerEvent = totalHrsPerEvent * fullyLoadedRate;
   const annualDiyCost = (laborCostPerEvent + totalRiskPerEvent) * eventsPerYear;
-  const totalSoftBenefits = defaultSoftBenefits.reduce((sum, b) => sum + Math.round(softBenefits[b.id] * (softBenefitPcts[b.id] / 100)), 0);
+  const totalSoftBenefits = defaultSoftBenefits.reduce((sum, b) => sum + (enabledBenefits.has(b.id) ? Math.round(softBenefits[b.id] * (softBenefitPcts[b.id] / 100)) : 0), 0);
   const totalAnnualValue = annualDiyCost + totalSoftBenefits;
   const annualSavings = totalAnnualValue - oePlatformCost;
   const roi = oePlatformCost > 0 ? ((annualSavings / oePlatformCost) * 100) : 0;
@@ -686,7 +689,8 @@ export default function OEValueCalculator() {
     doc.text("RAW VALUE", W - M - 70, y + 9, { align: "right" });
     doc.text("WEIGHTED", W - M - 10, y + 9, { align: "right" });
     y += 20;
-    defaultSoftBenefits.forEach((b, i) => {
+    const activeBenefits = defaultSoftBenefits.filter((b) => enabledBenefits.has(b.id));
+    activeBenefits.forEach((b, i) => {
       checkPage(24);
       if (i % 2 === 0) { doc.setFillColor(250, 248, 245); doc.rect(M, y - 4, contentW, 20, "F"); }
       const pct = softBenefitPcts[b.id];
@@ -737,22 +741,37 @@ export default function OEValueCalculator() {
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...redC);
-    doc.text(`DIY: $${fmt(Math.round(annualDiyCost))}`, M, y - 2);
+    doc.text("DIY Cost", M, y - 2);
+    const diyBarW = Math.max(4, (annualDiyCost / maxCostVal) * chartW);
     doc.setFillColor(194, 59, 34);
-    doc.roundedRect(M, y, Math.max(4, (annualDiyCost / maxCostVal) * chartW), 18, 3, 3, "F");
-    y += 28;
+    doc.roundedRect(M, y, diyBarW, 24, 3, 3, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(`$${fmt(Math.round(annualDiyCost))}`, M + 8, y + 16);
+    y += 34;
     // OE bar
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
     doc.setTextColor(...tealC);
-    doc.text(`OE Platform: $${fmt(oePlatformCost)}`, M, y - 2);
+    doc.text("OE Platform", M, y - 2);
+    const oeBarW = Math.max(4, (oePlatformCost / maxCostVal) * chartW);
     doc.setFillColor(0, 130, 133);
-    doc.roundedRect(M, y, Math.max(4, (oePlatformCost / maxCostVal) * chartW), 18, 3, 3, "F");
-    y += 28;
+    doc.roundedRect(M, y, oeBarW, 24, 3, 3, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(`$${fmt(oePlatformCost)}`, M + 8, y + 16);
+    y += 34;
     // Savings bar
     const savBarW = Math.max(4, (Math.abs(annualSavings) / maxCostVal) * chartW);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
     doc.setTextColor(43, 94, 73);
-    doc.text(`Savings: $${fmt(Math.round(annualSavings))}`, M, y - 2);
+    doc.text("You Save", M, y - 2);
     doc.setFillColor(43, 94, 73);
-    doc.roundedRect(M, y, savBarW, 18, 3, 3, "F");
+    doc.roundedRect(M, y, savBarW, 24, 3, 3, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(`$${fmt(Math.round(annualSavings))}`, M + 8, y + 16);
     y += 40;
 
     // Chart 2: Per-product cost bars
@@ -771,19 +790,29 @@ export default function OEValueCalculator() {
       });
       const maxPdf = Math.max(...pdfProdCosts.map((p) => p.total), 1);
       pdfProdCosts.forEach((p) => {
-        checkPage(36);
+        checkPage(40);
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(55, 65, 81);
-        doc.text(`${p.name}  $${fmt(p.total)}`, M, y + 10);
+        doc.text(`${p.name}`, M, y + 10);
         y += 14;
-        const laborW = (p.labor / maxPdf) * chartW;
-        const riskW = (p.risk / maxPdf) * chartW;
+        const laborW = Math.max(2, (p.labor / maxPdf) * chartW);
+        const riskW = Math.max(2, (p.risk / maxPdf) * chartW);
         doc.setFillColor(146, 102, 10);
-        doc.rect(M, y, laborW, 10, "F");
+        doc.rect(M, y, laborW, 16, "F");
         doc.setFillColor(194, 59, 34);
-        doc.rect(M + laborW, y, riskW, 10, "F");
-        y += 18;
+        doc.rect(M + laborW, y, riskW, 16, "F");
+        // Value label on bar
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "bold");
+        if (laborW > 40) {
+          doc.text(`$${fmt(p.labor)}`, M + 4, y + 11);
+        }
+        doc.setTextColor(55, 65, 81);
+        doc.setFontSize(8);
+        doc.text(`$${fmt(p.total)}`, M + laborW + riskW + 6, y + 11);
+        y += 24;
       });
       // Legend
       doc.setFillColor(146, 102, 10);
@@ -826,12 +855,20 @@ export default function OEValueCalculator() {
         const g = parseInt(roleColor.slice(3, 5), 16);
         const b = parseInt(roleColor.slice(5, 7), 16);
         doc.setFillColor(r, g, b);
-        doc.roundedRect(M, y, Math.max(4, barW), 12, 2, 2, "F");
+        const roleBarW = Math.max(4, barW);
+        doc.roundedRect(M, y, roleBarW, 16, 2, 2, "F");
+        // Label on bar if wide enough
+        if (roleBarW > 30) {
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(7);
+          doc.setFont("helvetica", "bold");
+          doc.text(`${Math.round(hrs)}h`, M + 4, y + 11);
+        }
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(55, 65, 81);
-        doc.text(`${role?.abbr || id}  ${Math.round(hrs)}h (${pct}%)`, M + Math.max(4, barW) + 8, y + 9);
-        y += 18;
+        doc.text(`${role?.abbr || id}  ${Math.round(hrs)}h (${pct}%)`, M + roleBarW + 8, y + 12);
+        y += 22;
       });
       doc.setFontSize(9);
       doc.setFont("helvetica", "bold");
@@ -839,6 +876,138 @@ export default function OEValueCalculator() {
       doc.text(`Total: ${Math.round(totalPdfRoleHrs)} hours/event`, M, y + 4);
       y += 24;
     }
+
+    // ── Chart 4: 3-Year Projection (grouped bar chart) ──
+    doc.addPage();
+    y = 50;
+    doc.setFontSize(13);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...dark);
+    doc.text("3-Year Cost Projection — Visual", M, y);
+    y += 24;
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...gray);
+    doc.text("ANNUAL DIY vs OE COST BY YEAR", M, y);
+    y += 18;
+
+    const projChartH = 140;
+    const projMaxVal = Math.max(annualDiyCost * 3, 1);
+    const yearGroupW = contentW / 3;
+    const barGap = 8;
+    const projBarW = 40;
+
+    // Y-axis baseline
+    const projBaseY = y + projChartH;
+
+    // Draw gridlines
+    for (let g = 0; g <= 4; g++) {
+      const gy = y + (projChartH * g) / 4;
+      doc.setDrawColor(232, 228, 223);
+      doc.setLineWidth(0.3);
+      doc.line(M, gy, W - M, gy);
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...gray);
+      const gridVal = Math.round(projMaxVal - (projMaxVal * g) / 4);
+      doc.text(`$${fmtk(gridVal)}`, M - 4, gy + 3, { align: "right" });
+    }
+
+    yearlyProjection.forEach((row, i) => {
+      const groupX = M + i * yearGroupW + yearGroupW / 2;
+
+      // DIY bar (red)
+      const diyH = (row.diyCost / projMaxVal) * projChartH;
+      doc.setFillColor(194, 59, 34);
+      doc.roundedRect(groupX - projBarW - barGap / 2, projBaseY - diyH, projBarW, diyH, 2, 2, "F");
+      // Value on DIY bar
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "bold");
+      if (diyH > 14) doc.text(`$${fmtk(Math.round(row.diyCost))}`, groupX - projBarW - barGap / 2 + projBarW / 2, projBaseY - diyH + 10, { align: "center" });
+
+      // OE bar (teal)
+      const oeH = (row.oeCost / projMaxVal) * projChartH;
+      doc.setFillColor(0, 130, 133);
+      doc.roundedRect(groupX + barGap / 2, projBaseY - oeH, projBarW, oeH, 2, 2, "F");
+      // Value on OE bar
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "bold");
+      if (oeH > 14) doc.text(`$${fmtk(Math.round(row.oeCost))}`, groupX + barGap / 2 + projBarW / 2, projBaseY - oeH + 10, { align: "center" });
+
+      // Year label
+      doc.setTextColor(...dark);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Year ${row.year}`, groupX, projBaseY + 16, { align: "center" });
+
+      // Savings label below
+      doc.setTextColor(43, 94, 73);
+      doc.setFontSize(8);
+      doc.text(`Save $${fmtk(Math.round(row.cumulativeSavings))}`, groupX, projBaseY + 28, { align: "center" });
+    });
+
+    y = projBaseY + 42;
+
+    // Legend
+    doc.setFillColor(194, 59, 34);
+    doc.rect(M, y, 10, 10, "F");
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...gray);
+    doc.text("DIY Cost", M + 14, y + 8);
+    doc.setFillColor(0, 130, 133);
+    doc.rect(M + 65, y, 10, 10, "F");
+    doc.text("OE Platform", M + 79, y + 8);
+    y += 30;
+
+    // ── Chart 5: Value Waterfall ──
+    checkPage(220);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...gray);
+    doc.text("VALUE WATERFALL", M, y);
+    y += 18;
+
+    const waterfallItems = [
+      { label: "DIY Cost", value: annualDiyCost, color: redC },
+      { label: "OE Cost", value: oePlatformCost, color: tealC },
+      { label: "Hard Savings", value: annualDiyCost - oePlatformCost, color: greenC },
+      { label: "Soft Benefits", value: totalSoftBenefits, color: [146, 102, 10] as [number, number, number] },
+      { label: "Total Value", value: annualSavings + totalSoftBenefits, color: dark },
+    ];
+    const waterfallMax = Math.max(...waterfallItems.map((w) => Math.abs(w.value)), 1);
+    const wfBarH = 28;
+    const wfBarMaxW = contentW * 0.7;
+
+    waterfallItems.forEach((item) => {
+      checkPage(50);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(item.color[0], item.color[1], item.color[2]);
+      doc.text(item.label, M, y + 10);
+
+      const barW = Math.max(4, (Math.abs(item.value) / waterfallMax) * wfBarMaxW);
+      const barX = M + 100;
+      doc.setFillColor(item.color[0], item.color[1], item.color[2]);
+      doc.roundedRect(barX, y, barW, wfBarH, 3, 3, "F");
+
+      // Value label on bar
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      if (barW > 50) {
+        doc.text(`$${fmt(Math.round(item.value))}`, barX + 8, y + 18);
+      } else {
+        doc.setTextColor(item.color[0], item.color[1], item.color[2]);
+        doc.text(`$${fmt(Math.round(item.value))}`, barX + barW + 6, y + 18);
+      }
+
+      y += wfBarH + 10;
+    });
+    y += 10;
 
     // ── Assumptions ──
     checkPage(120);
@@ -864,6 +1033,46 @@ export default function OEValueCalculator() {
       y += lines.length * 10 + 6;
     });
 
+    // ── DISCLAIMER ──
+    checkPage(180);
+    y += 16;
+    // Gray background box
+    doc.setFillColor(240, 240, 240);
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.5);
+    const disclaimerText = "This document is provided by OpenExchange, Inc. for informational purposes only and does not constitute a binding offer, guarantee, or warranty of any kind. All cost estimates, savings projections, and ROI calculations are based on assumptions, industry benchmarks, and user-provided inputs that may not reflect your organization\u2019s actual experience. Actual results will vary based on organizational complexity, team composition, event volume, vendor pricing, and market conditions. Strategic soft benefits are subjective estimates and should be validated by your finance and operations teams. Past performance indicators and industry benchmarks referenced herein do not guarantee future outcomes. This analysis is intended as a planning tool and conversation starter \u2014 not a contractual commitment. OpenExchange recommends that all purchasing decisions be made in consultation with appropriate internal stakeholders and subject to your organization\u2019s procurement policies. All figures are user-editable and the exported values reflect customized inputs at time of generation.";
+    const disclaimerLines = doc.splitTextToSize(disclaimerText, contentW - 40);
+    const disclaimerBoxH = disclaimerLines.length * 10 + 60;
+
+    // Check if we need a new page for the disclaimer
+    if (y + disclaimerBoxH > H - 60) { doc.addPage(); y = 50; }
+
+    doc.roundedRect(M, y, contentW, disclaimerBoxH, 4, 4, "FD");
+
+    // DISCLAIMER header
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(80, 80, 80);
+    doc.text("DISCLAIMER", M + 20, y + 22);
+
+    // Divider line under header
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.5);
+    doc.line(M + 20, y + 28, M + contentW - 20, y + 28);
+
+    // Disclaimer body text
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text(disclaimerLines, M + 20, y + 40);
+
+    // Date and page reference at bottom of disclaimer
+    doc.setFontSize(7);
+    doc.setTextColor(140, 140, 140);
+    doc.text(`Document generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} | Refer to pages 1\u2013${doc.getNumberOfPages()} for full analysis details.`, M + 20, y + disclaimerBoxH - 12);
+
+    y += disclaimerBoxH + 16;
+
     // ── Footer on every page ──
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
@@ -879,7 +1088,7 @@ export default function OEValueCalculator() {
     }
 
     doc.save("OE-ROI-Analysis.pdf");
-  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts]);
+  }, [diyData, rates, eventsPerYear, oePlatformCost, annualDiyCost, annualSavings, roi, totalHrsPerEvent, totalRiskPerEvent, blendedRate, fullyLoadedRate, laborCostPerEvent, costOfDelayPerMonth, softBenefits, softBenefitPcts, totalSoftBenefits, totalAnnualValue, selectedProducts, burdenRate, yearlyProjection, threeYearTotal, projectionYears, productCosts, enabledBenefits]);
 
   /* ═══════════════════════════════════════
      RENDER
@@ -999,8 +1208,13 @@ export default function OEValueCalculator() {
                   <div style={{ ...font.sans, fontSize: 11, color: color.subtle, lineHeight: 1.4 }}>
                     {p.oneLiner}
                   </div>
-                  <div style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }}>
-                    ${fmt(productCosts[p.id])}/yr
+                  <div style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }} onClick={(e) => e.stopPropagation()}>
+                    <Editable
+                      value={productCosts[p.id]}
+                      onChange={(v) => setProductCosts((prev) => ({ ...prev, [p.id]: v }))}
+                      prefix="$"
+                      suffix="/yr"
+                    />
                   </div>
                 </button>
               );
@@ -1571,60 +1785,109 @@ export default function OEValueCalculator() {
           <h2 style={{ ...font.serif, fontSize: 32, fontWeight: 700, color: color.text, letterSpacing: "-0.02em", marginBottom: 6 }}>
             What you can&apos;t put in a spreadsheet
           </h2>
-          <p style={{ ...font.serif, fontSize: 15, color: color.muted, marginBottom: 24 }}>
-            Strategic benefits that compound over time. Click any value to customize.
+          <p style={{ ...font.serif, fontSize: 15, color: color.muted, marginBottom: 12 }}>
+            Strategic benefits that compound over time. Click a card to toggle it on/off. Click values to edit.
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+            <span style={{ ...font.sans, fontSize: 11, color: color.subtle }}>
+              {enabledBenefits.size} of {defaultSoftBenefits.length} included
+            </span>
+            <button
+              onClick={() => {
+                if (enabledBenefits.size === defaultSoftBenefits.length) setEnabledBenefits(new Set());
+                else setEnabledBenefits(new Set(defaultSoftBenefits.map((b) => b.id)));
+              }}
+              style={{
+                ...font.sans, fontSize: 11, fontWeight: 500, color: color.teal, background: "none",
+                border: `1px solid ${color.teal}`, borderRadius: 16, padding: "3px 12px", cursor: "pointer",
+              }}
+            >
+              {enabledBenefits.size === defaultSoftBenefits.length ? "Deselect All" : "Select All"}
+            </button>
+          </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
             {defaultSoftBenefits.map((b) => {
+              const isOn = enabledBenefits.has(b.id);
               const pct = softBenefitPcts[b.id];
               const weighted = Math.round(softBenefits[b.id] * (pct / 100));
               return (
-                <div key={b.id} style={{
-                  background: color.card,
-                  border: `1px solid ${color.border}`,
-                  borderRadius: 10,
-                  padding: "16px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                }}>
+                <div
+                  key={b.id}
+                  onClick={() => {
+                    setEnabledBenefits((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(b.id)) next.delete(b.id);
+                      else next.add(b.id);
+                      return next;
+                    });
+                  }}
+                  style={{
+                    background: isOn ? color.card : color.bg,
+                    border: `2px solid ${isOn ? color.green : color.border}`,
+                    borderRadius: 10,
+                    padding: "16px 20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    cursor: "pointer",
+                    opacity: isOn ? 1 : 0.5,
+                    transition: "all 0.15s ease",
+                  }}
+                >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ ...font.sans, fontSize: 14, fontWeight: 600, color: color.text }}>
-                      {b.label}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{
+                        width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                        border: `2px solid ${isOn ? color.green : color.border}`,
+                        background: isOn ? color.green : "transparent",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "all 0.15s ease",
+                      }}>
+                        {isOn && <span style={{ color: "#fff", fontSize: 10, lineHeight: 1 }}>✓</span>}
+                      </div>
+                      <div style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: isOn ? color.text : color.muted }}>
+                        {b.label}
+                      </div>
                     </div>
                     {/* Editable percentage badge */}
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <Editable
-                        value={pct}
-                        onChange={(v) => setSoftBenefitPcts((prev) => ({ ...prev, [b.id]: Math.max(0, Math.min(100, v)) }))}
-                        suffix="%"
-                      />
-                    </div>
+                    {isOn && (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Editable
+                          value={pct}
+                          onChange={(v) => setSoftBenefitPcts((prev) => ({ ...prev, [b.id]: Math.max(0, Math.min(100, v)) }))}
+                          suffix="%"
+                        />
+                      </div>
+                    )}
                   </div>
                   <div style={{ ...font.sans, fontSize: 11, color: color.muted, lineHeight: 1.5, flex: 1 }}>
                     {b.desc}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <Editable value={softBenefits[b.id]} onChange={(v) => setSoftBenefits((prev) => ({ ...prev, [b.id]: v }))} prefix="$" />
-                    </div>
-                    {pct < 100 && (
-                      <span style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }}>
-                        → ${fmt(weighted)}
-                      </span>
-                    )}
-                  </div>
-                  {/* Tiny progress bar showing confidence */}
-                  <div style={{ height: 3, background: `${color.border}`, borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{
-                      height: "100%",
-                      width: `${pct}%`,
-                      background: pct >= 80 ? color.green : pct >= 50 ? color.amber : color.red,
-                      borderRadius: 2,
-                      transition: "width 0.2s ease, background 0.2s ease",
-                    }} />
-                  </div>
+                  {isOn && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Editable value={softBenefits[b.id]} onChange={(v) => setSoftBenefits((prev) => ({ ...prev, [b.id]: v }))} prefix="$" />
+                        </div>
+                        {pct < 100 && (
+                          <span style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }}>
+                            → ${fmt(weighted)}
+                          </span>
+                        )}
+                      </div>
+                      {/* Tiny progress bar showing confidence */}
+                      <div style={{ height: 3, background: `${color.border}`, borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{
+                          height: "100%",
+                          width: `${pct}%`,
+                          background: pct >= 80 ? color.green : pct >= 50 ? color.amber : color.red,
+                          borderRadius: 2,
+                          transition: "width 0.2s ease, background 0.2s ease",
+                        }} />
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             })}
@@ -1645,7 +1908,7 @@ export default function OEValueCalculator() {
                 Total strategic value (probability-weighted)
               </span>
               <div style={{ ...font.sans, fontSize: 11, color: color.muted, marginTop: 2 }}>
-                Raw total: ${fmt(Object.values(softBenefits).reduce((a, b) => a + b, 0))} · Weighted by confidence %
+                {enabledBenefits.size} benefits enabled · Weighted by confidence %
               </div>
             </div>
             <span style={{ ...font.serif, fontSize: 22, fontWeight: 700, color: color.teal }}>
@@ -1946,6 +2209,38 @@ export default function OEValueCalculator() {
         </div>
 
       </div>
+
+      {/* ─── STICKY FLOATING EXPORT PDF BUTTON ─── */}
+      {selectedProducts.length > 0 && (
+        <button
+          onClick={exportPDF}
+          style={{
+            position: "fixed" as const,
+            bottom: 32,
+            right: 32,
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "14px 28px",
+            ...font.sans,
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#fff",
+            background: color.teal,
+            border: "none",
+            borderRadius: 999,
+            cursor: "pointer",
+            boxShadow: "0 4px 20px rgba(0,130,133,0.35), 0 2px 8px rgba(0,0,0,0.15)",
+            letterSpacing: "0.02em",
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = color.tealDark; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,130,133,0.45), 0 4px 12px rgba(0,0,0,0.2)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = color.teal; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,130,133,0.35), 0 2px 8px rgba(0,0,0,0.15)"; }}
+        >
+          Export PDF
+        </button>
+      )}
     </div>
   );
 }

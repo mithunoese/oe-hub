@@ -1438,6 +1438,142 @@ export default function OEValueCalculator() {
           )}
         </div>
 
+        {/* ─── STRATEGIC BENEFITS ─── */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ height: 1, background: color.border, marginBottom: 32 }} />
+          <h2 style={{ ...font.serif, fontSize: 32, fontWeight: 700, color: color.text, letterSpacing: "-0.02em", marginBottom: 6 }}>
+            What you can&apos;t put in a spreadsheet
+          </h2>
+          <p style={{ ...font.serif, fontSize: 15, color: color.muted, marginBottom: 12 }}>
+            Strategic benefits that compound over time. Click a card to toggle it on/off. Click values to edit.
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+            <span style={{ ...font.sans, fontSize: 11, color: color.subtle }}>
+              {enabledBenefits.size} of {defaultSoftBenefits.length} included
+            </span>
+            <button
+              onClick={() => {
+                if (enabledBenefits.size === defaultSoftBenefits.length) setEnabledBenefits(new Set());
+                else setEnabledBenefits(new Set(defaultSoftBenefits.map((b) => b.id)));
+              }}
+              style={{
+                ...font.sans, fontSize: 11, fontWeight: 500, color: color.teal, background: "none",
+                border: `1px solid ${color.teal}`, borderRadius: 16, padding: "3px 12px", cursor: "pointer",
+              }}
+            >
+              {enabledBenefits.size === defaultSoftBenefits.length ? "Deselect All" : "Select All"}
+            </button>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+            {defaultSoftBenefits.map((b) => {
+              const isOn = enabledBenefits.has(b.id);
+              const pct = softBenefitPcts[b.id];
+              const weighted = Math.round(softBenefits[b.id] * (pct / 100));
+              return (
+                <div
+                  key={b.id}
+                  onClick={() => {
+                    setEnabledBenefits((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(b.id)) next.delete(b.id);
+                      else next.add(b.id);
+                      return next;
+                    });
+                  }}
+                  style={{
+                    background: isOn ? color.card : color.bg,
+                    border: `2px solid ${isOn ? color.green : color.border}`,
+                    borderRadius: 10,
+                    padding: "16px 20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    cursor: "pointer",
+                    opacity: isOn ? 1 : 0.5,
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{
+                        width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                        border: `2px solid ${isOn ? color.green : color.border}`,
+                        background: isOn ? color.green : "transparent",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "all 0.15s ease",
+                      }}>
+                        {isOn && <span style={{ color: "#fff", fontSize: 10, lineHeight: 1 }}>✓</span>}
+                      </div>
+                      <div style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: isOn ? color.text : color.muted }}>
+                        {b.label}
+                      </div>
+                    </div>
+                    {isOn && (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Editable
+                          value={pct}
+                          onChange={(v) => setSoftBenefitPcts((prev) => ({ ...prev, [b.id]: Math.max(0, Math.min(100, v)) }))}
+                          suffix="%"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ ...font.sans, fontSize: 11, color: color.muted, lineHeight: 1.5, flex: 1 }}>
+                    {b.desc}
+                  </div>
+                  {isOn && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Editable value={softBenefits[b.id]} onChange={(v) => setSoftBenefits((prev) => ({ ...prev, [b.id]: v }))} prefix="$" />
+                        </div>
+                        {pct < 100 && (
+                          <span style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }}>
+                            → ${fmt(weighted)}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ height: 3, background: `${color.border}`, borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{
+                          height: "100%",
+                          width: `${pct}%`,
+                          background: pct >= 80 ? color.green : pct >= 50 ? color.amber : color.red,
+                          borderRadius: 2,
+                          transition: "width 0.2s ease, background 0.2s ease",
+                        }} />
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{
+            marginTop: 14,
+            padding: "14px 20px",
+            background: color.tealLight,
+            border: `1px solid ${color.teal}`,
+            borderRadius: 10,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+            <div>
+              <span style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: color.tealDark }}>
+                Total strategic value (probability-weighted)
+              </span>
+              <div style={{ ...font.sans, fontSize: 11, color: color.muted, marginTop: 2 }}>
+                {enabledBenefits.size} benefits enabled · Weighted by confidence %
+              </div>
+            </div>
+            <span style={{ ...font.serif, fontSize: 22, fontWeight: 700, color: color.teal }}>
+              ${fmt(totalSoftBenefits)}
+            </span>
+          </div>
+        </div>
+
         {/* ─── TABBED PRODUCT COMPARISON ─── */}
         {selectedProducts.length > 0 && (
           <div style={{ marginBottom: 40 }}>
@@ -1778,144 +1914,6 @@ export default function OEValueCalculator() {
             </div>
           </div>
         )}
-
-        {/* ─── STRATEGIC BENEFITS ─── */}
-        <div style={{ marginBottom: 40 }}>
-          <div style={{ height: 1, background: color.border, marginBottom: 32 }} />
-          <h2 style={{ ...font.serif, fontSize: 32, fontWeight: 700, color: color.text, letterSpacing: "-0.02em", marginBottom: 6 }}>
-            What you can&apos;t put in a spreadsheet
-          </h2>
-          <p style={{ ...font.serif, fontSize: 15, color: color.muted, marginBottom: 12 }}>
-            Strategic benefits that compound over time. Click a card to toggle it on/off. Click values to edit.
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-            <span style={{ ...font.sans, fontSize: 11, color: color.subtle }}>
-              {enabledBenefits.size} of {defaultSoftBenefits.length} included
-            </span>
-            <button
-              onClick={() => {
-                if (enabledBenefits.size === defaultSoftBenefits.length) setEnabledBenefits(new Set());
-                else setEnabledBenefits(new Set(defaultSoftBenefits.map((b) => b.id)));
-              }}
-              style={{
-                ...font.sans, fontSize: 11, fontWeight: 500, color: color.teal, background: "none",
-                border: `1px solid ${color.teal}`, borderRadius: 16, padding: "3px 12px", cursor: "pointer",
-              }}
-            >
-              {enabledBenefits.size === defaultSoftBenefits.length ? "Deselect All" : "Select All"}
-            </button>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
-            {defaultSoftBenefits.map((b) => {
-              const isOn = enabledBenefits.has(b.id);
-              const pct = softBenefitPcts[b.id];
-              const weighted = Math.round(softBenefits[b.id] * (pct / 100));
-              return (
-                <div
-                  key={b.id}
-                  onClick={() => {
-                    setEnabledBenefits((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(b.id)) next.delete(b.id);
-                      else next.add(b.id);
-                      return next;
-                    });
-                  }}
-                  style={{
-                    background: isOn ? color.card : color.bg,
-                    border: `2px solid ${isOn ? color.green : color.border}`,
-                    borderRadius: 10,
-                    padding: "16px 20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 6,
-                    cursor: "pointer",
-                    opacity: isOn ? 1 : 0.5,
-                    transition: "all 0.15s ease",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{
-                        width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                        border: `2px solid ${isOn ? color.green : color.border}`,
-                        background: isOn ? color.green : "transparent",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        transition: "all 0.15s ease",
-                      }}>
-                        {isOn && <span style={{ color: "#fff", fontSize: 10, lineHeight: 1 }}>✓</span>}
-                      </div>
-                      <div style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: isOn ? color.text : color.muted }}>
-                        {b.label}
-                      </div>
-                    </div>
-                    {/* Editable percentage badge */}
-                    {isOn && (
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <Editable
-                          value={pct}
-                          onChange={(v) => setSoftBenefitPcts((prev) => ({ ...prev, [b.id]: Math.max(0, Math.min(100, v)) }))}
-                          suffix="%"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ ...font.sans, fontSize: 11, color: color.muted, lineHeight: 1.5, flex: 1 }}>
-                    {b.desc}
-                  </div>
-                  {isOn && (
-                    <>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <Editable value={softBenefits[b.id]} onChange={(v) => setSoftBenefits((prev) => ({ ...prev, [b.id]: v }))} prefix="$" />
-                        </div>
-                        {pct < 100 && (
-                          <span style={{ ...font.mono, fontSize: 11, color: color.teal, fontWeight: 600 }}>
-                            → ${fmt(weighted)}
-                          </span>
-                        )}
-                      </div>
-                      {/* Tiny progress bar showing confidence */}
-                      <div style={{ height: 3, background: `${color.border}`, borderRadius: 2, overflow: "hidden" }}>
-                        <div style={{
-                          height: "100%",
-                          width: `${pct}%`,
-                          background: pct >= 80 ? color.green : pct >= 50 ? color.amber : color.red,
-                          borderRadius: 2,
-                          transition: "width 0.2s ease, background 0.2s ease",
-                        }} />
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div style={{
-            marginTop: 14,
-            padding: "14px 20px",
-            background: color.tealLight,
-            border: `1px solid ${color.teal}`,
-            borderRadius: 10,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-            <div>
-              <span style={{ ...font.sans, fontSize: 13, fontWeight: 600, color: color.tealDark }}>
-                Total strategic value (probability-weighted)
-              </span>
-              <div style={{ ...font.sans, fontSize: 11, color: color.muted, marginTop: 2 }}>
-                {enabledBenefits.size} benefits enabled · Weighted by confidence %
-              </div>
-            </div>
-            <span style={{ ...font.serif, fontSize: 22, fontWeight: 700, color: color.teal }}>
-              ${fmt(totalSoftBenefits)}
-            </span>
-          </div>
-        </div>
 
         {/* ─── CHARTS ─── */}
         {selectedProducts.length > 0 && (() => {

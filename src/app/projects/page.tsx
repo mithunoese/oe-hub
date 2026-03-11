@@ -31,19 +31,12 @@ const projects = [
       "Real-time operator scheduling, device health, and staffing across all regions — replacing the Outlook calendar Tetris.",
     badge: "For Carlos",
   },
-  {
-    slug: "/agents/prospecting",
-    title: "AI Prospecting Agent",
-    description:
-      "Finds companies similar to Intuit, Siena AI, and Gibson Dunn — event types, company intel, and who to contact at each prospect for the Zoom sales team.",
-    badge: "For Kristen & Kara",
-  },
 ];
 
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
   return (
     <Link
-      href={project.slug.startsWith("/") ? project.slug : `/projects/${project.slug}`}
+      href={`/projects/${project.slug}`}
       style={{
         border: "1px solid #f0f0f0",
         borderRadius: 8,

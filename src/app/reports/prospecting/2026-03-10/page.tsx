@@ -393,14 +393,26 @@ export default function ProspectingReport20260310() {
                   {/* Who to Hit Up */}
                   <div style={{ marginBottom: 16 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 8 }}>
-                      Who to Hit Up
+                      Who to Hit Up — Find on LinkedIn
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
-                      {co.targetRoles.map((role) => (
-                        <span key={role} style={{ fontSize: 12, fontWeight: 600, color: "#008285", background: "#f0fafa", border: "1px solid #e0f0f0", padding: "4px 10px", borderRadius: 20, ...sans }}>
-                          {role}
-                        </span>
-                      ))}
+                    <div style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+                      {co.targetRoles.map((role) => {
+                        const liUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(role + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`;
+                        return (
+                          <div key={role} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f0fafa", border: "1px solid #e0f0f0", borderRadius: 8, padding: "8px 12px" }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#008285", ...sans }}>{role}</span>
+                            <a
+                              href={liUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ fontSize: 11, fontWeight: 700, color: "#0077b5", background: "#fff", border: "1px solid #0077b5", borderRadius: 6, padding: "3px 10px", textDecoration: "none", ...sans, whiteSpace: "nowrap" as const }}
+                            >
+                              Find on LinkedIn →
+                            </a>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -425,11 +437,17 @@ export default function ProspectingReport20260310() {
                         const draft = drafts[key];
                         const loading = draftLoading[key];
                         const saved = savedToQueue[key];
+                        const liUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(role + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`;
                         return (
                           <div key={role} style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
                             {/* Role header + draft button */}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f9fafb" }}>
-                              <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", ...sans }}>{role}</span>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f9fafb", gap: 8 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", ...sans }}>{role}</span>
+                                <a href={liUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontSize: 10, fontWeight: 700, color: "#0077b5", textDecoration: "none", ...sans }}>
+                                  LinkedIn →
+                                </a>
+                              </div>
                               {!draft ? (
                                 <button
                                   onClick={() => draftEmail(co, role)}

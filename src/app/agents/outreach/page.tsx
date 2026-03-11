@@ -47,7 +47,6 @@ type FilterType = "all" | "pending" | "sent";
 export default function OutreachQueuePage() {
   const [queue, setQueue] = useState<OutreachItem[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
-  const [expanded, setExpanded] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [emails, setEmails] = useState<Record<string, string>>({});
 
@@ -80,9 +79,9 @@ export default function OutreachQueuePage() {
     refresh();
   };
 
-  const outlookUrl = (item: OutreachItem) => {
+  const mailtoUrl = (item: OutreachItem) => {
     const to = emails[item.id] ?? item.toEmail ?? "";
-    return `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(item.subject)}&body=${encodeURIComponent(item.body)}`;
+    return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(item.subject)}&body=${encodeURIComponent(item.body)}`;
   };
 
   const downloadExcel = () => {
@@ -268,103 +267,90 @@ export default function OutreachQueuePage() {
       )}
 
       {/* Queue Items */}
-      <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
+      <div style={{ display: "flex", flexDirection: "column" as const, gap: 16 }}>
         {filteredQueue.map((item) => {
-          const isExpanded = expanded === item.id;
           return (
-            <div key={item.id} style={{ border: "1px solid #f0f0f0", borderRadius: 10, background: "#fff", overflow: "hidden" }}>
-              {/* Item Header */}
-              <div
-                onClick={() => setExpanded(isExpanded ? null : item.id)}
-                style={{ padding: "18px 22px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}
-              >
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" as const }}>
+            <div key={item.id} style={{ border: "1px solid #e5e7eb", borderRadius: 10, background: "#fff", overflow: "hidden" }}>
+              {/* Card Header */}
+              <div style={{ padding: "16px 20px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                     <span style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>{item.companyName}</span>
                     <span style={{ fontSize: 10, fontWeight: 600, ...sans, color: item.status === "sent" ? "#15803d" : "#c2410c", background: item.status === "sent" ? "#f0fdf4" : "#fff7ed", border: `1px solid ${item.status === "sent" ? "#bbf7d0" : "#fed7aa"}`, padding: "2px 8px", borderRadius: 20 }}>
                       {item.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: 12, color: "#9ca3af", ...sans, marginBottom: 4 }}>{item.targetRole}</div>
-                  <div style={{ fontSize: 13, color: "#374151", fontWeight: 600 }}>Re: {item.subject}</div>
+                  <div style={{ fontSize: 11, color: "#9ca3af", ...sans }}>{item.targetRole}</div>
                 </div>
-                <span style={{ fontSize: 18, color: "#d1d5db", flexShrink: 0, transform: isExpanded ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.15s" }}>›</span>
+                <button
+                  onClick={() => deleteItem(item.id)}
+                  style={{ fontSize: 11, ...sans, padding: "4px 10px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff", color: "#ef4444", cursor: "pointer", flexShrink: 0 }}
+                >
+                  Remove
+                </button>
               </div>
 
-              {/* Expanded */}
-              {isExpanded && (
-                <div style={{ padding: "0 22px 22px", borderTop: "1px solid #f9fafb" }}>
-                  {/* To Email */}
-                  <div style={{ paddingTop: 16, marginBottom: 16 }}>
-                    <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
-                      To Email Address
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="firstname@company.com"
-                      defaultValue={item.toEmail ?? ""}
-                      onChange={(e) => updateEmail(item.id, e.target.value)}
-                      style={{ width: "100%", padding: "8px 12px", fontSize: 13, ...sans, border: "1px solid #e5e7eb", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
-                    />
-                  </div>
+              {/* Email content — always visible */}
+              <div style={{ padding: "16px 20px" }}>
+                {/* To */}
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", display: "block", marginBottom: 5 }}>
+                    To
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="firstname@company.com"
+                    defaultValue={item.toEmail ?? ""}
+                    onChange={(e) => updateEmail(item.id, e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ width: "100%", padding: "7px 11px", fontSize: 13, ...sans, border: "1px solid #e5e7eb", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
+                  />
+                </div>
 
-                  {/* Subject */}
-                  <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 6 }}>
-                      Subject
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{item.subject}</div>
-                  </div>
+                {/* Subject */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 5 }}>Subject</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px" }}>{item.subject}</div>
+                </div>
 
-                  {/* Body */}
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 6 }}>
-                      Email Body
-                    </div>
-                    <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.8, background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 8, padding: "14px 16px", whiteSpace: "pre-line" }}>
-                      {item.body}
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
-                    <a
-                      href={outlookUrl(item)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block" }}
-                    >
-                      Open in Outlook →
-                    </a>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(item.body)}
-                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
-                    >
-                      Copy Body
-                    </button>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(item.subject)}
-                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
-                    >
-                      Copy Subject
-                    </button>
-                    {item.status === "pending" && (
-                      <button
-                        onClick={() => markSent(item.id)}
-                        style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 16px", borderRadius: 8, border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#15803d", cursor: "pointer" }}
-                      >
-                        Mark Sent ✓
-                      </button>
-                    )}
-                    <button
-                      onClick={() => deleteItem(item.id)}
-                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 16px", borderRadius: 8, border: "1px solid #fecaca", background: "#fff", color: "#ef4444", cursor: "pointer", marginLeft: "auto" }}
-                    >
-                      Remove
-                    </button>
+                {/* Body */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 5 }}>Message</div>
+                  <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.8, background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "12px 14px", whiteSpace: "pre-line" }}>
+                    {item.body}
                   </div>
                 </div>
-              )}
+
+                {/* Action Buttons */}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
+                  <a
+                    href={mailtoUrl(item)}
+                    style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block" }}
+                  >
+                    Open in Outlook →
+                  </a>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(item.subject)}
+                    style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
+                  >
+                    Copy Subject
+                  </button>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(item.body)}
+                    style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
+                  >
+                    Copy Message
+                  </button>
+                  {item.status === "pending" && (
+                    <button
+                      onClick={() => markSent(item.id)}
+                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#15803d", cursor: "pointer" }}
+                    >
+                      Mark Sent ✓
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           );
         })}

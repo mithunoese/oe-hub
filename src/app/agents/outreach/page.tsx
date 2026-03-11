@@ -79,9 +79,19 @@ export default function OutreachQueuePage() {
     refresh();
   };
 
+  const [copied, setCopied] = useState<Record<string, "subject" | "body" | null>>({});
+
   const mailtoUrl = (item: OutreachItem) => {
     const to = emails[item.id] ?? item.toEmail ?? "";
-    return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(item.subject)}&body=${encodeURIComponent(item.body)}`;
+    // Note: body omitted — mailto with long bodies gets truncated by browsers.
+    // Kristen copies the body separately and pastes into Outlook.
+    return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(item.subject)}`;
+  };
+
+  const copyText = (id: string, text: string, field: "subject" | "body") => {
+    navigator.clipboard.writeText(text);
+    setCopied((prev) => ({ ...prev, [id]: field }));
+    setTimeout(() => setCopied((prev) => ({ ...prev, [id]: null })), 2000);
   };
 
   const downloadExcel = () => {
@@ -315,36 +325,43 @@ export default function OutreachQueuePage() {
 
                 {/* Body */}
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 5 }}>Message</div>
-                  <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.8, background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "12px 14px", whiteSpace: "pre-line" }}>
-                    {item.body}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Message</div>
+                    <button
+                      onClick={() => copyText(item.id, item.body, "body")}
+                      style={{ fontSize: 11, fontWeight: 700, ...sans, padding: "4px 12px", borderRadius: 6, border: copied[item.id] === "body" ? "1px solid #bbf7d0" : "1px solid #e5e7eb", background: copied[item.id] === "body" ? "#f0fdf4" : "#fff", color: copied[item.id] === "body" ? "#15803d" : "#374151", cursor: "pointer", transition: "all 0.15s" }}
+                    >
+                      {copied[item.id] === "body" ? "✓ Copied!" : "Copy Message"}
+                    </button>
                   </div>
+                  <textarea
+                    readOnly
+                    value={item.body}
+                    rows={8}
+                    style={{ width: "100%", fontSize: 13, color: "#374151", lineHeight: 1.8, background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "12px 14px", whiteSpace: "pre-wrap", resize: "vertical", outline: "none", boxSizing: "border-box" as const, fontFamily: "system-ui, sans-serif", cursor: "text" }}
+                    onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                  />
                 </div>
 
                 {/* Action Buttons */}
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, alignItems: "center" }}>
                   <a
                     href={mailtoUrl(item)}
                     style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block" }}
                   >
-                    Open in Outlook →
+                    Open Outlook →
                   </a>
                   <button
-                    onClick={() => navigator.clipboard.writeText(item.subject)}
-                    style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
+                    onClick={() => copyText(item.id, item.subject, "subject")}
+                    style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: copied[item.id] === "subject" ? "1px solid #bbf7d0" : "1px solid #e5e7eb", background: copied[item.id] === "subject" ? "#f0fdf4" : "#fff", color: copied[item.id] === "subject" ? "#15803d" : "#374151", cursor: "pointer" }}
                   >
-                    Copy Subject
+                    {copied[item.id] === "subject" ? "✓ Copied!" : "Copy Subject"}
                   </button>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(item.body)}
-                    style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
-                  >
-                    Copy Message
-                  </button>
+                  <span style={{ fontSize: 11, color: "#c0c0c0", ...sans }}>← paste body into Outlook</span>
                   {item.status === "pending" && (
                     <button
                       onClick={() => markSent(item.id)}
-                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#15803d", cursor: "pointer" }}
+                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#15803d", cursor: "pointer", marginLeft: "auto" }}
                     >
                       Mark Sent ✓
                     </button>

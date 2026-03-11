@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
+import type { EmailSequence } from "@/app/api/draft-email/route";
 
 const serif = { fontFamily: "Georgia, serif" };
 const sans = { fontFamily: "system-ui, sans-serif" };
@@ -14,6 +15,7 @@ export interface OutreachItem {
   targetRole: string;
   subject: string;
   body: string;
+  sequence?: EmailSequence[];
   status: "pending" | "sent";
   createdAt: string;
   toEmail?: string;
@@ -43,12 +45,21 @@ export function saveToQueue(item: Omit<OutreachItem, "id" | "status" | "createdA
 }
 
 type FilterType = "all" | "pending" | "sent";
+type SequenceTab = "initial" | "followup1" | "followup2";
+
+const SEQ_LABELS: Record<SequenceTab, string> = {
+  initial: "Day 0",
+  followup1: "Day 5",
+  followup2: "Day 12",
+};
 
 export default function OutreachQueuePage() {
   const [queue, setQueue] = useState<OutreachItem[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
   const [showPreview, setShowPreview] = useState(false);
   const [emails, setEmails] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState<Record<string, SequenceTab>>({});
+  const [copied, setCopied] = useState<Record<string, string | null>>({});
 
   useEffect(() => {
     setQueue(loadQueue());
@@ -58,7 +69,7 @@ export default function OutreachQueuePage() {
 
   const markSent = (id: string) => {
     const updated = loadQueue().map((item) =>
-      item.id === id ? { ...item, status: "sent" as const, sentAt: new Date().toISOString() } : item
+      item.id === id ? { ...item, status: "sent" as const } : item
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     refresh();
@@ -79,19 +90,25 @@ export default function OutreachQueuePage() {
     refresh();
   };
 
-  const [copied, setCopied] = useState<Record<string, "subject" | "body" | null>>({});
+  const getActiveEmail = (item: OutreachItem): { subject: string; body: string } => {
+    const tab = activeTab[item.id] ?? "initial";
+    if (item.sequence) {
+      const seq = item.sequence.find((e) => e.type === tab);
+      if (seq) return { subject: seq.subject, body: seq.body };
+    }
+    return { subject: item.subject, body: item.body };
+  };
+
+  const copyText = (id: string, text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied((prev) => ({ ...prev, [id]: key }));
+    setTimeout(() => setCopied((prev) => ({ ...prev, [id]: null })), 2000);
+  };
 
   const mailtoUrl = (item: OutreachItem) => {
     const to = emails[item.id] ?? item.toEmail ?? "";
-    // Note: body omitted — mailto with long bodies gets truncated by browsers.
-    // Kristen copies the body separately and pastes into Outlook.
-    return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(item.subject)}`;
-  };
-
-  const copyText = (id: string, text: string, field: "subject" | "body") => {
-    navigator.clipboard.writeText(text);
-    setCopied((prev) => ({ ...prev, [id]: field }));
-    setTimeout(() => setCopied((prev) => ({ ...prev, [id]: null })), 2000);
+    const { subject } = getActiveEmail(item);
+    return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}`;
   };
 
   const downloadExcel = () => {
@@ -102,43 +119,32 @@ export default function OutreachQueuePage() {
       "To Email": item.toEmail ?? "",
       Subject: item.subject,
       "Email Body": item.body,
+      "Follow-up 1 (Day 5)": item.sequence?.find((e) => e.type === "followup1")?.body ?? "",
+      "Follow-up 2 (Day 12)": item.sequence?.find((e) => e.type === "followup2")?.body ?? "",
       Status: item.status,
       "Created At": new Date(item.createdAt).toLocaleDateString(),
     }));
 
     const ws = XLSX.utils.json_to_sheet(rows);
-
-    // Column widths
     ws["!cols"] = [
-      { wch: 20 }, // Company
-      { wch: 28 }, // Industry
-      { wch: 30 }, // Target Role
-      { wch: 28 }, // To Email
-      { wch: 40 }, // Subject
-      { wch: 80 }, // Email Body
-      { wch: 10 }, // Status
-      { wch: 14 }, // Created At
+      { wch: 20 }, { wch: 28 }, { wch: 30 }, { wch: 28 },
+      { wch: 40 }, { wch: 80 }, { wch: 80 }, { wch: 80 }, { wch: 10 }, { wch: 14 },
     ];
-
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Outreach Queue");
     XLSX.writeFile(wb, `outreach-queue-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const filteredQueue =
-    filter === "all" ? queue : queue.filter((item) => item.status === filter);
-
+  const filteredQueue = filter === "all" ? queue : queue.filter((item) => item.status === filter);
   const pendingCount = queue.filter((i) => i.status === "pending").length;
   const sentCount = queue.filter((i) => i.status === "sent").length;
 
   return (
     <div style={{ maxWidth: 760, margin: "0 auto", padding: "56px 24px 96px", ...serif }}>
-      {/* Back */}
       <Link href="/agents" style={{ fontSize: 12, color: "#9ca3af", ...sans, textDecoration: "none" }}>
         ← Back to Agents
       </Link>
 
-      {/* Header */}
       <div style={{ marginTop: 24, marginBottom: 40 }}>
         <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase" as const, color: "#c0c0c0", ...sans, marginBottom: 12 }}>
           Agent
@@ -147,17 +153,15 @@ export default function OutreachQueuePage() {
           Outreach Queue
         </h1>
         <p style={{ fontSize: 16, color: "#9ca3af", lineHeight: 1.7, margin: "0 0 16px 0" }}>
-          Drafted emails for your prospecting targets — one click to open in Outlook, or download all as Excel.
+          3-touch sequences for your prospecting targets — Day 0 cold email, Day 5 follow-up, Day 12 close.
         </p>
-
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, marginBottom: 16 }}>
-          {["Zoom Sales", "Outlook Ready", "Excel Export"].map((tag) => (
+          {["3-Touch Sequence", "Outlook Ready", "Excel Export"].map((tag) => (
             <span key={tag} style={{ fontSize: 11, fontWeight: 600, color: "#008285", background: "#f0fafa", border: "1px solid #e0f0f0", padding: "3px 10px", borderRadius: 20, ...sans }}>
               {tag}
             </span>
           ))}
         </div>
-
         <div style={{ width: 40, height: 3, background: "#008285", borderRadius: 2 }} />
       </div>
 
@@ -177,30 +181,21 @@ export default function OutreachQueuePage() {
 
       {/* Actions Row */}
       <div style={{ display: "flex", gap: 10, marginBottom: 24, alignItems: "center", flexWrap: "wrap" as const }}>
-        {/* Filter */}
         {(["all", "pending", "sent"] as FilterType[]).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "6px 14px", borderRadius: 20, border: filter === f ? "1px solid #008285" : "1px solid #e5e7eb", background: filter === f ? "#008285" : "#fff", color: filter === f ? "#fff" : "#6b7280", cursor: "pointer" }}
-          >
+          <button key={f} onClick={() => setFilter(f)}
+            style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "6px 14px", borderRadius: 20, border: filter === f ? "1px solid #008285" : "1px solid #e5e7eb", background: filter === f ? "#008285" : "#fff", color: filter === f ? "#fff" : "#6b7280", cursor: "pointer" }}>
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
-
         <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
           {filteredQueue.length > 0 && (
             <>
-              <button
-                onClick={() => setShowPreview(true)}
-                style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "7px 16px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
-              >
+              <button onClick={() => setShowPreview(true)}
+                style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "7px 16px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}>
                 Preview Excel
               </button>
-              <button
-                onClick={downloadExcel}
-                style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "7px 16px", borderRadius: 8, border: "none", background: "#008285", color: "#fff", cursor: "pointer" }}
-              >
+              <button onClick={downloadExcel}
+                style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "7px 16px", borderRadius: 8, border: "none", background: "#008285", color: "#fff", cursor: "pointer" }}>
                 ↓ Download Excel
               </button>
             </>
@@ -219,7 +214,6 @@ export default function OutreachQueuePage() {
               </div>
               <button onClick={() => setShowPreview(false)} style={{ fontSize: 20, color: "#9ca3af", background: "none", border: "none", cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
-
             <div style={{ overflow: "auto", flex: 1 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" as const, fontSize: 12, ...sans }}>
                 <thead>
@@ -247,15 +241,13 @@ export default function OutreachQueuePage() {
                 </tbody>
               </table>
             </div>
-
             <div style={{ padding: "16px 24px", borderTop: "1px solid #f0f0f0", display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button onClick={() => setShowPreview(false)} style={{ fontSize: 13, fontWeight: 600, ...sans, padding: "9px 20px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}>
+              <button onClick={() => setShowPreview(false)}
+                style={{ fontSize: 13, fontWeight: 600, ...sans, padding: "9px 20px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}>
                 Close
               </button>
-              <button
-                onClick={() => { setShowPreview(false); downloadExcel(); }}
-                style={{ fontSize: 13, fontWeight: 700, ...sans, padding: "9px 20px", borderRadius: 8, border: "none", background: "#008285", color: "#fff", cursor: "pointer" }}
-              >
+              <button onClick={() => { setShowPreview(false); downloadExcel(); }}
+                style={{ fontSize: 13, fontWeight: 700, ...sans, padding: "9px 20px", borderRadius: 8, border: "none", background: "#008285", color: "#fff", cursor: "pointer" }}>
                 ↓ Download Excel
               </button>
             </div>
@@ -279,6 +271,10 @@ export default function OutreachQueuePage() {
       {/* Queue Items */}
       <div style={{ display: "flex", flexDirection: "column" as const, gap: 16 }}>
         {filteredQueue.map((item) => {
+          const tab = activeTab[item.id] ?? "initial";
+          const { subject, body } = getActiveEmail(item);
+          const hasSequence = item.sequence && item.sequence.length > 1;
+
           return (
             <div key={item.id} style={{ border: "1px solid #e5e7eb", borderRadius: 10, background: "#fff", overflow: "hidden" }}>
               {/* Card Header */}
@@ -292,71 +288,63 @@ export default function OutreachQueuePage() {
                   </div>
                   <div style={{ fontSize: 11, color: "#9ca3af", ...sans }}>{item.targetRole}</div>
                 </div>
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  style={{ fontSize: 11, ...sans, padding: "4px 10px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff", color: "#ef4444", cursor: "pointer", flexShrink: 0 }}
-                >
+                <button onClick={() => deleteItem(item.id)}
+                  style={{ fontSize: 11, ...sans, padding: "4px 10px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff", color: "#ef4444", cursor: "pointer", flexShrink: 0 }}>
                   Remove
                 </button>
               </div>
 
-              {/* Email content — always visible */}
+              {/* Sequence Tabs */}
+              {hasSequence && (
+                <div style={{ display: "flex", borderBottom: "1px solid #f0f0f0", background: "#fafafa" }}>
+                  {(["initial", "followup1", "followup2"] as SequenceTab[]).map((t) => (
+                    <button key={t} onClick={() => setActiveTab((prev) => ({ ...prev, [item.id]: t }))}
+                      style={{ flex: 1, padding: "9px 0", fontSize: 11, fontWeight: 700, ...sans, border: "none", borderBottom: tab === t ? "2px solid #008285" : "2px solid transparent", background: "transparent", color: tab === t ? "#008285" : "#9ca3af", cursor: "pointer", textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>
+                      {SEQ_LABELS[t]}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Email content */}
               <div style={{ padding: "16px 20px" }}>
                 {/* To */}
                 <div style={{ marginBottom: 12 }}>
-                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", display: "block", marginBottom: 5 }}>
-                    To
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="firstname@company.com"
-                    defaultValue={item.toEmail ?? ""}
+                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", display: "block", marginBottom: 5 }}>To</label>
+                  <input type="email" placeholder="firstname@company.com" defaultValue={item.toEmail ?? ""}
                     onChange={(e) => updateEmail(item.id, e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ width: "100%", padding: "7px 11px", fontSize: 13, ...sans, border: "1px solid #e5e7eb", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }}
-                  />
+                    style={{ width: "100%", padding: "7px 11px", fontSize: 13, ...sans, border: "1px solid #e5e7eb", borderRadius: 6, outline: "none", boxSizing: "border-box" as const }} />
                 </div>
 
                 {/* Subject */}
                 <div style={{ marginBottom: 12 }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 5 }}>Subject</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px" }}>{item.subject}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px" }}>{subject}</div>
                 </div>
 
                 {/* Body */}
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Message</div>
-                    <button
-                      onClick={() => copyText(item.id, item.body, "body")}
-                      style={{ fontSize: 11, fontWeight: 700, ...sans, padding: "4px 12px", borderRadius: 6, border: copied[item.id] === "body" ? "1px solid #bbf7d0" : "1px solid #e5e7eb", background: copied[item.id] === "body" ? "#f0fdf4" : "#fff", color: copied[item.id] === "body" ? "#15803d" : "#374151", cursor: "pointer", transition: "all 0.15s" }}
-                    >
+                    <button onClick={() => copyText(item.id, body, "body")}
+                      style={{ fontSize: 11, fontWeight: 700, ...sans, padding: "4px 12px", borderRadius: 6, border: copied[item.id] === "body" ? "1px solid #bbf7d0" : "1px solid #e5e7eb", background: copied[item.id] === "body" ? "#f0fdf4" : "#fff", color: copied[item.id] === "body" ? "#15803d" : "#374151", cursor: "pointer" }}>
                       {copied[item.id] === "body" ? "✓ Copied!" : "Copy Message"}
                     </button>
                   </div>
-                  <textarea
-                    readOnly
-                    value={item.body}
-                    rows={8}
-                    style={{ width: "100%", fontSize: 13, color: "#374151", lineHeight: 1.8, background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "12px 14px", whiteSpace: "pre-wrap", resize: "vertical", outline: "none", boxSizing: "border-box" as const, fontFamily: "system-ui, sans-serif", cursor: "text" }}
-                    onClick={(e) => (e.target as HTMLTextAreaElement).select()}
-                  />
+                  <textarea readOnly value={body} rows={hasSequence && tab !== "initial" ? 4 : 8}
+                    style={{ width: "100%", fontSize: 13, color: "#374151", lineHeight: 1.8, background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 6, padding: "12px 14px", resize: "vertical", outline: "none", boxSizing: "border-box" as const, fontFamily: "system-ui, sans-serif", cursor: "text" }}
+                    onClick={(e) => (e.target as HTMLTextAreaElement).select()} />
                 </div>
 
-                {/* Action Buttons */}
+                {/* Actions */}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, alignItems: "center" }}>
-                  <a
-                    href={mailtoUrl(item)}
-                    onClick={() => copyText(item.id, item.body, "body")}
-                    style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: copied[item.id] === "body" ? "#005a9e" : "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block", cursor: "pointer" }}
-                  >
+                  <a href={mailtoUrl(item)} onClick={() => copyText(item.id, body, "body")}
+                    style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: copied[item.id] === "body" ? "#005a9e" : "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block", cursor: "pointer" }}>
                     {copied[item.id] === "body" ? "✓ Body Copied — Paste in Outlook" : "Copy Body & Open Outlook →"}
                   </a>
                   {item.status === "pending" && (
-                    <button
-                      onClick={() => markSent(item.id)}
-                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#15803d", cursor: "pointer", marginLeft: "auto" }}
-                    >
+                    <button onClick={() => markSent(item.id)}
+                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#15803d", cursor: "pointer", marginLeft: "auto" }}>
                       Mark Sent ✓
                     </button>
                   )}
@@ -367,7 +355,6 @@ export default function OutreachQueuePage() {
         })}
       </div>
 
-      {/* Footer */}
       <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 20, marginTop: 48, display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "#c0c0c0", ...sans }}>
         <span>Open Exchange · Confidential</span>
         <span>Outreach Queue</span>

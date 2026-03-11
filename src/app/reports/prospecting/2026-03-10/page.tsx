@@ -258,7 +258,7 @@ export default function ProspectingReport20260310() {
   const [filter, setFilter] = useState<SeedFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [draftLoading, setDraftLoading] = useState<Record<string, boolean>>({});
-  const [drafts, setDrafts] = useState<Record<string, { subject: string; body: string }>>({});
+  const [drafts, setDrafts] = useState<Record<string, { subject: string; body: string; sequence?: import("@/app/api/draft-email/route").EmailSequence[] }>>({});
   const [savedToQueue, setSavedToQueue] = useState<Record<string, boolean>>({});
 
   const draftEmail = async (co: Company, role: string) => {
@@ -287,7 +287,7 @@ export default function ProspectingReport20260310() {
       });
       const data = await res.json();
       if (res.ok && data.email) {
-        setDrafts((prev) => ({ ...prev, [key]: data.email }));
+        setDrafts((prev) => ({ ...prev, [key]: { ...data.email, sequence: data.sequence } }));
       }
     } finally {
       setDraftLoading((prev) => ({ ...prev, [key]: false }));
@@ -304,6 +304,7 @@ export default function ProspectingReport20260310() {
       targetRole: role,
       subject: draft.subject,
       body: draft.body,
+      sequence: draft.sequence,
     });
     setSavedToQueue((prev) => ({ ...prev, [key]: true }));
   };

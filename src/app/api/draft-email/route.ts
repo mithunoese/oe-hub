@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
+export interface EmailSequence {
+  type: "initial" | "followup1" | "followup2";
+  day: number;
+  subject: string;
+  body: string;
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -11,35 +18,58 @@ export async function POST(req: NextRequest) {
   const { companyName, industry, size, hq, eventTypes, targetRole, outreachAngle, contactName, contactNote } =
     await req.json();
 
-  const systemPrompt = `You are a sales development rep at Open Exchange, a company that helps organizations produce world-class virtual events on Zoom Events.
+  const name = contactName ? contactName.split(" ")[0] : `the ${targetRole}`;
 
-Write short, personalized cold emails following these rules:
-- Subject line: specific, under 8 words, references something real about the company or person
-- Opener (1 sentence): if a specific contact name is provided, address them by first name and reference something specific from their context (event they ran, thing they posted about, or their role's specific challenge)
-- Value prop (1-2 sentences): what Zoom Events does better for their specific situation — no generic pitches
-- Ask (1 sentence): one 15-minute call, low-friction
-- Sign-off: from Kristen at Open Exchange
-- Total body: under 130 words
-- No fluff, no buzzwords, no "I hope this email finds you well"
-- Write as if you know exactly who they are and why you're reaching out
+  const systemPrompt = `You are a sales development rep at Open Exchange, a Zoom Premier Partner that produces world-class virtual events for enterprises.
 
-Return ONLY valid JSON with this shape:
-{"subject": "...", "body": "..."}`;
+Write a 3-touch cold outreach sequence. Rules:
 
-  const contactContext = contactName && contactNote
-    ? `\n\nSpecific contact: ${contactName} (${targetRole})\nWhat they're known for: ${contactNote}\nAddress them by first name. Reference something specific from their context in the opener.`
-    : "";
+INITIAL EMAIL (day 0):
+- Subject: specific, under 8 words, references something real about the company
+- Opener: address ${name} by first name${contactNote ? `, reference: "${contactNote}"` : ""}. One sentence, no fluff.
+- Body: what Open Exchange does better for their specific situation — use proof, not adjectives. 1-2 sentences max.
+- Ask: one 15-minute call, low-friction. Be direct.
+- Sign-off: Kristen at Open Exchange
+- Total: under 120 words
 
-  const userPrompt = `Write a cold email to the ${targetRole} at ${companyName}.${contactContext}
+FOLLOW-UP 1 (day 5):
+- Short. 3-4 sentences total.
+- Reference the initial email briefly
+- Add ONE new proof point or stat (e.g. "We run 200+ events/month for teams like yours")
+- Same ask: 15 min
+- Under 60 words
+
+FOLLOW-UP 2 (day 12):
+- Clean close. 2-3 sentences.
+- Acknowledge they're busy, leave the door open
+- No pressure, just a soft re-ask
+- Under 40 words
+
+Quality gate — REJECT if any email:
+- Contains "I hope this email finds you well" or similar filler
+- Uses adjectives without proof ("innovative", "cutting-edge", "best-in-class")
+- Has a vague subject line
+- Has more than one ask
+
+Return ONLY valid JSON:
+{
+  "emails": [
+    {"type": "initial", "day": 0, "subject": "...", "body": "..."},
+    {"type": "followup1", "day": 5, "subject": "...", "body": "..."},
+    {"type": "followup2", "day": 12, "subject": "...", "body": "..."}
+  ]
+}`;
+
+  const userPrompt = `Write a 3-touch sequence for ${name} — ${targetRole} at ${companyName}.
 
 Company context:
 - Industry: ${industry}
 - Size: ${size}
 - HQ: ${hq}
 - Events they run: ${eventTypes.join(", ")}
-- Why they fit: ${outreachAngle}
+- Why they fit: ${outreachAngle}${contactNote ? `\n- Contact context: ${contactNote}` : ""}
 
-The email should feel like it was written specifically for this person at this company.`;
+Every email must feel written specifically for this person, not a template.`;
 
   try {
     const res = await fetch(
@@ -49,14 +79,14 @@ The email should feel like it was written specifically for this person at this c
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
-          generationConfig: { temperature: 0.5, maxOutputTokens: 1500 },
+          generationConfig: { temperature: 0.5, maxOutputTokens: 2000 },
         }),
       }
     );
 
     const data = await res.json();
     if (!res.ok) {
-      return NextResponse.json({ error: data.error?.message ?? "Groq API error" }, { status: 500 });
+      return NextResponse.json({ error: data.error?.message ?? "Gemini API error" }, { status: 500 });
     }
 
     const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
@@ -65,8 +95,13 @@ The email should feel like it was written specifically for this person at this c
       return NextResponse.json({ error: "Could not parse email from response." }, { status: 500 });
     }
 
-    const email = JSON.parse(jsonMatch[0]) as { subject: string; body: string };
-    return NextResponse.json({ email });
+    const parsed = JSON.parse(jsonMatch[0]) as { emails: EmailSequence[] };
+    // Support legacy callers expecting { email }
+    const initial = parsed.emails.find((e) => e.type === "initial");
+    return NextResponse.json({
+      email: initial ? { subject: initial.subject, body: initial.body } : null,
+      sequence: parsed.emails,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Unknown error" },

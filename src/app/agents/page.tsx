@@ -69,6 +69,34 @@ export default function Agents() {
         </div>
       </Link>
 
+      <Link href="/agents/outreach" style={{ textDecoration: "none", color: "inherit", display: "block", marginTop: 16 }}>
+        <div
+          style={{
+            border: "1px solid #f0f0f0",
+            borderRadius: 8,
+            padding: "24px 28px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 12,
+            cursor: "pointer",
+            transition: "border-color 0.15s",
+          }}
+        >
+          <div>
+            <h2 style={{ ...serif, fontSize: 18, fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", marginBottom: 6 }}>
+              Outreach Queue
+            </h2>
+            <p style={{ ...serif, fontSize: 14, color: "#9ca3af", lineHeight: 1.65 }}>
+              Drafted cold emails from the Prospecting Agent — one click to open in Gmail, track send status, and download the full queue as Excel.
+            </p>
+          </div>
+          <span style={{ fontSize: 10, fontWeight: 600, color: "#008285", background: "#f0fafa", padding: "4px 10px", borderRadius: 20, whiteSpace: "nowrap", flexShrink: 0, marginTop: 2 }}>
+            Active
+          </span>
+        </div>
+      </Link>
+
       <div
         style={{
           border: "2px dashed #f0f0f0",

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { saveToQueue } from "@/app/agents/outreach/page";
 
 const serif = { fontFamily: "Georgia, serif" };
 const sans = { fontFamily: "system-ui, sans-serif" };
@@ -189,6 +190,49 @@ const seedColors: Record<"intuit" | "siena" | "gibson", { bg: string; border: st
 export default function ProspectingReport20260310() {
   const [filter, setFilter] = useState<SeedFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [draftLoading, setDraftLoading] = useState<Record<string, boolean>>({});
+  const [drafts, setDrafts] = useState<Record<string, { subject: string; body: string }>>({});
+  const [savedToQueue, setSavedToQueue] = useState<Record<string, boolean>>({});
+
+  const draftEmail = async (co: Company, role: string) => {
+    const key = `${co.name}__${role}`;
+    setDraftLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      const res = await fetch("/api/draft-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName: co.name,
+          industry: co.industry,
+          size: co.size,
+          hq: co.hq,
+          eventTypes: co.eventTypes,
+          targetRole: role,
+          outreachAngle: co.outreachAngle,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.email) {
+        setDrafts((prev) => ({ ...prev, [key]: data.email }));
+      }
+    } finally {
+      setDraftLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const addToQueue = (co: Company, role: string) => {
+    const key = `${co.name}__${role}`;
+    const draft = drafts[key];
+    if (!draft) return;
+    saveToQueue({
+      companyName: co.name,
+      industry: co.industry,
+      targetRole: role,
+      subject: draft.subject,
+      body: draft.body,
+    });
+    setSavedToQueue((prev) => ({ ...prev, [key]: true }));
+  };
 
   const filtered = filter === "all" ? companies : companies.filter((c) => c.similarTo === filter);
 
@@ -361,13 +405,77 @@ export default function ProspectingReport20260310() {
                   </div>
 
                   {/* Outreach Angle */}
-                  <div style={{ background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 8, padding: "12px 16px" }}>
+                  <div style={{ background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 8, padding: "12px 16px", marginBottom: 20 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 6 }}>
                       Outreach Hook
                     </div>
                     <p style={{ fontSize: 13, color: "#374151", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
                       &ldquo;{co.outreachAngle}&rdquo;
                     </p>
+                  </div>
+
+                  {/* Draft Emails */}
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 12 }}>
+                      Draft Outreach Emails
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
+                      {co.targetRoles.slice(0, 2).map((role) => {
+                        const key = `${co.name}__${role}`;
+                        const draft = drafts[key];
+                        const loading = draftLoading[key];
+                        const saved = savedToQueue[key];
+                        return (
+                          <div key={role} style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
+                            {/* Role header + draft button */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f9fafb" }}>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", ...sans }}>{role}</span>
+                              {!draft ? (
+                                <button
+                                  onClick={() => draftEmail(co, role)}
+                                  disabled={loading}
+                                  style={{ fontSize: 11, fontWeight: 700, ...sans, padding: "5px 12px", borderRadius: 6, border: "none", background: loading ? "#f3f4f6" : "#008285", color: loading ? "#9ca3af" : "#fff", cursor: loading ? "default" : "pointer" }}
+                                >
+                                  {loading ? "Drafting…" : "Draft Email"}
+                                </button>
+                              ) : (
+                                <div style={{ display: "flex", gap: 6 }}>
+                                  <button
+                                    onClick={() => navigator.clipboard.writeText(`Subject: ${draft.subject}\n\n${draft.body}`)}
+                                    style={{ fontSize: 11, fontWeight: 600, ...sans, padding: "5px 10px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
+                                  >
+                                    Copy
+                                  </button>
+                                  <button
+                                    onClick={() => addToQueue(co, role)}
+                                    disabled={saved}
+                                    style={{ fontSize: 11, fontWeight: 700, ...sans, padding: "5px 10px", borderRadius: 6, border: "none", background: saved ? "#f0fdf4" : "#008285", color: saved ? "#15803d" : "#fff", cursor: saved ? "default" : "pointer" }}
+                                  >
+                                    {saved ? "✓ In Queue" : "Add to Queue"}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                            {/* Draft content */}
+                            {draft && (
+                              <div style={{ padding: "12px 14px" }}>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", ...sans, marginBottom: 4 }}>SUBJECT</div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 10 }}>{draft.subject}</div>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", ...sans, marginBottom: 4 }}>BODY</div>
+                                <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.75, whiteSpace: "pre-line" }}>{draft.body}</div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Link to queue */}
+                    <div style={{ marginTop: 10, textAlign: "right" as const }}>
+                      <Link href="/agents/outreach" style={{ fontSize: 11, color: "#008285", ...sans, textDecoration: "none", fontWeight: 600 }}>
+                        View Outreach Queue →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}

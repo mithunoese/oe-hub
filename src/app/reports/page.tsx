@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 const serif = { fontFamily: "Georgia, serif" };
+const sans = { fontFamily: "system-ui, sans-serif" };
 
 const reports = [
   {
@@ -60,6 +61,26 @@ export default function Reports() {
             </div>
           </Link>
         ))}
+      </div>
+
+      {/* Prospecting Reports */}
+      <div style={{ marginTop: 40 }}>
+        <Link href="/reports/prospecting" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+          <div style={{ border: "1px solid #e0f0f0", borderRadius: 8, padding: "24px 28px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, background: "#f0fafa" }}>
+            <div>
+              <h2 style={{ ...serif, fontSize: 18, fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", marginBottom: 6 }}>
+                Prospecting Reports
+              </h2>
+              <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 4, ...sans }}>Weekly · Auto-generated</p>
+              <p style={{ ...serif, fontSize: 14, color: "#9ca3af", lineHeight: 1.65 }}>
+                AI-generated company lookalikes for the Zoom Events sales pipeline — seeded from Intuit, Siena AI, and Gibson Dunn.
+              </p>
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#008285", background: "#fff", border: "1px solid #e0f0f0", padding: "4px 10px", borderRadius: 20, whiteSpace: "nowrap", flexShrink: 0, marginTop: 2, ...sans }}>
+              View Reports →
+            </span>
+          </div>
+        </Link>
       </div>
     </>
   );

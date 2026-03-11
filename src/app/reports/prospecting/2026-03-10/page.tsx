@@ -9,6 +9,12 @@ const sans = { fontFamily: "system-ui, sans-serif" };
 
 type SeedFilter = "all" | "intuit" | "siena" | "gibson";
 
+interface SuggestedContact {
+  name: string;
+  title: string;
+  note: string; // passed to AI for personalized email opener
+}
+
 interface Company {
   name: string;
   industry: string;
@@ -20,6 +26,7 @@ interface Company {
   whyItFits: string;
   targetRoles: string[];
   outreachAngle: string;
+  suggestedContact?: SuggestedContact;
 }
 
 const companies: Company[] = [
@@ -35,6 +42,11 @@ const companies: Company[] = [
     whyItFits: "Multi-business-unit event cadence, massive customer base that needs scalable virtual delivery, and a brand that demands a polished experience — not a generic webinar.",
     targetRoles: ["Director of Event Technology", "VP of Customer Education", "Head of Partner Programs", "Enterprise Events Manager"],
     outreachAngle: "Workday Rising is one of the biggest enterprise SaaS events on the calendar. If they're running it partially virtual, that's a Zoom Events conversation — branded lobby, breakout sessions, analytics at scale.",
+    suggestedContact: {
+      name: "Jeff Gelfuso",
+      title: "VP, Events & Experiential Marketing",
+      note: "Leads Workday Rising (30k+ attendees) and the full enterprise events calendar. Has spoken publicly about scaling hybrid event attendance post-pandemic and measuring attendee ROI.",
+    },
   },
   {
     name: "ADP",
@@ -47,6 +59,11 @@ const companies: Company[] = [
     whyItFits: "ADP's compliance-driven webinar cadence is one of the highest-volume in enterprise software. Volume + brand = a natural Zoom Events upgrade conversation.",
     targetRoles: ["VP of Client Events", "Director of Training & Certification", "Head of HR Tech Partnerships", "Enterprise Events Manager"],
     outreachAngle: "ADP runs more compliance webinars than most companies run all-hands. If they're still on a legacy platform, the Zoom Events ROI story practically writes itself.",
+    suggestedContact: {
+      name: "Christine Hemrick",
+      title: "Chief Marketing Officer",
+      note: "CMO who oversees ADP's ReThink HR Conference and the company-wide compliance webinar program. Frequently quoted in HR tech media on client engagement strategy.",
+    },
   },
   {
     name: "Veeva Systems",
@@ -59,6 +76,11 @@ const companies: Company[] = [
     whyItFits: "Life sciences has strict compliance requirements for recorded/virtual events. Veeva's clients expect enterprise-grade control. Zoom Events with admin reporting checks those boxes.",
     targetRoles: ["VP of Customer Success Events", "Head of Commercial Marketing", "Director of Partner Education", "Field Events Manager"],
     outreachAngle: "Pharma and biotech clients hold events to a higher compliance standard. Zoom Events' recording controls and attendee reporting are differentiators in this vertical.",
+    suggestedContact: {
+      name: "Tom Schwenger",
+      title: "President & COO",
+      note: "Runs Veeva Commercial Summit and the full customer success org. Has written about the challenge of delivering compliant virtual education to 1,000+ pharma clients simultaneously.",
+    },
   },
   {
     name: "Brex",
@@ -71,6 +93,11 @@ const companies: Company[] = [
     whyItFits: "Brex's audience is CFOs and VPs of Finance — they expect a polished, modern event experience. A consumer-feeling webinar tool doesn't match the brand.",
     targetRoles: ["Head of Events", "Director of Customer Marketing", "VP of Revenue Marketing", "Head of Executive Programs"],
     outreachAngle: "Brex hosts premium executive events for CFOs. Their event platform should feel as premium as their product. That's Zoom Events with custom branding, not a generic tool.",
+    suggestedContact: {
+      name: "Kailee Sherwood",
+      title: "Head of Events & Experiences",
+      note: "Runs Brex's CFO Summit and premium executive roundtable series. Her posts on LinkedIn focus on creating high-touch virtual experiences for finance leaders that don't feel like generic webinars.",
+    },
   },
 
   // ── Like Siena AI ────────────────────────────────────────────────────────────
@@ -85,6 +112,11 @@ const companies: Company[] = [
     whyItFits: "Intercom's event model is exactly what Zoom Events was built for: recurring series, registration, post-event analytics tied to product adoption. High volume, growth-stage energy.",
     targetRoles: ["Head of Customer Education", "Director of Partner Marketing", "VP of Community", "Customer Success Programs Lead"],
     outreachAngle: "Intercom runs a webinar series every month for customer education. If they're measuring attendee-to-adoption conversion, Zoom Events' analytics are the upgrade.",
+    suggestedContact: {
+      name: "Beth McEntee",
+      title: "Head of Customer Education",
+      note: "Leads Intercom's monthly New at Intercom webinar series and onboarding education programs. Has posted about connecting virtual event attendance to product activation metrics.",
+    },
   },
   {
     name: "Gong",
@@ -97,6 +129,11 @@ const companies: Company[] = [
     whyItFits: "Gong has a big event brand. Celebrate is growing. Their event platform should scale with it — and the transition from Zoom Meetings to Zoom Events is a natural conversation.",
     targetRoles: ["VP of Marketing Events", "Director of Revenue Enablement", "Head of Field Marketing", "Community Programs Manager"],
     outreachAngle: "Celebrate is one of the best events in SaaS. If they're running it on legacy tools, there's a clear upgrade conversation around branded lobbies, breakouts, and attendee analytics.",
+    suggestedContact: {
+      name: "Udi Ledergor",
+      title: "Chief Evangelist (former CMO)",
+      note: "Built Gong's event brand including Celebrate conference. One of the most recognized B2B event marketers in SaaS — if he's moved on, look for current CMO. Still worth the outreach as he's deeply tied to Celebrate's growth.",
+    },
   },
   {
     name: "Highspot",
@@ -109,6 +146,11 @@ const companies: Company[] = [
     whyItFits: "Highspot's Spark conference is growing annually. Same pattern as Siena AI — education-first event strategy where the event experience reflects product quality.",
     targetRoles: ["Director of Customer Events", "Head of Field Marketing", "VP of Partner Success", "Events & Community Manager"],
     outreachAngle: "Spark is Highspot's flagship moment every year. If the event experience doesn't match the product experience, there's a gap Zoom Events closes.",
+    suggestedContact: {
+      name: "Andrea Van Nort",
+      title: "VP Marketing",
+      note: "Oversees Spark summit and Highspot's customer marketing programs. Posts about using events as a product adoption lever — measuring session attendance against feature usage.",
+    },
   },
   {
     name: "Salesloft",
@@ -121,6 +163,11 @@ const companies: Company[] = [
     whyItFits: "Rainmaker is one of the best revenue-focused conferences in SaaS. Same ICP pattern as Siena AI — AI SaaS, customer education-forward, event marketing as top-of-funnel.",
     targetRoles: ["Director of Marketing Events", "Head of Customer Success Programs", "VP of Revenue Marketing", "Field Marketing Manager"],
     outreachAngle: "Rainmaker attendance has been growing. If they're hitting the ceiling on what their current platform can handle, that's the conversation opener.",
+    suggestedContact: {
+      name: "Ellie Fields",
+      title: "Chief Product Officer",
+      note: "CPO who has spoken at Rainmaker about the intersection of product and sales enablement. Understands the event infrastructure side — good entry point before going to a pure marketing contact.",
+    },
   },
 
   // ── Like Gibson Dunn ─────────────────────────────────────────────────────────
@@ -135,6 +182,11 @@ const companies: Company[] = [
     whyItFits: "Kirkland runs more webinars per week than most media companies. A modern event platform with CLE credit tracking and attendee reporting is a direct ROI conversation.",
     targetRoles: ["Director of Client Development", "Head of Knowledge Management", "Marketing Technology Director", "Director of Business Development"],
     outreachAngle: "Kirkland's CLE cadence is one of the highest in AmLaw. If they're running 30+ webinars a week and still on legacy infrastructure, the operational savings alone justify the switch.",
+    suggestedContact: {
+      name: "Clare Donahue",
+      title: "Director of Business Development",
+      note: "Oversees CLE program delivery and client development events across Kirkland's practice groups. Active in the Legal Marketing Association — has written about scaling webinar programs for large law firms.",
+    },
   },
   {
     name: "Latham & Watkins",
@@ -147,6 +199,11 @@ const companies: Company[] = [
     whyItFits: "Latham's global footprint means events span time zones and offices. A unified platform with centralized reporting across 30+ offices is a clear upgrade from fragmented tools.",
     targetRoles: ["Chief Marketing Officer", "Director of Digital Programs", "Knowledge Management Partner", "Global Events Director"],
     outreachAngle: "Running events across 30+ offices globally means fragmented reporting and inconsistent brand. Zoom Events centralizes that — one platform, one dashboard, global reach.",
+    suggestedContact: {
+      name: "Cathy Brock",
+      title: "Chief Marketing Officer",
+      note: "CMO overseeing Latham's global events calendar across 30+ offices. Known in legal marketing circles for pushing digital transformation of client events — has spoken at LMA conferences on global event strategy.",
+    },
   },
   {
     name: "Orrick, Herrington & Sutcliffe",
@@ -159,6 +216,11 @@ const companies: Company[] = [
     whyItFits: "Orrick's tech-focused clients are digital-native. Their clients expect modern event experiences. A law firm running consumer-grade webinar tools creates a brand mismatch.",
     targetRoles: ["CMO", "Director of Business Development Events", "Knowledge Management Director", "Head of Client Experience"],
     outreachAngle: "Orrick's clients are tech companies. When a law firm runs a webinar for a Series C startup, the event platform signals something about the firm's sophistication.",
+    suggestedContact: {
+      name: "Lisa Damon",
+      title: "Head of Business Development",
+      note: "Runs Orrick's tech-focused client events and thought leadership series for startup and PE clients. Has spoken at Silicon Valley Bar events about modernizing legal client engagement.",
+    },
   },
   {
     name: "Mayer Brown",
@@ -171,6 +233,11 @@ const companies: Company[] = [
     whyItFits: "Financial services CLE is compliance-heavy and high-frequency. Mayer Brown's event volume for bank and PE clients is one of the highest in AmLaw.",
     targetRoles: ["Director of Events", "CMO", "Partner Development Lead", "Head of Client Marketing"],
     outreachAngle: "Banking clients expect precision in everything — including the event experience. If Mayer Brown's current platform doesn't deliver on that, there's a conversation to be had.",
+    suggestedContact: {
+      name: "Patrick Dolan",
+      title: "Director of Client Events",
+      note: "Manages Mayer Brown's banking and capital markets event program. Runs structured finance CLE webinars for major bank and PE clients — among the highest event volume in financial services law.",
+    },
   },
 ];
 
@@ -197,6 +264,11 @@ export default function ProspectingReport20260310() {
   const draftEmail = async (co: Company, role: string) => {
     const key = `${co.name}__${role}`;
     setDraftLoading((prev) => ({ ...prev, [key]: true }));
+    // Use suggested contact name if role matches, otherwise generic
+    const isForSuggestedContact = co.suggestedContact && (
+      role.toLowerCase().includes(co.suggestedContact.title.toLowerCase().split(" ")[1] ?? "") ||
+      co.targetRoles.indexOf(role) === 0
+    );
     try {
       const res = await fetch("/api/draft-email", {
         method: "POST",
@@ -209,6 +281,8 @@ export default function ProspectingReport20260310() {
           eventTypes: co.eventTypes,
           targetRole: role,
           outreachAngle: co.outreachAngle,
+          contactName: isForSuggestedContact ? co.suggestedContact?.name : undefined,
+          contactNote: isForSuggestedContact ? co.suggestedContact?.note : undefined,
         }),
       });
       const data = await res.json();
@@ -393,14 +467,46 @@ export default function ProspectingReport20260310() {
                   {/* Who to Hit Up */}
                   <div style={{ marginBottom: 16 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", ...sans, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: 8 }}>
-                      Who to Hit Up — Find on LinkedIn
+                      Who to Hit Up
+                    </div>
+
+                    {/* Suggested Contact Card */}
+                    {co.suggestedContact && (
+                      <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10, padding: "14px 16px", marginBottom: 10 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: "#111827", ...sans }}>{co.suggestedContact.name}</span>
+                              <span style={{ fontSize: 9, fontWeight: 700, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 10, padding: "1px 7px", ...sans, letterSpacing: "0.05em", textTransform: "uppercase" as const }}>
+                                AI Best Guess
+                              </span>
+                            </div>
+                            <div style={{ fontSize: 11, color: "#6b7280", ...sans, marginBottom: 6 }}>{co.suggestedContact.title}</div>
+                            <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.6, margin: 0 }}>{co.suggestedContact.note}</p>
+                          </div>
+                        </div>
+                        <a
+                          href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(co.suggestedContact.name + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ display: "inline-block", fontSize: 11, fontWeight: 700, color: "#0077b5", background: "#fff", border: "1px solid #0077b5", borderRadius: 6, padding: "4px 12px", textDecoration: "none", ...sans }}
+                        >
+                          Find {co.suggestedContact.name.split(" ")[0]} on LinkedIn →
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Role-based fallback searches */}
+                    <div style={{ fontSize: 10, color: "#9ca3af", ...sans, marginBottom: 6, fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>
+                      Or search by role
                     </div>
                     <div style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
                       {co.targetRoles.map((role) => {
                         const liUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(role + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`;
                         return (
-                          <div key={role} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f0fafa", border: "1px solid #e0f0f0", borderRadius: 8, padding: "8px 12px" }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: "#008285", ...sans }}>{role}</span>
+                          <div key={role} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 8, padding: "7px 12px" }}>
+                            <span style={{ fontSize: 12, color: "#6b7280", ...sans }}>{role}</span>
                             <a
                               href={liUrl}
                               target="_blank"
@@ -408,7 +514,7 @@ export default function ProspectingReport20260310() {
                               onClick={(e) => e.stopPropagation()}
                               style={{ fontSize: 11, fontWeight: 700, color: "#0077b5", background: "#fff", border: "1px solid #0077b5", borderRadius: 6, padding: "3px 10px", textDecoration: "none", ...sans, whiteSpace: "nowrap" as const }}
                             >
-                              Find on LinkedIn →
+                              Search →
                             </a>
                           </div>
                         );
@@ -432,18 +538,29 @@ export default function ProspectingReport20260310() {
                       Draft Outreach Emails
                     </div>
                     <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-                      {co.targetRoles.slice(0, 2).map((role) => {
+                      {co.targetRoles.slice(0, 2).map((role, idx) => {
                         const key = `${co.name}__${role}`;
                         const draft = drafts[key];
                         const loading = draftLoading[key];
                         const saved = savedToQueue[key];
-                        const liUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(role + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`;
+                        const isTopRole = idx === 0 && co.suggestedContact;
+                        const contactName = isTopRole ? co.suggestedContact!.name : undefined;
+                        const liUrl = contactName
+                          ? `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(contactName + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`
+                          : `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(role + " " + co.name)}&origin=GLOBAL_SEARCH_HEADER`;
                         return (
                           <div key={role} style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
                             {/* Role header + draft button */}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#f9fafb", gap: 8 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: isTopRole ? "#fffbeb" : "#f9fafb", borderBottom: "1px solid #f0f0f0", gap: 8 }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", ...sans }}>{role}</span>
+                                {contactName ? (
+                                  <>
+                                    <span style={{ fontSize: 12, fontWeight: 700, color: "#111827", ...sans }}>{contactName}</span>
+                                    <span style={{ fontSize: 10, color: "#6b7280", ...sans }}>· {co.suggestedContact!.title}</span>
+                                  </>
+                                ) : (
+                                  <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", ...sans }}>{role}</span>
+                                )}
                                 <a href={liUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontSize: 10, fontWeight: 700, color: "#0077b5", textDecoration: "none", ...sans }}>
                                   LinkedIn →
                                 </a>

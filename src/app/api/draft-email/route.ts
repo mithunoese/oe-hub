@@ -8,14 +8,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "GROQ_API_KEY not configured." }, { status: 500 });
   }
 
-  const { companyName, industry, size, hq, eventTypes, targetRole, outreachAngle } =
+  const { companyName, industry, size, hq, eventTypes, targetRole, outreachAngle, contactName, contactNote } =
     await req.json();
 
   const systemPrompt = `You are a sales development rep at Open Exchange, a company that helps organizations produce world-class virtual events on Zoom Events.
 
 Write short, personalized cold emails following these rules:
-- Subject line: specific, under 8 words, references something real about the company
-- Opener (1 sentence): acknowledge something specific about their events — name a real event they run if possible
+- Subject line: specific, under 8 words, references something real about the company or person
+- Opener (1 sentence): if a specific contact name is provided, address them by first name and reference something specific from their context (event they ran, thing they posted about, or their role's specific challenge)
 - Value prop (1-2 sentences): what Zoom Events does better for their specific situation — no generic pitches
 - Ask (1 sentence): one 15-minute call, low-friction
 - Sign-off: from Kristen at Open Exchange
@@ -26,7 +26,11 @@ Write short, personalized cold emails following these rules:
 Return ONLY valid JSON with this shape:
 {"subject": "...", "body": "..."}`;
 
-  const userPrompt = `Write a cold email to the ${targetRole} at ${companyName}.
+  const contactContext = contactName && contactNote
+    ? `\n\nSpecific contact: ${contactName} (${targetRole})\nWhat they're known for: ${contactNote}\nAddress them by first name. Reference something specific from their context in the opener.`
+    : "";
+
+  const userPrompt = `Write a cold email to the ${targetRole} at ${companyName}.${contactContext}
 
 Company context:
 - Industry: ${industry}

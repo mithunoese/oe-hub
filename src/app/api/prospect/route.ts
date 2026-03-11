@@ -77,40 +77,20 @@ export async function POST(req: NextRequest) {
     searchContext = await buildSearchContext(seeds, tavilyKey);
   }
 
-  const systemPrompt = `You are a senior sales intelligence analyst at Open Exchange — a live event production company specializing in corporate webinars, tech summits, virtual training sessions, expert panel series, and internal enablement events. We are a Zoom Premier Partner.
+  const systemPrompt = `You are a sales intelligence analyst at Open Exchange, a Zoom Premier Partner specializing in corporate webinars, tech summits, training events, and expert panel series. Produce dense, actionable prospect lists.`;
 
-Our ideal clients:
-- Run recurring events: quarterly webinars, annual summits, ongoing training programs, partner enablement sessions
-- Have dedicated events teams or heavy event needs across departments
-- Use Zoom or are in the Zoom ecosystem
-- Have 200+ employees
-- Operate in SaaS, HRIS/HR Tech, professional services, fintech, legal, consulting, or enterprise software
+  const userPrompt = `Find 12 companies similar to ${seeds.join(", ")} for our event production sales pipeline.${extraCriteria ? ` Focus: ${extraCriteria}` : ""}${searchContext ? `\n\nContext:\n${searchContext}` : ""}
 
-You produce dense, actionable sales intelligence — not fluffy lists. Every company you identify must have specific reasons why they'd buy event production services.`;
+Return ONLY a JSON array, no markdown:
+[{"name":"","industry":"","description":"","size":"","hq":"","eventTypes":[],"similarTo":"","whyItFits":"","targetRoles":[],"outreachAngle":""}]
 
-  const userPrompt = `Identify 22 companies that are strong lookalikes for our best clients: ${seeds.join(", ")}.
-
-${extraCriteria ? `Additional criteria from the sales team: ${extraCriteria}\n\n` : ""}${searchContext ? `Web research context:\n${searchContext}\n\n` : ""}
-
-For each company, return a JSON object with these fields:
-- name: Company name
-- industry: Specific vertical (e.g., "Enterprise HCM / HRIS", "AmLaw 200 Firm", "Fintech SaaS")
-- description: 1-sentence description of the company
-- size: Employee range (e.g., "1,000–5,000")
-- hq: City, State/Country
-- eventTypes: Array of 3-4 specific event types they run (be specific: "annual customer summit", "quarterly partner enablement webinar", not just "webinars")
-- similarTo: Which seed client they most resemble — must be one of: ${seeds.map((s) => `"${s}"`).join(", ")}
-- whyItFits: 2–3 sentences explaining why they're a strong OE prospect. Reference their actual event needs.
-- targetRoles: Array of 3–4 exact job titles to reach for outreach at this specific company (e.g., "Director of Corporate Events", "VP of Customer Success", "Head of Revenue Enablement") — make them specific to the company type
-- outreachAngle: A single punchy hook sentence that would resonate with this company's events team
-
-Spread companies across all three seed profiles. Prioritize companies that actually run events at scale, not just hypothetically.
-
-Return ONLY a valid JSON array — no markdown, no explanation, no code fences:
-[
-  { "name": "...", "industry": "...", "description": "...", "size": "...", "hq": "...", "eventTypes": [...], "similarTo": "...", "whyItFits": "...", "targetRoles": [...], "outreachAngle": "..." },
-  ...
-]`;
+Rules:
+- similarTo must be one of: ${seeds.map((s) => `"${s}"`).join(", ")}
+- eventTypes: 3 specific types (e.g. "annual customer summit", "quarterly partner webinar")
+- targetRoles: 3 exact titles to reach (e.g. "Director of Events", "VP of L&D")
+- whyItFits: 2 sentences on why they need event production
+- outreachAngle: one punchy hook sentence
+- Spread evenly across all seed profiles`;
 
   const geminiRes = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
@@ -120,7 +100,7 @@ Return ONLY a valid JSON array — no markdown, no explanation, no code fences:
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: [{ parts: [{ text: userPrompt }] }],
-        generationConfig: { maxOutputTokens: 6000, temperature: 0.4 },
+        generationConfig: { maxOutputTokens: 3500, temperature: 0.4 },
       }),
     }
   );

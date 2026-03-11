@@ -536,7 +536,7 @@ export default function ProspectingAgent() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             {[
               { title: "ICP Analysis", text: "Claude analyzes what makes Intuit, Siena AI, and Gibson Dunn ideal clients — event cadence, company profile, decision makers." },
-              { title: "Lookalike Search", text: "Identifies 20+ companies that match the same profile across SaaS, HRIS, legal, fintech, and professional services." },
+              { title: "Lookalike Search", text: "Identifies 12 companies that match the same profile across SaaS, HRIS, legal, fintech, and professional services." },
               { title: "Dense Intel", text: "For each company: industry, size, HQ, event types they run, why they fit, and who to contact." },
               { title: "Repeatable", text: "Swap in any seed clients and re-run. New quarter, new campaign, new vertical — same pipeline in 30 seconds." },
             ].map((c) => (

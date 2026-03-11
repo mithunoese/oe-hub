@@ -80,9 +80,9 @@ export default function OutreachQueuePage() {
     refresh();
   };
 
-  const gmailUrl = (item: OutreachItem) => {
+  const outlookUrl = (item: OutreachItem) => {
     const to = emails[item.id] ?? item.toEmail ?? "";
-    return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(item.subject)}&body=${encodeURIComponent(item.body)}`;
+    return `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(item.subject)}&body=${encodeURIComponent(item.body)}`;
   };
 
   const downloadExcel = () => {
@@ -329,18 +329,24 @@ export default function OutreachQueuePage() {
                   {/* Action Buttons */}
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
                     <a
-                      href={gmailUrl(item)}
+                      href={outlookUrl(item)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: "#008285", color: "#fff", textDecoration: "none", display: "inline-block" }}
+                      style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block" }}
                     >
-                      Open in Gmail →
+                      Open in Outlook →
                     </a>
                     <button
-                      onClick={() => navigator.clipboard.writeText(`Subject: ${item.subject}\n\n${item.body}`)}
+                      onClick={() => navigator.clipboard.writeText(item.body)}
                       style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
                     >
-                      Copy Email
+                      Copy Body
+                    </button>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(item.subject)}
+                      style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", color: "#374151", cursor: "pointer" }}
+                    >
+                      Copy Subject
                     </button>
                     {item.status === "pending" && (
                       <button

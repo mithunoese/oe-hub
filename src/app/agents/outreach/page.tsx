@@ -347,17 +347,11 @@ export default function OutreachQueuePage() {
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, alignItems: "center" }}>
                   <a
                     href={mailtoUrl(item)}
-                    style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block" }}
+                    onClick={() => copyText(item.id, item.body, "body")}
+                    style={{ fontSize: 12, fontWeight: 700, ...sans, padding: "8px 16px", borderRadius: 8, border: "none", background: copied[item.id] === "body" ? "#005a9e" : "#0072c6", color: "#fff", textDecoration: "none", display: "inline-block", cursor: "pointer" }}
                   >
-                    Open Outlook →
+                    {copied[item.id] === "body" ? "✓ Body Copied — Paste in Outlook" : "Copy Body & Open Outlook →"}
                   </a>
-                  <button
-                    onClick={() => copyText(item.id, item.subject, "subject")}
-                    style={{ fontSize: 12, fontWeight: 600, ...sans, padding: "8px 14px", borderRadius: 8, border: copied[item.id] === "subject" ? "1px solid #bbf7d0" : "1px solid #e5e7eb", background: copied[item.id] === "subject" ? "#f0fdf4" : "#fff", color: copied[item.id] === "subject" ? "#15803d" : "#374151", cursor: "pointer" }}
-                  >
-                    {copied[item.id] === "subject" ? "✓ Copied!" : "Copy Subject"}
-                  </button>
-                  <span style={{ fontSize: 11, color: "#c0c0c0", ...sans }}>← paste body into Outlook</span>
                   {item.status === "pending" && (
                     <button
                       onClick={() => markSent(item.id)}

@@ -60,9 +60,9 @@ async function buildSearchContext(seeds: string[], tavilyKey: string): Promise<s
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
+    return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
   }
 
   const body = await req.json().catch(() => ({}));
@@ -112,28 +112,26 @@ Return ONLY a valid JSON array — no markdown, no explanation, no code fences:
   ...
 ]`;
 
-  const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 6000,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
-    }),
-  });
+  const geminiRes = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ parts: [{ text: userPrompt }] }],
+        generationConfig: { maxOutputTokens: 6000, temperature: 0.4 },
+      }),
+    }
+  );
 
-  if (!claudeRes.ok) {
-    const err = await claudeRes.text();
-    return NextResponse.json({ error: `Claude API error: ${err}` }, { status: 500 });
+  if (!geminiRes.ok) {
+    const err = await geminiRes.text();
+    return NextResponse.json({ error: `Gemini API error: ${err}` }, { status: 500 });
   }
 
-  const claudeData = await claudeRes.json();
-  const raw: string = claudeData.content?.[0]?.text ?? "";
+  const geminiData = await geminiRes.json();
+  const raw: string = geminiData.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
   // Extract JSON array from Claude's response
   const jsonMatch = raw.match(/\[[\s\S]*\]/);

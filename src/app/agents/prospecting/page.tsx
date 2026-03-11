@@ -319,7 +319,7 @@ export default function ProspectingAgent() {
         </p>
 
         <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
-          {["Claude Sonnet 4.6", "Zoom Sales", "Repeatable Pipeline"].map((tag) => (
+          {["Gemini Flash", "Free Tier", "Zoom Sales", "Repeatable Pipeline"].map((tag) => (
             <span key={tag} style={{
               fontSize: 11, fontWeight: 600, color: "#008285",
               background: "#f0fafa", border: "1px solid #e0f0f0",

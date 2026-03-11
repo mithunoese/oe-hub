@@ -138,11 +138,11 @@ export default function OutreachQueuePage() {
           Outreach Queue
         </h1>
         <p style={{ fontSize: 16, color: "#9ca3af", lineHeight: 1.7, margin: "0 0 16px 0" }}>
-          Drafted emails for your prospecting targets — one click to send in Gmail, or download all as Excel.
+          Drafted emails for your prospecting targets — one click to open in Outlook, or download all as Excel.
         </p>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, marginBottom: 16 }}>
-          {["Zoom Sales", "Gmail Ready", "Excel Export"].map((tag) => (
+          {["Zoom Sales", "Outlook Ready", "Excel Export"].map((tag) => (
             <span key={tag} style={{ fontSize: 11, fontWeight: 600, color: "#008285", background: "#f0fafa", border: "1px solid #e0f0f0", padding: "3px 10px", borderRadius: 20, ...sans }}>
               {tag}
             </span>

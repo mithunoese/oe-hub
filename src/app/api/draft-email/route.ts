@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey || apiKey === "your_groq_api_key_here") {
-    return NextResponse.json({ error: "GROQ_API_KEY not configured." }, { status: 500 });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: "GEMINI_API_KEY not configured." }, { status: 500 });
   }
 
   const { companyName, industry, size, hq, eventTypes, targetRole, outreachAngle, contactName, contactNote } =
@@ -42,29 +42,24 @@ Company context:
 The email should feel like it was written specifically for this person at this company.`;
 
   try {
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        temperature: 0.5,
-        max_tokens: 500,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
-    });
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+          generationConfig: { temperature: 0.5, maxOutputTokens: 500 },
+        }),
+      }
+    );
 
     const data = await res.json();
     if (!res.ok) {
       return NextResponse.json({ error: data.error?.message ?? "Groq API error" }, { status: 500 });
     }
 
-    const raw: string = data.choices?.[0]?.message?.content ?? "";
+    const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: "Could not parse email from response." }, { status: 500 });

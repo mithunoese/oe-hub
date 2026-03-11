@@ -4,6 +4,13 @@ const serif = { fontFamily: "Georgia, serif" };
 
 const projects = [
   {
+    slug: "prospecting-pipeline",
+    title: "Prospecting Pipeline",
+    description:
+      "Full AI-powered prospecting workflow — run the agent to find lookalike companies, review the report with suggested contacts, draft cold emails, and send from Outlook.",
+    badge: "For Kristen",
+  },
+  {
     slug: "oe-value-calculator",
     title: "OE Value Calculator",
     description:

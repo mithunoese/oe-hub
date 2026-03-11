@@ -60,9 +60,9 @@ async function buildSearchContext(seeds: string[], tavilyKey: string): Promise<s
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
+    return NextResponse.json({ error: "GROQ_API_KEY not configured" }, { status: 500 });
   }
 
   const body = await req.json().catch(() => ({}));
@@ -92,26 +92,30 @@ Rules:
 - outreachAngle: one punchy hook sentence
 - Spread evenly across all seed profiles`;
 
-  const geminiRes = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: userPrompt }] }],
-        generationConfig: { maxOutputTokens: 3500, temperature: 0.4 },
-      }),
-    }
-  );
+  const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.4,
+      max_tokens: 3500,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+    }),
+  });
 
-  if (!geminiRes.ok) {
-    const err = await geminiRes.text();
-    return NextResponse.json({ error: `Gemini API error: ${err}` }, { status: 500 });
+  if (!groqRes.ok) {
+    const err = await groqRes.text();
+    return NextResponse.json({ error: `Groq API error: ${err}` }, { status: 500 });
   }
 
-  const geminiData = await geminiRes.json();
-  const raw: string = geminiData.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  const groqData = await groqRes.json();
+  const raw: string = groqData.choices?.[0]?.message?.content ?? "";
 
   // Extract JSON array from Claude's response
   const jsonMatch = raw.match(/\[[\s\S]*\]/);

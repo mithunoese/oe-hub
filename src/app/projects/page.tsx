@@ -4,6 +4,13 @@ const serif = { fontFamily: "Georgia, serif" };
 
 const projects = [
   {
+    slug: "corp-comms-prospector",
+    title: "Corp Comms Prospector",
+    description:
+      "Finds the right contact at corporate communications agencies and drafts a cold outreach email introducing OE as a broadcast infrastructure partner.",
+    badge: "Active",
+  },
+  {
     slug: "prospecting-pipeline",
     title: "Prospecting Pipeline",
     description:

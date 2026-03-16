@@ -5,6 +5,13 @@ const sans = { fontFamily: "system-ui, sans-serif" };
 
 const reports = [
   {
+        href: "/reports/week-4",
+        week: "Week 4",
+        date: "Mar 9–13, 2026",
+        summary: "17 meetings across migration pricing launch, Zoom platform enablement, EMEA intro, Workato partnership discovery, and the Zoom API gap.",
+        count: "17 meetings",
+  },
+  {
     href: "/reports/week-3",
     week: "Week 3",
     date: "Mar 2–6, 2026",

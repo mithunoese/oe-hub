@@ -30,7 +30,7 @@ interface Team {
 // ---------------------------------------------------------------------------
 
 const ameliaTapsall: Person = {
-  name: "Amelia Tapsall",
+  name: "Emilia Tapsall",
   title: "Co-Head of Sales + Delivery",
   location: "Arizona",
   bio: "Leads the Zoom partnership — OE's highest growth area. Also owns Computershare, LSEG (a board member, $10M investor, and potential acquirer), delivery operations, and co-leads the institutional business. Sees the Zoom partnership growing from $6M to $20M in 3–5 years.",
@@ -41,7 +41,7 @@ const andrew: Person = {
   name: "Andrew",
   title: "Co-Head of Sales",
   location: "New York",
-  bio: "Runs the GCS team alongside Christian Bowens, the Broadridge partnership with Rob Garrigan, OE Stream through Jules, and co-leads institutional with Amelia. Spent his first months at OE the same way — getting to know people, understanding what makes them tick. His advice to new hires: take the long road.",
+  bio: "Runs the GCS team alongside Christian Bowens, the Broadridge partnership with Rob Garrigan, OE Stream through Jules, and co-leads institutional with Emilia. Spent his first months at OE the same way — getting to know people, understanding what makes them tick. His advice to new hires: take the long road.",
   tag: "GCS · Broadridge · Partnerships",
 };
 
@@ -62,7 +62,7 @@ const initialTeams: Team[] = [
         name: "Kara Dingenthal",
         title: "Zoom Sales Lead",
         location: "Denver",
-        bio: "Came directly from Zoom when they disbanded their professional services organization in early 2025. Amelia called her the greatest hire of all time. Leads the Zoom sales motion and is the closest thing to a Zoom subject matter expert on the sales side.",
+        bio: "Came directly from Zoom when they disbanded their professional services organization in early 2025. Emilia called her the greatest hire of all time. Leads the Zoom sales motion and is the closest thing to a Zoom subject matter expert on the sales side.",
         tag: "Ex-Zoom · 'Greatest Hire of All Time'",
       },
       {
@@ -940,7 +940,7 @@ export default function SalesOrgPage() {
           </div>
         </div>
 
-        {/* Team circles for Amelia and Andrew */}
+        {/* Team circles for Emilia and Andrew */}
         <div
           style={{
             display: "flex",

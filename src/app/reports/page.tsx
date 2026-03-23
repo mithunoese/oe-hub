@@ -1,9 +1,26 @@
+"use client";
+
 import Link from "next/link";
 
-const serif = { fontFamily: "Georgia, serif" };
-const sans = { fontFamily: "system-ui, sans-serif" };
-
-const reports = [
+const weeks = [
+  {
+    href: "/reports/week-5",
+    week: "Week 5",
+    date: "Mar 16–20, 2026",
+    summary: "20 meetings across Q1 close sprint, Zoom API gaps resolved, integrations go-to-market confirmed, and prospecting tools shipped.",
+    count: "20 meetings",
+    badge: "New",
+    pdf: "/weekly_report_week5.pdf",
+  },
+  {
+    href: "/reports/week-4",
+    week: "Week 4",
+    date: "Mar 9–13, 2026",
+    summary: "BD pipeline launched — 75 contacts scored, ASCO 2026 and Corp Comms outreach initiated.",
+    count: "Pipeline launch",
+    badge: null,
+    pdf: "/weekly_report_week4.pdf",
+  },
   {
         href: "/reports/week-4",
         week: "Week 4",
@@ -17,6 +34,8 @@ const reports = [
     date: "Mar 2–6, 2026",
     summary: "22 meetings across migration engineering, CMS pricing, first client demos, and SE cadence.",
     count: "22 meetings",
+    badge: null,
+    pdf: "/weekly_report_week3.pdf",
   },
   {
     href: "/reports/week-2",
@@ -24,52 +43,114 @@ const reports = [
     date: "Feb 23–27, 2026",
     summary: "27 meetings across sales, delivery, product, engineering, and the Zoom partnership.",
     count: "27 meetings",
+    badge: null,
+    pdf: "/weekly_report_week2.pdf",
   },
 ];
 
 export default function Reports() {
   return (
-    <>
-      <h1 style={{ ...serif, fontSize: 36, fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.1 }}>
-        Weekly Reports
-      </h1>
-      <p style={{ ...serif, fontSize: 15, color: "#9ca3af", lineHeight: 1.65, marginTop: 8 }}>
-        Week-by-week updates and progress tracking.
-      </p>
-      <div style={{ width: 40, height: 3, background: "#111827", borderRadius: 2, marginTop: 16, marginBottom: 32 }} />
+    <main style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px 72px" }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--light)", marginBottom: 8 }}>
+          Reports
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.025em", color: "var(--text)", marginBottom: 6 }}>
+              Weekly Reports
+            </h1>
+            <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6 }}>
+              Week-by-week updates, pipeline activity, and progress tracking.
+            </p>
+          </div>
+          <Link
+            href="/admin"
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--teal)",
+              background: "var(--teal-light)",
+              border: "1px solid var(--teal-mid)",
+              borderRadius: 8,
+              padding: "8px 14px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              marginTop: 4,
+            }}
+          >
+            ↑ Upload PDF
+          </Link>
+        </div>
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {reports.map((r) => (
-          <Link key={r.href} href={r.href} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
-            <div
-              style={{
-                border: "1px solid #f0f0f0",
-                borderRadius: 8,
-                padding: "24px 28px",
+        {weeks.map((r) => (
+          <div key={r.href} style={{ position: "relative" }}>
+            <Link href={r.href} style={{ display: "block" }}>
+              <div style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: 10,
+                padding: "20px 24px",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-start",
-                gap: 12,
-                cursor: "pointer",
-                transition: "border-color 0.15s",
-              }}
-            >
-              <div>
-                <h2 style={{ ...serif, fontSize: 18, fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", marginBottom: 6 }}>
-                  {r.week}
-                </h2>
-                <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 4 }}>{r.date}</p>
-                <p style={{ ...serif, fontSize: 14, color: "#9ca3af", lineHeight: 1.65 }}>
-                  {r.summary}
-                </p>
+                gap: 16,
+                transition: "border-color 0.15s, box-shadow 0.15s",
+              }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{r.week}</span>
+                    <span style={{ fontSize: 12, color: "var(--muted)" }}>· {r.date}</span>
+                    {r.badge && (
+                      <span style={{ fontSize: 10, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", padding: "2px 8px", borderRadius: 20 }}>
+                        {r.badge}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>{r.summary}</p>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+                  <span style={{ fontSize: 11, color: "var(--muted)" }}>{r.count}</span>
+                  {r.pdf && (
+                    <a
+                      href={r.pdf}
+                      download
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: "var(--teal)",
+                        background: "var(--teal-light)",
+                        border: "1px solid var(--teal-mid)",
+                        borderRadius: 6,
+                        padding: "4px 10px",
+                        textDecoration: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      ↓ PDF
+                    </a>
+                  )}
+                </div>
               </div>
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#008285", background: "#f0fafa", padding: "4px 10px", borderRadius: 20, whiteSpace: "nowrap", flexShrink: 0, marginTop: 2 }}>
-                {r.count}
-              </span>
-            </div>
-          </Link>
+            </Link>
+          </div>
         ))}
       </div>
 
-</>
+      <div style={{ marginTop: 32, padding: "16px 24px", background: "var(--teal-light)", borderRadius: 10, border: "1px solid var(--teal-mid)" }}>
+        <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
+          View the live BD Pipeline dashboard →{" "}
+          <Link href="/projects/bd-pipeline" style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}>
+            Corp Comms · ASCO 2026 · Zoom
+          </Link>
+        </div>
+      </div>
+    </main>
   );
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import * as XLSX from "xlsx";
 
 const serif = { fontFamily: "Georgia, serif" };
 const sans = { fontFamily: "system-ui, sans-serif" };
@@ -136,6 +137,24 @@ export default function CorpCommsProspectorPage() {
   const [copied, setCopied] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
+  function exportExcel() {
+    const cache = loadCache();
+    const rows = ALL_FIRMS.map((f) => {
+      const entry = cache[f];
+      const c = entry ? entry.contact : null;
+      return {
+        Firm: f,
+        "Contact Name": c?.name ?? "",
+        Title: c?.title ?? "",
+        LinkedIn: c?.linkedin_url ?? "",
+      };
+    });
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Corp Comms");
+    XLSX.writeFile(wb, "corp-comms-contacts.xlsx");
+  }
+
   // Auto-fetch contact whenever firm changes
   useEffect(() => {
     // Cancel any in-flight request
@@ -263,12 +282,18 @@ export default function CorpCommsProspectorPage() {
           <p style={{ fontSize: 15, color: "#9ca3af", lineHeight: 1.7, margin: 0 }}>
             Select a firm — contact is looked up automatically. Draft a cold email in one click.
           </p>
-          <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" as const }}>
+          <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" as const, alignItems: "center" }}>
             {["Auto-search", "Gemini Flash", "Cached 7 days"].map((tag) => (
               <span key={tag} style={{ fontSize: 11, fontWeight: 600, color: "#008285", background: "#f0fafa", border: "1px solid #e0f0f0", padding: "3px 10px", borderRadius: 20, ...sans }}>
                 {tag}
               </span>
             ))}
+            <button
+              onClick={exportExcel}
+              style={{ fontSize: 11, fontWeight: 600, color: "#008285", background: "#f0fafa", border: "1px solid #99e0e1", padding: "3px 10px", borderRadius: 20, cursor: "pointer", ...sans }}
+            >
+              Export Excel
+            </button>
           </div>
           <div style={{ width: 40, height: 3, background: "#008285", borderRadius: 2, marginTop: 24 }} />
         </div>

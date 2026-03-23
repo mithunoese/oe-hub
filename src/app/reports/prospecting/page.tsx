@@ -68,11 +68,11 @@ export default function ProspectingReports() {
 
       <div style={{ marginTop: 40, padding: "16px 20px", background: "#f9fafb", border: "1px solid #f0f0f0", borderRadius: 8 }}>
         <p style={{ fontSize: 12, color: "#9ca3af", fontFamily: "system-ui, sans-serif", lineHeight: 1.6, margin: 0 }}>
-          Generated weekly by the{" "}
+          Runs every Friday — after running the{" "}
           <Link href="/agents/prospecting" style={{ color: "#008285" }}>
             Prospecting Agent
-          </Link>{" "}
-          — Llama 3.3 70B via Groq, free tier. New reports publish every Friday.
+          </Link>
+          , add the new report to this page manually.
         </p>
       </div>
     </>

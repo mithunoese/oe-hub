@@ -4,29 +4,31 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-6",
+    week: "Week 6",
+    date: "Mar 23–27, 2026",
+    summary: "10 meetings across IFRS client dry-run planning, migration pricing endorsed by Zoom VP, first Zoom integrations training with Ren, and NYC cocktail networking event.",
+    count: "10 meetings",
+    badge: "New",
+    pdf: "/weekly_report_week6.pdf",
+  },
+  {
     href: "/reports/week-5",
     week: "Week 5",
     date: "Mar 16–20, 2026",
     summary: "20 meetings across Q1 close sprint, Zoom API gaps resolved, integrations go-to-market confirmed, and prospecting tools shipped.",
     count: "20 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/weekly_report_week5.pdf",
   },
   {
     href: "/reports/week-4",
     week: "Week 4",
     date: "Mar 9–13, 2026",
-    summary: "BD pipeline launched — 75 contacts scored, ASCO 2026 and Corp Comms outreach initiated.",
-    count: "Pipeline launch",
+    summary: "17 meetings across migration pricing launch, Zoom platform enablement, EMEA intro, Workato partnership discovery, and the Zoom API gap.",
+    count: "17 meetings",
     badge: null,
     pdf: "/weekly_report_week4.pdf",
-  },
-  {
-        href: "/reports/week-4",
-        week: "Week 4",
-        date: "Mar 9–13, 2026",
-        summary: "17 meetings across migration pricing launch, Zoom platform enablement, EMEA intro, Workato partnership discovery, and the Zoom API gap.",
-        count: "17 meetings",
   },
   {
     href: "/reports/week-3",

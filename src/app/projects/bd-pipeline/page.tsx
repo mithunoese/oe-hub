@@ -148,21 +148,32 @@ export default function BDPipelinePage() {
     fetch('/api/pipeline-state', {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ rows: pipelineRows, pipelines: allPipelines }),
+      body: JSON.stringify({ rows: pipelineRows, pipelines: allPipelines, version: DATA_VERSION }),
     }).catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pipelineRows]);
 
-  // Load from Neon on mount (authoritative source)
+  // Load from Neon on mount — reset stale data if it lacks LinkedIn-verified contacts
+  const DATA_VERSION = 2; // bump to force reset of old DB data
   useEffect(() => {
     fetch('/api/pipeline-state')
       .then(r => r.json())
-      .then(({ rows, pipelines: savedPipelines }) => {
-        if (rows) {
+      .then(({ rows, pipelines: savedPipelines, version }) => {
+        if (version >= DATA_VERSION && rows) {
+          // DB has current version — use it
           setPipelineRows(rows);
-        }
-        if (savedPipelines && Array.isArray(savedPipelines) && savedPipelines.length > 0) {
-          setAllPipelines(savedPipelines);
+          if (savedPipelines && Array.isArray(savedPipelines) && savedPipelines.length > 0) {
+            setAllPipelines(savedPipelines);
+          }
+        } else {
+          // Old or no version — push fresh defaults to DB
+          const freshRows = Object.fromEntries(pipelines.map((p, i) => [i, p.rows]));
+          setPipelineRows(freshRows);
+          fetch('/api/pipeline-state', {
+            method: 'PUT',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ rows: freshRows, pipelines, version: DATA_VERSION }),
+          }).catch(() => {});
         }
         setDbSynced(true);
       })

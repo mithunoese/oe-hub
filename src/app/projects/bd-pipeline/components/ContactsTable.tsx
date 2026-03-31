@@ -1,5 +1,6 @@
 'use client';
 import type { PipelineRow } from '@/data/pipelines';
+import { isOeCustomer } from '@/data/oe-customers';
 import { scoreColor, scoreBg, statusBadge } from './shared';
 
 interface Props {
@@ -102,7 +103,16 @@ export default function ContactsTable({
             }}
           >
             <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{row.firm}</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                {row.firm}
+                {isOeCustomer(row.firm) && (
+                  <span style={{
+                    fontSize: 8.5, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                    background: '#fef2f2', color: '#dc2626', letterSpacing: '0.04em',
+                    textTransform: 'uppercase', whiteSpace: 'nowrap',
+                  }}>CUSTOMER</span>
+                )}
+              </div>
               <div style={{ fontSize: 11, color: 'var(--light)', marginTop: 1 }}>{row.group}</div>
             </div>
             <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: row.dim ? 400 : 500 }}>{row.contact}</div>

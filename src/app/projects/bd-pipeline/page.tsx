@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { pipelines, CONTACT_LINKEDIN_POSTS, CONTACT_NEXT_BEST } from '@/data/pipelines';
 import type { PipelineRow, Pipeline } from '@/data/pipelines';
+import { isOeCustomer } from '@/data/oe-customers';
 import {
   AnalyticsSection,
   AuditLogPanel,
@@ -1083,6 +1084,20 @@ export default function BDPipelinePage() {
                       <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>{currentContact.name}</div>
                       <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{currentContact.title}</div>
                       <div style={{ fontSize: 13, color: 'var(--muted)' }}>{currentContact.firm}</div>
+                      {isOeCustomer(currentContact.firm) && (
+                        <div style={{
+                          marginTop: 8,
+                          padding: '8px 12px',
+                          borderRadius: 7,
+                          background: '#fef2f2',
+                          border: '1px solid #fecaca',
+                          fontSize: 12,
+                          color: '#991b1b',
+                          lineHeight: 1.5,
+                        }}>
+                          <span style={{ fontWeight: 700 }}>Existing OE customer.</span> This firm is already in our client base — do not cold-outreach. Consider upsell or cross-sell instead.
+                        </div>
+                      )}
                       {currentContact.li && (
                         <span style={{
                           display: 'inline-block',

@@ -3,21 +3,29 @@
 import { useState } from 'react';
 import { pipelines } from '@/data/pipelines';
 
+type PipelineRow = { firm: string; contact: string; title: string; li: boolean; score: number; dim?: boolean; [key: string]: unknown };
+
 export default function AgentsPage() {
   const [icpRunState, setIcpRunState] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
   const [icpProgress, setIcpProgress] = useState({ scored: 0, total: 0, highFit: 0 });
+
+  // Salesforce Dedup state
+  const [sfState, setSfState] = useState<'idle' | 'syncing' | 'finding' | 'done' | 'error'>('idle');
+  const [sfStats, setSfStats] = useState({ blocklist: 0, prospects: 0, clean: 0, duped: 0, blocked: 0 });
+  const [sfIndustry, setSfIndustry] = useState('Healthcare');
+
+  // LinkedIn Tracker state
+  const [liState, setLiState] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
+  const [liProgress, setLiProgress] = useState({ enriched: 0, total: 0, active: 0 });
 
   const runIcpAgent = async () => {
     setIcpRunState('running');
     setIcpProgress({ scored: 0, total: 0, highFit: 0 });
 
     try {
-      // Load pipeline state from DB
       const stateRes = await fetch('/api/pipeline-state');
       const { rows: pipelineRows } = await stateRes.json();
 
-      // Flatten all contacts across all pipelines
-      type PipelineRow = { firm: string; contact: string; title: string; li: boolean; score: number; [key: string]: unknown };
       const allContacts: Array<{ pipelineIdx: number; rowIdx: number; row: PipelineRow }> = [];
 
       for (let pi = 0; pi < pipelines.length; pi++) {
@@ -29,7 +37,6 @@ export default function AgentsPage() {
 
       setIcpProgress({ scored: 0, total: allContacts.length, highFit: 0 });
 
-      // Score in batches of 5
       const updatedRows: Record<number, PipelineRow[]> = {};
       for (let pi = 0; pi < pipelines.length; pi++) {
         updatedRows[pi] = [...(pipelineRows?.[pi] || pipelines[pi].rows)];
@@ -65,7 +72,6 @@ export default function AgentsPage() {
         }));
       }
 
-      // Save updated scores to DB
       await fetch('/api/pipeline-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -78,6 +84,140 @@ export default function AgentsPage() {
       setIcpRunState('error');
     }
   };
+
+  const runSfBlocklist = async () => {
+    setSfState('syncing');
+    try {
+      const queryRes = await fetch('/api/sf-query?type=blocklist');
+      const { contacts } = await queryRes.json();
+
+      const dedupRes = await fetch('/api/sf-dedup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contacts, mode: 'blocklist' }),
+      });
+      const result = await dedupRes.json();
+
+      setSfStats(prev => ({ ...prev, blocklist: result.total ?? contacts?.length ?? 0 }));
+      setSfState('done');
+    } catch {
+      setSfState('error');
+    }
+  };
+
+  const runSfProspects = async () => {
+    setSfState('finding');
+    try {
+      const queryRes = await fetch(`/api/sf-query?type=prospects&industry=${encodeURIComponent(sfIndustry)}`);
+      const { contacts } = await queryRes.json();
+
+      const dedupRes = await fetch('/api/sf-dedup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contacts, mode: 'prospects' }),
+      });
+      const result = await dedupRes.json();
+
+      setSfStats(prev => ({
+        ...prev,
+        prospects: result.total ?? contacts?.length ?? 0,
+        clean: result.clean ?? 0,
+        duped: result.duped ?? 0,
+        blocked: result.blocked ?? 0,
+      }));
+      setSfState('done');
+    } catch {
+      setSfState('error');
+    }
+  };
+
+  const runLinkedInTracker = async () => {
+    setLiState('running');
+    setLiProgress({ enriched: 0, total: 0, active: 0 });
+
+    try {
+      const stateRes = await fetch('/api/pipeline-state');
+      const { rows: pipelineRows } = await stateRes.json();
+
+      // Flatten all contacts where li === false
+      const unenriched: Array<{ pipelineIdx: number; rowIdx: number; row: PipelineRow }> = [];
+
+      for (let pi = 0; pi < pipelines.length; pi++) {
+        const rows: PipelineRow[] = pipelineRows?.[pi] || pipelines[pi].rows;
+        rows.forEach((row: PipelineRow, ri: number) => {
+          if (!row.dim && row.li === false) {
+            unenriched.push({ pipelineIdx: pi, rowIdx: ri, row });
+          }
+        });
+      }
+
+      setLiProgress({ enriched: 0, total: unenriched.length, active: 0 });
+
+      if (unenriched.length === 0) {
+        setLiProgress({ enriched: 0, total: 0, active: 0 });
+        setLiState('done');
+        return;
+      }
+
+      const updatedRows: Record<number, PipelineRow[]> = {};
+      for (let pi = 0; pi < pipelines.length; pi++) {
+        updatedRows[pi] = [...(pipelineRows?.[pi] || pipelines[pi].rows)];
+      }
+
+      let enriched = 0;
+      let active = 0;
+      const BATCH = 5;
+
+      for (let i = 0; i < unenriched.length; i += BATCH) {
+        const batch = unenriched.slice(i, i + BATCH);
+        try {
+          const res = await fetch('/api/linkedin/enrich', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contacts: batch.map(b => ({
+                firm: b.row.firm,
+                contact: b.row.contact,
+                title: b.row.title,
+              })),
+            }),
+          });
+          const data = await res.json();
+          const results = data.results || [];
+
+          batch.forEach((entry, idx) => {
+            updatedRows[entry.pipelineIdx][entry.rowIdx] = {
+              ...updatedRows[entry.pipelineIdx][entry.rowIdx],
+              li: true,
+            };
+            if (results[idx]?.active) active++;
+            enriched++;
+            setLiProgress(p => ({ ...p, enriched, active }));
+          });
+        } catch {
+          // Mark as enriched even on failure to avoid re-processing
+          batch.forEach(entry => {
+            enriched++;
+            setLiProgress(p => ({ ...p, enriched }));
+          });
+        }
+      }
+
+      // Save updated pipeline state
+      await fetch('/api/pipeline-state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows: updatedRows }),
+      });
+
+      setLiProgress({ enriched, total: unenriched.length, active });
+      setLiState('done');
+    } catch {
+      setLiState('error');
+    }
+  };
+
+  const SF_INDUSTRIES = ['Healthcare', 'Financial Services', 'Technology', 'Media', 'Real Estate'];
 
   const agents = [
     {
@@ -103,7 +243,7 @@ export default function AgentsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <svg className="spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
               <span style={{ fontSize: 12.5, color: 'var(--teal)', fontWeight: 500 }}>
-                Scoring {icpProgress.scored} / {icpProgress.total} contacts…
+                Scoring {icpProgress.scored} / {icpProgress.total} contacts...
               </span>
             </div>
           )}
@@ -137,8 +277,107 @@ export default function AgentsPage() {
         : [
             { label: 'Contacts scored', val: icpRunState === 'running' ? String(icpProgress.scored) : '—' },
             { label: 'High-fit (≥75)', val: icpRunState === 'running' ? String(icpProgress.highFit) : '—' },
-            { label: 'Status', val: icpRunState === 'running' ? 'Running…' : 'Ready' },
+            { label: 'Status', val: icpRunState === 'running' ? 'Running...' : 'Ready' },
           ],
+    },
+    {
+      name: 'Salesforce Dedup Agent',
+      description: 'Queries Salesforce for existing customers and deduplicates against your pipeline. Ensures you never email active clients.',
+      accent: '#2563eb',
+      accentBg: '#eff6ff',
+      status: 'active',
+      statusLabel: 'Active',
+      pulse: true,
+      tags: ['Salesforce', 'Dedup', 'Blocklist'],
+      stats: sfState === 'done'
+        ? [
+            { label: 'Blocklist count', val: String(sfStats.blocklist) },
+            { label: 'Prospects found', val: String(sfStats.clean || sfStats.prospects) },
+            { label: 'Last run', val: 'Just now' },
+          ]
+        : [
+            { label: 'Blocklist count', val: sfState === 'syncing' ? '...' : String(sfStats.blocklist || '—') },
+            { label: 'Prospects found', val: sfState === 'finding' ? '...' : String(sfStats.clean || '—') },
+            { label: 'Status', val: sfState === 'syncing' ? 'Syncing...' : sfState === 'finding' ? 'Finding...' : 'Ready' },
+          ],
+      action: (
+        <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+          {sfState === 'idle' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <button
+                onClick={runSfBlocklist}
+                style={{ fontSize: 12.5, padding: '7px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer', fontWeight: 600 }}
+              >
+                ✦ Sync Blocklist
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <select
+                  value={sfIndustry}
+                  onChange={e => setSfIndustry(e.target.value)}
+                  style={{ fontSize: 12.5, padding: '5px 10px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', cursor: 'pointer' }}
+                >
+                  {SF_INDUSTRIES.map(ind => (
+                    <option key={ind} value={ind}>{ind}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={runSfProspects}
+                  style={{ fontSize: 12.5, padding: '7px 16px', background: 'transparent', color: '#2563eb', border: '1px solid #2563eb', borderRadius: 7, cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Find Prospects
+                </button>
+              </div>
+            </div>
+          )}
+          {sfState === 'syncing' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <svg className="spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+              <span style={{ fontSize: 12.5, color: '#2563eb', fontWeight: 500 }}>
+                Syncing blocklist from Salesforce...
+              </span>
+            </div>
+          )}
+          {sfState === 'finding' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <svg className="spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+              <span style={{ fontSize: 12.5, color: '#2563eb', fontWeight: 500 }}>
+                Finding prospects in {sfIndustry}...
+              </span>
+            </div>
+          )}
+          {sfState === 'done' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 12.5, color: '#2563eb', fontWeight: 600 }}>
+                  ✓ {sfStats.blocklist} blocked · {sfStats.clean} clean · {sfStats.duped} duped
+                </span>
+                <button
+                  onClick={() => setSfState('idle')}
+                  style={{ fontSize: 11.5, padding: '4px 12px', background: 'transparent', color: 'var(--light)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}
+                >
+                  Re-run
+                </button>
+              </div>
+              {sfStats.clean > 0 && (
+                <button
+                  onClick={() => {
+                    window.location.href = '/projects/bd-pipeline';
+                  }}
+                  style={{ fontSize: 12.5, padding: '7px 16px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer', fontWeight: 600, alignSelf: 'flex-start' }}
+                >
+                  Import {sfStats.clean} to Pipeline
+                </button>
+              )}
+            </div>
+          )}
+          {sfState === 'error' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 12.5, color: '#ef4444' }}>Sync failed</span>
+              <button onClick={() => setSfState('idle')} style={{ fontSize: 11.5, padding: '3px 10px', background: 'transparent', color: 'var(--light)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>Retry</button>
+            </div>
+          )}
+        </div>
+      ),
     },
     {
       name: 'Email Draft Agent',
@@ -170,16 +409,60 @@ export default function AgentsPage() {
       description: 'Monitors target accounts for recent posts, role changes, and engagement signals to surface warm outreach moments.',
       accent: '#d97706',
       accentBg: '#fffbeb',
-      status: 'paused',
-      statusLabel: 'Paused',
-      pulse: false,
-      stats: [
-        { label: 'Accounts tracked', val: '48' },
-        { label: 'New signals', val: '0' },
-        { label: 'Last run', val: '3d ago' },
-      ],
+      status: 'active',
+      statusLabel: 'Active',
+      pulse: true,
+      stats: liState === 'done'
+        ? [
+            { label: 'Contacts enriched', val: String(liProgress.enriched) },
+            { label: 'Active signals', val: String(liProgress.active) },
+            { label: 'Last run', val: 'Just now' },
+          ]
+        : [
+            { label: 'Contacts enriched', val: liState === 'running' ? String(liProgress.enriched) : '—' },
+            { label: 'Active signals', val: liState === 'running' ? String(liProgress.active) : '—' },
+            { label: 'Status', val: liState === 'running' ? 'Running...' : 'Ready' },
+          ],
       tags: ['Social listening', 'Role changes'],
-      action: null,
+      action: (
+        <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+          {liState === 'idle' && (
+            <button
+              onClick={runLinkedInTracker}
+              style={{ fontSize: 12.5, padding: '7px 16px', background: '#d97706', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer', fontWeight: 600 }}
+            >
+              ✦ Run Agent
+            </button>
+          )}
+          {liState === 'running' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <svg className="spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+              <span style={{ fontSize: 12.5, color: '#d97706', fontWeight: 500 }}>
+                Enriching {liProgress.enriched} / {liProgress.total} contacts...
+              </span>
+            </div>
+          )}
+          {liState === 'done' && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 12.5, color: '#d97706', fontWeight: 600 }}>
+                ✓ {liProgress.enriched} enriched · {liProgress.active} active
+              </span>
+              <button
+                onClick={runLinkedInTracker}
+                style={{ fontSize: 11.5, padding: '4px 12px', background: 'transparent', color: 'var(--light)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}
+              >
+                Re-run
+              </button>
+            </div>
+          )}
+          {liState === 'error' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 12.5, color: '#ef4444' }}>Run failed</span>
+              <button onClick={runLinkedInTracker} style={{ fontSize: 11.5, padding: '3px 10px', background: 'transparent', color: 'var(--light)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>Retry</button>
+            </div>
+          )}
+        </div>
+      ),
     },
     {
       name: 'SMS Sequencer',

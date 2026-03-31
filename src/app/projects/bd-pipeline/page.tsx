@@ -157,6 +157,7 @@ export default function BDPipelinePage() {
   const [liPosts, setLiPosts] = useState<Array<{ date: string; text: string; hook: string }> | null>(null);
   const [liPostsLoading, setLiPostsLoading] = useState(false);
   const [liPostsContact, setLiPostsContact] = useState<string | null>(null);
+  const [liVerifying, setLiVerifying] = useState(false);
 
   // DB sync status
   const [dbSynced, setDbSynced] = useState(false);
@@ -1750,8 +1751,8 @@ export default function BDPipelinePage() {
                         style={{ fontSize: 11, color: 'var(--light)', background: 'none', border: 'none', cursor: 'pointer' }}
                       >refresh</button>
                     </div>
-                    {/* LinkedIn profile link + source badge */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                    {/* LinkedIn profile link + source badge + verify button */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
                       <a
                         href={profileUrl}
                         target="_blank"
@@ -1772,6 +1773,62 @@ export default function BDPipelinePage() {
                       }}>
                         {currentContact.liUsername ? 'Verified' : 'AI-generated'}
                       </span>
+                      {!currentContact.liUsername && (
+                        <button
+                          disabled={liVerifying}
+                          onClick={async () => {
+                            setLiVerifying(true);
+                            try {
+                              const res = await fetch('/api/linkedin/verify', {
+                                method: 'POST',
+                                headers: { 'content-type': 'application/json' },
+                                body: JSON.stringify({
+                                  contact: currentContact.name,
+                                  title: currentContact.title,
+                                  firm: currentContact.firm,
+                                }),
+                              });
+                              const data = await res.json();
+                              if (data.guessedUsernames?.[0]) {
+                                const username = data.guessedUsernames[0];
+                                // Update the current contact
+                                setCurrentContact(prev => prev ? { ...prev, liUsername: username, li: true } : prev);
+                                // Update the row in pipeline data
+                                if (currentRow) {
+                                  const updatedRows = (pipelineRows[activePipeline] || []).map(r =>
+                                    r.contact === currentRow.contact && r.firm === currentRow.firm
+                                      ? { ...r, liUsername: username, li: true }
+                                      : r
+                                  );
+                                  setPipelineRows(prev => ({ ...prev, [activePipeline]: updatedRows }));
+                                }
+                                // Re-fetch posts with the new username
+                                setLiPostsContact(null);
+                                setLiPosts(null);
+                              }
+                            } catch {}
+                            setLiVerifying(false);
+                          }}
+                          style={{
+                            fontSize: 10.5,
+                            fontWeight: 600,
+                            padding: '3px 10px',
+                            borderRadius: 5,
+                            border: '1px solid #1d4ed8',
+                            background: liVerifying ? '#eff6ff' : 'white',
+                            color: '#1d4ed8',
+                            cursor: liVerifying ? 'wait' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          {liVerifying && (
+                            <svg className="spin" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+                          )}
+                          {liVerifying ? 'Verifying…' : '🔍 Verify LinkedIn'}
+                        </button>
+                      )}
                     </div>
                     {liPostsLoading && (
                       <div style={{ background: '#f9f8f6', borderRadius: 9, padding: '14px 16px', fontSize: 12.5, color: 'var(--muted)', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 8 }}>

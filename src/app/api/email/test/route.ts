@@ -27,7 +27,7 @@ function buildHtml(firstName: string, firm: string, repKey: string, oePost: bool
     <p style="margin:0 0 20px;color:#374151;">OE delivers a fully managed, broadcast-grade platform for town halls, webcasts, and hybrid events — with 99.99% uptime, AI-powered analytics, and a dedicated operator team. Our clients include Fortune 500 comms teams running 100+ events annually.</p>
     ${oePost ? `<div style="background:#f0fafa;border-left:3px solid #007a7d;border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:20px;font-size:13px;color:#007a7d;">I thought this might be relevant: <a href="https://openexchange.com/blog/broadcast-grade-town-halls-2026" style="color:#007a7d;">Broadcast-Grade Town Halls in 2026 →</a></div>` : ''}
     <div style="margin-bottom:24px;">
-      <a href="https://calendly.com/openexchange" style="display:inline-block;background:#007a7d;color:#fff;padding:11px 22px;border-radius:8px;font-size:13.5px;font-weight:600;text-decoration:none;">Schedule 20 min →</a>
+      <a href="mailto:${rep.toLowerCase().replace(' ', '.')}@openexc.com?subject=OpenExchange%20-%2015%20min%20chat" style="display:inline-block;background:#007a7d;color:#fff;padding:11px 22px;border-radius:8px;font-size:13.5px;font-weight:600;text-decoration:none;">Let's connect →</a>
     </div>
     <div style="border-top:1px solid #e5e7eb;padding-top:16px;">
       <div style="font-weight:600;font-size:13.5px;color:#111827;">${rep}</div>

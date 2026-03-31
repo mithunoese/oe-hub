@@ -1628,9 +1628,14 @@ export default function BDPipelinePage() {
                       border: '1px solid var(--teal-mid)',
                     }}>
                       <span style={{ fontSize: 11.5, color: 'var(--teal)', fontWeight: 600, flexShrink: 0 }}>OE post:</span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11.5, color: 'var(--teal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        openexchange.com/blog/broadcast-grade-town-halls-2026
-                      </span>
+                      <a
+                        href="https://www.linkedin.com/company/openexchange-inc-/posts/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontFamily: 'var(--font-mono)', fontSize: 11.5, color: 'var(--teal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}
+                      >
+                        linkedin.com/company/openexchange-inc-/posts
+                      </a>
                     </div>
                   )}
 
@@ -1691,7 +1696,7 @@ export default function BDPipelinePage() {
                           fontSize: 12.5,
                           color: 'var(--teal)',
                         }}>
-                          I thought this might be relevant: <a href="#" style={{ color: 'var(--teal)', textDecoration: 'underline' }}>Broadcast-Grade Town Halls in 2026 →</a>
+                          I thought this might be relevant: <a href="https://www.linkedin.com/company/openexchange-inc-/posts/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--teal)', textDecoration: 'underline' }}>See what OpenExchange is doing →</a>
                         </div>
                       )}
 

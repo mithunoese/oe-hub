@@ -84,12 +84,6 @@ export default function BDPipelinePage() {
 
   // Mutable pipeline rows (enables status editing, score updates)
   const [pipelineRows, setPipelineRows] = useState<Record<number, PipelineRow[]>>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('oe-pipeline-rows');
-        if (saved) return JSON.parse(saved);
-      } catch {}
-    }
     return Object.fromEntries(pipelines.map((p, i) => [i, p.rows]));
   });
 
@@ -148,9 +142,15 @@ export default function BDPipelinePage() {
 
   const pipeline = allPipelines[activePipeline] || allPipelines[0];
 
-  // localStorage persistence
+  // Persist to DB on changes (no localStorage)
   useEffect(() => {
-    try { localStorage.setItem('oe-pipeline-rows', JSON.stringify(pipelineRows)); } catch {}
+    if (!dbSynced) return;
+    fetch('/api/pipeline-state', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ rows: pipelineRows, pipelines: allPipelines }),
+    }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pipelineRows]);
 
   // Load from Neon on mount (authoritative source)
@@ -160,7 +160,6 @@ export default function BDPipelinePage() {
       .then(({ rows, pipelines: savedPipelines }) => {
         if (rows) {
           setPipelineRows(rows);
-          try { localStorage.setItem('oe-pipeline-rows', JSON.stringify(rows)); } catch {}
         }
         if (savedPipelines && Array.isArray(savedPipelines) && savedPipelines.length > 0) {
           setAllPipelines(savedPipelines);

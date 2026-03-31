@@ -2,55 +2,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { pipelines, CONTACT_LINKEDIN_POSTS, CONTACT_NEXT_BEST } from '@/data/pipelines';
 import type { PipelineRow, Pipeline } from '@/data/pipelines';
+import {
+  AnalyticsSection,
+  AuditLogPanel,
+  ContactsTable,
+  ImportModal,
+  AddPipelineModal,
+  scoreColor,
+  scoreBg,
+  statusBadge,
+  getInitials,
+  getNextStep,
+  repNames,
+  panelTabs,
+} from './components';
+import type { ContactInfo, AuditEntry, ActivityEntry, IcpSignals, EmailHistoryItem } from './components';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface ContactInfo {
-  name: string;
-  title: string;
-  firm: string;
-  score: number;
-  status: string;
-  li: boolean;
-  liUsername?: string;
-}
-
-interface AuditEntry {
-  time: string;
-  action: string;
-  by: string;
-  detail: string;
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function scoreColor(score: number): string {
-  if (score >= 75) return 'var(--green)';
-  if (score >= 60) return 'var(--amber)';
-  return 'var(--score-lo)';
-}
-
-function scoreBg(score: number): string {
-  if (score >= 75) return '#dcfce7';
-  if (score >= 60) return '#fef3c7';
-  return '#f3f4f6';
-}
-
-function statusBadge(status: string) {
-  const map: Record<string, { label: string; bg: string; color: string }> = {
-    emailed: { label: 'Emailed', bg: 'var(--teal-light)', color: 'var(--teal)' },
-    replied: { label: 'Replied', bg: '#dcfce7', color: 'var(--green)' },
-    none: { label: '—', bg: 'transparent', color: 'var(--light)' },
-  };
-  return map[status] || map.none;
-}
-
-function getInitials(name: string): string {
-  const parts = name.split(' ');
-  return parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : name[0] || '?';
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Sub-components (used in contact panel) ──────────────────────────────────
 
 function OELogoMini() {
   return (
@@ -109,20 +77,10 @@ export default function BDPipelinePage() {
   const [logDate, setLogDate] = useState('');
   const [logBy, setLogBy] = useState('cara');
   const [logNotes, setLogNotes] = useState('');
-  const [activityEntries, setActivityEntries] = useState<{ method: string; outcome: string; date: string; by: string; notes: string }[]>([]);
+  const [activityEntries, setActivityEntries] = useState<ActivityEntry[]>([]);
 
   // Dynamic pipelines (starts from static definitions, can grow)
   const [allPipelines, setAllPipelines] = useState<Pipeline[]>(() => [...pipelines]);
-
-  // Modal state
-  const [newPipelineName, setNewPipelineName] = useState('');
-  const [newPipelineIndustry, setNewPipelineIndustry] = useState('');
-  const [newPipelineSize, setNewPipelineSize] = useState('');
-  const [newPipelineContext, setNewPipelineContext] = useState('');
-  const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([]);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [modalGenerating, setModalGenerating] = useState(false);
-  const [modalError, setModalError] = useState('');
 
   // Mutable pipeline rows (enables status editing, score updates)
   const [pipelineRows, setPipelineRows] = useState<Record<number, PipelineRow[]>>(() => {
@@ -170,48 +128,14 @@ export default function BDPipelinePage() {
 
   // Import contacts modal
   const [importOpen, setImportOpen] = useState(false);
-  const [importText, setImportText] = useState('');
-  const [importPreview, setImportPreview] = useState<PipelineRow[]>([]);
-  const [importError, setImportError] = useState('');
-
-  const parseImportText = (text: string): PipelineRow[] => {
-    const lines = text.trim().split('\n').filter(l => l.trim());
-    if (!lines.length) return [];
-    const sep = lines[0].includes('\t') ? '\t' : ',';
-    const firstLower = lines[0].toLowerCase();
-    const hasHeader = firstLower.includes('firm') || firstLower.includes('company') || firstLower.includes('contact') || firstLower.includes('name');
-    const dataLines = hasHeader ? lines.slice(1) : lines;
-    const parsed: PipelineRow[] = [];
-    for (const line of dataLines) {
-      const cols = line.split(sep).map(c => c.trim().replace(/^["']|["']$/g, ''));
-      const firm = cols[0] || '';
-      const contact = cols[1] || '';
-      const title = cols[2] || '';
-      const email = cols[3] && cols[3].includes('@') ? cols[3] : undefined;
-      const by = cols[4] || '—';
-      if (!firm) continue;
-      parsed.push({ firm, group: 'Import', contact, title, score: 0, status: 'none', li: false, by, lastAct: '—', email });
-    }
-    return parsed;
-  };
-
-  const handleImportConfirm = () => {
-    if (!importPreview.length) return;
-    const existing = pipelineRows[activePipeline] || pipeline.rows;
-    setPipelineRows(prev => ({ ...prev, [activePipeline]: [...existing, ...importPreview] }));
-    setImportOpen(false);
-    setImportText('');
-    setImportPreview([]);
-    setImportError('');
-  };
 
   // Real ICP signals from AI scoring
-  const [icpSignals, setIcpSignals] = useState<{ firmographic: number; eventVolume: number; techStack: number; linkedin: number; buyingIntent: number } | null>(null);
+  const [icpSignals, setIcpSignals] = useState<IcpSignals | null>(null);
   const [icpRationale, setIcpRationale] = useState<string | null>(null);
   const [icpLoading, setIcpLoading] = useState(false);
 
   // Email send history for current contact
-  const [emailHistory, setEmailHistory] = useState<Array<{ id: number; pipeline_name: string; sent_by: string; sent_at: string; send_type: string }>>([]);
+  const [emailHistory, setEmailHistory] = useState<EmailHistoryItem[]>([]);
 
   const loadEmailHistory = useCallback(async (email: string) => {
     if (!email) return;
@@ -392,8 +316,8 @@ export default function BDPipelinePage() {
 
     setIcpScoring(false);
     const thresholdMatch = pipeline.stats.find(s => s.hi)?.label.match(/\d+/);
-    const minScore = thresholdMatch ? parseInt(thresholdMatch[0]) : 65;
-    const highCount = updatedRows.filter(r => !r.dim && r.score >= minScore).length;
+    const minScoreVal = thresholdMatch ? parseInt(thresholdMatch[0]) : 65;
+    const highCount = updatedRows.filter(r => !r.dim && r.score >= minScoreVal).length;
     setIcpSaveBar({ count: highCount });
     setAuditLog(prev => [{
       time: 'Just now', action: 'ICP Scoring run', by: 'Agent',
@@ -412,91 +336,6 @@ export default function BDPipelinePage() {
     }, ...prev]);
     setIcpSaveBar(null);
     setIcpSegName('');
-  };
-
-  const generatePipeline = async () => {
-    if (!newPipelineName) return;
-    setModalGenerating(true);
-    setModalError('');
-    try {
-      const seeds = ['Intuit', 'Siena AI', 'Gibson Dunn'];
-
-      const criteria = [
-        newPipelineIndustry,
-        newPipelineSize,
-        selectedEventTypes.length > 0 ? `Event types: ${selectedEventTypes.join(', ')}` : '',
-        selectedRoles.length > 0 ? `Target roles: ${selectedRoles.join(', ')}` : '',
-      ].filter(Boolean).join('. ');
-
-      const res = await fetch('/api/prospect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          seeds,
-          criteria,
-          pipelineName: newPipelineName,
-        }),
-      });
-
-      if (!res.ok) throw new Error((await res.json()).error || 'Failed to generate prospects');
-      const data = await res.json();
-
-      // New API returns rows directly with real contact names + scores
-      const newRows: PipelineRow[] = (data.rows || []).map((r: PipelineRow) => ({
-        firm: r.firm || '—',
-        group: r.group || newPipelineIndustry || 'Prospect',
-        contact: r.contact || '—',
-        title: r.title || '—',
-        score: typeof r.score === 'number' ? r.score : 0,
-        status: 'none' as const,
-        li: r.li ?? false,
-        by: '—',
-        lastAct: 'AI generated',
-      }));
-
-      const newIdx = allPipelines.length;
-      const newPipeline: Pipeline = {
-        id: newIdx,
-        name: newPipelineName,
-        count: newRows.length,
-        agentTitle: `Context Agent — ${newPipelineName}`,
-        chips: [newPipelineIndustry, newPipelineSize].filter(Boolean),
-        stats: [
-          { label: 'Total firms', val: String(newRows.length) },
-          { label: 'Score ≥ 65', val: '0', hi: true },
-          { label: 'LinkedIn verified', val: '0' },
-          { label: 'Emails drafted', val: '0' },
-          { label: 'Sent', val: '0' },
-        ],
-        eyebrow: 'AI-Generated Pipeline',
-        title: newPipelineName,
-        sub: `AI-identified prospects for ${newPipelineName}. Run Update → to score with ICP.`,
-        tableFooter: '',
-        rows: newRows,
-      };
-
-      setAllPipelines((prev) => [...prev, newPipeline]);
-      setPipelineRows((prev) => ({ ...prev, [newIdx]: newRows }));
-      setActivePipeline(newIdx);
-      setSegments([{ label: 'All firms', minScore: 0 }]);
-      setAuditLog((prev) => [{
-        time: 'Just now',
-        action: 'Pipeline created',
-        by: 'You',
-        detail: `${newPipelineName} — ${newRows.length} prospects generated by AI`,
-      }, ...prev]);
-      setModalOpen(false);
-      setNewPipelineName('');
-      setNewPipelineIndustry('');
-      setNewPipelineSize('');
-      setNewPipelineContext('');
-      setSelectedEventTypes([]);
-      setSelectedRoles([]);
-    } catch (err) {
-      setModalError(err instanceof Error ? err.message : 'Something went wrong — try again');
-    } finally {
-      setModalGenerating(false);
-    }
   };
 
   const submitActivityLog = () => {
@@ -573,11 +412,6 @@ export default function BDPipelinePage() {
     URL.revokeObjectURL(url);
   };
 
-  const repNames: Record<string, string> = { cara: 'Cara Dingenthal', kristen: 'Kristen Conklin', peter: 'Peter Georgiou' };
-
-  // Panel tab labels
-  const panelTabs = ['Contact', 'LinkedIn Posts', 'Draft Email', 'Activity Log', 'Text / SMS'];
-
   // Live stats computed from mutable rows
   const liveRows = pipelineRows[activePipeline] || pipeline.rows;
   const scoreThreshold = pipeline.id === 0 ? 65 : pipeline.id === 1 ? 70 : 75;
@@ -589,39 +423,29 @@ export default function BDPipelinePage() {
     { label: pipeline.stats[4].label, val: String(liveRows.filter(r => r.status === 'replied').length), hi: false },
   ];
 
-  // Next step logic for Contact tab
-  const getNextStep = (status: string, score: number) => {
-    if (status === 'replied') return { text: 'Schedule 20-min discovery call', bg: '#dcfce7', color: 'var(--green)' };
-    if (status === 'emailed') return { text: 'Follow up — 3 days', bg: '#fef3c7', color: 'var(--amber)' };
-    if (status === 'none' && score >= 75) return { text: 'Send initial outreach email', bg: 'var(--teal-light)', color: 'var(--teal)' };
-    return { text: 'Verify LinkedIn before outreach', bg: '#fef3c7', color: 'var(--amber)' };
+  // ─── Handler props for extracted components ────────────────────────────────
+
+  const handleSort = (col: string) => {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortCol(col); setSortDir('desc'); }
   };
 
-  const SortHeader = ({ col, label }: { col: string; label: string }) => (
-    <button
-      onClick={() => {
-        if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-        else { setSortCol(col); setSortDir('desc'); }
-      }}
-      style={{
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: 10.5,
-        fontWeight: 700,
-        textTransform: 'uppercase',
-        letterSpacing: '0.08em',
-        color: sortCol === col ? 'var(--teal)' : 'var(--light)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 3,
-        padding: 0,
-      }}
-    >
-      {label}
-      <span style={{ fontSize: 9 }}>{sortCol === col ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
-    </button>
-  );
+  const handleImport = (rows: PipelineRow[]) => {
+    const existing = pipelineRows[activePipeline] || pipeline.rows;
+    setPipelineRows(prev => ({ ...prev, [activePipeline]: [...existing, ...rows] }));
+  };
+
+  const handleCreatePipeline = (newPipeline: Pipeline, newRows: PipelineRow[]) => {
+    const newIdx = allPipelines.length;
+    setAllPipelines(prev => [...prev, newPipeline]);
+    setPipelineRows(prev => ({ ...prev, [newIdx]: newRows }));
+    setActivePipeline(newIdx);
+    setSegments([{ label: 'All firms', minScore: 0 }]);
+    setAuditLog(prev => [{
+      time: 'Just now', action: 'Pipeline created', by: 'You',
+      detail: `${newPipeline.name} — ${newRows.length} prospects generated by AI`,
+    }, ...prev]);
+  };
 
   // ─── Render ─────────────────────────────────────────────────────────────────
 
@@ -1019,7 +843,7 @@ export default function BDPipelinePage() {
 
             {/* Import contacts */}
             <button
-              onClick={() => { setImportOpen(true); setImportText(''); setImportPreview([]); setImportError(''); }}
+              onClick={() => setImportOpen(true)}
               style={{
                 fontSize: 12,
                 padding: '6px 12px',
@@ -1081,232 +905,28 @@ export default function BDPipelinePage() {
           </div>
 
           {/* Table */}
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
-            {/* Table header */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr 80px 100px 70px 80px 80px',
-              padding: '10px 16px',
-              background: '#f9f8f6',
-              borderBottom: '1px solid var(--border)',
-              fontSize: 10.5,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              color: 'var(--light)',
-            }}>
-              <SortHeader col="firm" label="Firm" />
-              <span>Contact</span>
-              <span>Title</span>
-              <SortHeader col="score" label="Score" />
-              <SortHeader col="status" label="Status" />
-              <span>LinkedIn</span>
-              <span>Owner</span>
-              <SortHeader col="lastAct" label="Last activity" />
-            </div>
+          <ContactsTable
+            sortedRows={sortedRows}
+            allRows={pipelineRows[activePipeline] || pipeline.rows}
+            selectedRowIdx={selectedRowIdx}
+            rescoringIdx={rescoringIdx}
+            ownerFilter={ownerFilter}
+            minScore={minScore}
+            sortCol={sortCol}
+            sortDir={sortDir}
+            onOpenContact={openContact}
+            onCycleStatus={cycleStatus}
+            onSetOwnerFilter={setOwnerFilter}
+            onSort={handleSort}
+            onOpenImport={() => setImportOpen(true)}
+            onExportCsv={exportCsv}
+          />
 
-            {/* Empty state */}
-            {sortedRows.length === 0 && (
-              <div style={{ padding: '52px 24px', textAlign: 'center' }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>No contacts yet</div>
-                <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>
-                  Import from a spreadsheet or paste in contacts to get started.
-                </div>
-                <button
-                  onClick={() => { setImportOpen(true); setImportText(''); setImportPreview([]); setImportError(''); }}
-                  style={{ fontSize: 13, padding: '8px 20px', background: 'var(--teal)', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600 }}
-                >
-                  + Import contacts
-                </button>
-              </div>
-            )}
-
-            {/* Table rows */}
-            {sortedRows.map((row, idx) => {
-              const badge = statusBadge(row.status);
-              const globalIdx = (pipelineRows[activePipeline] || pipeline.rows).indexOf(row);
-              const isRescoring = rescoringIdx.has(globalIdx);
-              return (
-                <div
-                  key={idx}
-                  className="bd-row"
-                  onClick={() => !row.dim && openContact(row, idx)}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr 80px 100px 70px 80px 80px',
-                    padding: '13px 16px',
-                    borderBottom: '1px solid var(--border)',
-                    alignItems: 'center',
-                    opacity: row.dim ? 0.45 : 1,
-                    transition: 'background 0.1s',
-                    background: isRescoring ? 'rgba(0,122,125,0.05)' : selectedRowIdx === idx ? '#f9f8f6' : 'transparent',
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{row.firm}</div>
-                    <div style={{ fontSize: 11, color: 'var(--light)', marginTop: 1 }}>{row.group}</div>
-                  </div>
-                  <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: row.dim ? 400 : 500 }}>
-                    {row.contact}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{row.title}</div>
-                  <div>
-                    <span style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: scoreColor(row.score),
-                      background: isRescoring ? 'rgba(0,122,125,0.15)' : scoreBg(row.score),
-                      padding: '3px 8px',
-                      borderRadius: 6,
-                      transition: 'background 0.3s',
-                    }}>
-                      {isRescoring ? (
-                        <svg className="spin" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle' }}>
-                          <path d="M21 12a9 9 0 11-6.219-8.56" />
-                        </svg>
-                      ) : row.score}
-                    </span>
-                  </div>
-                  <div
-                    className="status-cell"
-                    onClick={(e) => !row.dim && cycleStatus(e, globalIdx)}
-                    title="Click to update status"
-                  >
-                    {row.status !== 'none' ? (
-                      <span style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        padding: '3px 9px',
-                        borderRadius: 20,
-                        background: badge.bg,
-                        color: badge.color,
-                      }}>{badge.label}</span>
-                    ) : (
-                      <span style={{ fontSize: 12, color: 'var(--light)' }}>—</span>
-                    )}
-                  </div>
-                  <div>
-                    {row.li ? (
-                      <span style={{
-                        fontSize: 10.5,
-                        fontWeight: 700,
-                        padding: '2px 7px',
-                        borderRadius: 4,
-                        background: '#dbeafe',
-                        color: '#1d4ed8',
-                        letterSpacing: '0.04em',
-                      }}>in</span>
-                    ) : (
-                      <span style={{ fontSize: 12, color: 'var(--light)' }}>—</span>
-                    )}
-                  </div>
-                  <div>
-                    <span
-                      className="owner-cell"
-                      onClick={(e) => { e.stopPropagation(); setOwnerFilter(prev => prev === row.by ? null : row.by); }}
-                      title="Filter by owner"
-                      style={{
-                        fontSize: 12,
-                        color: ownerFilter === row.by ? 'var(--teal)' : (row.by === '—' ? 'var(--light)' : 'var(--muted)'),
-                        fontWeight: ownerFilter === row.by ? 600 : (row.by !== '—' ? 500 : 400),
-                        cursor: row.by !== '—' ? 'pointer' : 'default',
-                      }}
-                    >{row.by}</span>
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11.5, color: row.lastAct === '—' ? 'var(--light)' : 'var(--muted)' }}>{row.lastAct}</div>
-                </div>
-              );
-            })}
-
-            {/* Table footer */}
-            <div style={{ padding: '10px 16px', fontSize: 11.5, color: 'var(--light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Showing {sortedRows.length} of {liveRows.length} · score ≥ {minScore}</span>
-              <span
-                onClick={exportCsv}
-                style={{ color: 'var(--teal)', cursor: 'pointer', fontSize: 12, fontWeight: 500 }}
-              >Export CSV →</span>
-            </div>
-          </div>
-
-          {/* ── Analytics ───────────────────────────────────────────── */}
-          {(() => {
-            const allRows = Object.values(pipelineRows).flat().filter((r: PipelineRow) => !r.dim);
-            const totalContacts = allRows.length;
-            const totalEmailed = allRows.filter((r: PipelineRow) => r.status === 'emailed' || r.status === 'replied').length;
-            const totalReplied = allRows.filter((r: PipelineRow) => r.status === 'replied').length;
-            const replyRate = totalEmailed > 0 ? Math.round((totalReplied / totalEmailed) * 100) : 0;
-            const aes = ['Cara', 'Kristen', 'Peter'];
-            const maxEmails = Math.max(...aes.map(ae => allRows.filter((r: PipelineRow) => r.by === ae && (r.status === 'emailed' || r.status === 'replied')).length), 1);
-            return (
-              <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
-                <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--light)', marginBottom: 16 }}>
-                  Pipeline Analytics
-                </div>
-
-                {/* Summary stats */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-                  {[
-                    { label: 'Total contacts', val: totalContacts, sub: 'across all pipelines' },
-                    { label: 'Emailed', val: totalEmailed, sub: `${Math.round((totalEmailed/Math.max(totalContacts,1))*100)}% of total` },
-                    { label: 'Replied', val: totalReplied, sub: 'responses received' },
-                    { label: 'Reply rate', val: `${replyRate}%`, sub: 'of emails sent' },
-                  ].map(({ label, val, sub }) => (
-                    <div key={label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 9, padding: '14px 16px' }}>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{val}</div>
-                      <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted)', marginBottom: 2 }}>{label}</div>
-                      <div style={{ fontSize: 11, color: 'var(--light)' }}>{sub}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Pipeline breakdown */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 9, padding: '16px' }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--light)', marginBottom: 12 }}>By pipeline</div>
-                    {pipelines.map((p, i) => {
-                      const rows = (pipelineRows[i] || []).filter((r: PipelineRow) => !r.dim);
-                      const emailed = rows.filter((r: PipelineRow) => r.status === 'emailed' || r.status === 'replied').length;
-                      const replied = rows.filter((r: PipelineRow) => r.status === 'replied').length;
-                      const pct = rows.length > 0 ? Math.round((emailed / rows.length) * 100) : 0;
-                      return (
-                        <div key={p.name} style={{ marginBottom: i < pipelines.length - 1 ? 12 : 0 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                            <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text)' }}>{p.name}</span>
-                            <span style={{ fontSize: 11.5, color: 'var(--muted)' }}>{emailed} emailed · {replied} replied</span>
-                          </div>
-                          <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: `${pct}%`, background: 'var(--teal)', borderRadius: 2 }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* AE breakdown */}
-                  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 9, padding: '16px' }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--light)', marginBottom: 12 }}>By AE</div>
-                    {aes.map((ae, i) => {
-                      const sent = allRows.filter((r: PipelineRow) => r.by === ae && (r.status === 'emailed' || r.status === 'replied')).length;
-                      const replied = allRows.filter((r: PipelineRow) => r.by === ae && r.status === 'replied').length;
-                      return (
-                        <div key={ae} style={{ marginBottom: i < aes.length - 1 ? 12 : 0 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                            <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text)' }}>{ae}</span>
-                            <span style={{ fontSize: 11.5, color: 'var(--muted)' }}>{sent} sent · {replied} replied</span>
-                          </div>
-                          <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: `${Math.round((sent / maxEmails) * 100)}%`, background: 'var(--teal)', borderRadius: 2, opacity: 0.75 }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
+          {/* Analytics */}
+          <AnalyticsSection
+            pipelineRows={pipelineRows}
+            pipelines={allPipelines}
+          />
         </div>
       </main>
 
@@ -2320,313 +1940,27 @@ export default function BDPipelinePage() {
         )}
       </div>
 
-      {/* ── Audit Log Panel (from RIGHT) ─────────────────────────── */}
-      <div style={{
-        position: 'fixed',
-        top: 'var(--nav-h)',
-        right: 0,
-        bottom: 0,
-        width: 380,
-        background: 'var(--surface)',
-        borderLeft: '1px solid var(--border)',
-        zIndex: 498,
-        transform: auditOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.3s cubic-bezier(0.32,0,0,1)',
-        boxShadow: auditOpen ? '-8px 0 40px rgba(0,0,0,0.1)' : 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          padding: '0 20px',
-          height: 52,
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-        }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Audit Log</div>
-          <button
-            onClick={() => setAuditOpen(false)}
-            className="close-btn"
-            style={{
-              width: 26,
-              height: 26,
-              borderRadius: 6,
-              border: '1px solid var(--border)',
-              background: 'transparent',
-              cursor: 'pointer',
-              fontSize: 15,
-              color: 'var(--muted)',
-              lineHeight: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >×</button>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
-          {auditLog.map((entry, i) => (
-            <div key={i} style={{
-              paddingBottom: 14,
-              marginBottom: 14,
-              borderBottom: i < auditLog.length - 1 ? '1px solid var(--border)' : 'none',
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)' }}>{entry.action}</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, color: 'var(--light)' }}>{entry.by}</span>
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 3 }}>{entry.detail}</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, color: 'var(--light)' }}>{entry.time}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* ── Audit Log Panel ─────────────────────────────────────── */}
+      <AuditLogPanel
+        open={auditOpen}
+        onClose={() => setAuditOpen(false)}
+        entries={auditLog}
+      />
 
-      {/* ── Import Contacts Modal ─────────────────────────────────── */}
-      {importOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
-          onClick={(e) => { if (e.target === e.currentTarget) setImportOpen(false); }}
-        >
-          <div className="modal-box" style={{ background: 'var(--surface)', borderRadius: 12, width: '100%', maxWidth: 560, padding: 28, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 3 }}>Import contacts</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>Paste from Excel / Google Sheets / CSV</div>
-              </div>
-              <button onClick={() => setImportOpen(false)} className="close-btn" style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', fontSize: 16, cursor: 'pointer', color: 'var(--muted)' }}>×</button>
-            </div>
+      {/* ── Import Contacts Modal ────────────────────────────────── */}
+      <ImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImport={handleImport}
+      />
 
-            <div style={{ background: '#f9f8f6', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
-              <strong style={{ color: 'var(--text)' }}>Column order:</strong> Firm · Contact Name · Title · Email · Owner<br />
-              First row can be a header — it will be auto-detected and skipped.
-            </div>
-
-            <textarea
-              value={importText}
-              onChange={(e) => {
-                setImportText(e.target.value);
-                setImportError('');
-                const parsed = parseImportText(e.target.value);
-                setImportPreview(parsed);
-              }}
-              placeholder={"Firm\tContact\tTitle\tEmail\tOwner\nGatehouse\tJane Smith\tVP Comms\tjane@gatehouse.com\tCara"}
-              style={{ width: '100%', minHeight: 160, fontFamily: 'var(--font-mono)', fontSize: 12, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box' }}
-            />
-
-            {importError && <div style={{ fontSize: 12, color: '#ef4444', marginTop: 6 }}>{importError}</div>}
-
-            {importPreview.length > 0 && (
-              <div style={{ marginTop: 12, background: 'var(--teal-light)', border: '1px solid var(--teal-mid)', borderRadius: 8, padding: '10px 14px' }}>
-                <div style={{ fontSize: 12, color: 'var(--teal)', fontWeight: 600, marginBottom: 6 }}>
-                  ✓ {importPreview.length} contact{importPreview.length !== 1 ? 's' : ''} ready to import
-                </div>
-                <div style={{ fontSize: 11.5, color: 'var(--teal)', opacity: 0.8 }}>
-                  {importPreview.slice(0, 3).map(r => `${r.contact || '(no name)'} @ ${r.firm}`).join(' · ')}
-                  {importPreview.length > 3 ? ` · +${importPreview.length - 3} more` : ''}
-                </div>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
-              <button onClick={() => setImportOpen(false)} style={{ padding: '8px 18px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 7, cursor: 'pointer', fontSize: 13, color: 'var(--muted)' }}>
-                Cancel
-              </button>
-              <button
-                onClick={handleImportConfirm}
-                disabled={!importPreview.length}
-                style={{ padding: '8px 20px', background: importPreview.length ? 'var(--teal)' : '#ccc', color: '#fff', border: 'none', borderRadius: 7, cursor: importPreview.length ? 'pointer' : 'not-allowed', fontSize: 13, fontWeight: 600 }}
-              >
-                Import {importPreview.length > 0 ? `${importPreview.length} contacts` : ''}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Add Pipeline Modal ────────────────────────────────────── */}
-      {modalOpen && (
-        <div
-          className="modal-overlay"
-          onClick={(e) => { if (e.target === e.currentTarget) { setModalOpen(false); setSelectedEventTypes([]); setSelectedRoles([]); } }}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.3)',
-            zIndex: 600,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 24,
-          }}
-        >
-          <div
-            className="modal-box"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 14,
-              padding: '28px 32px',
-              width: '100%',
-              maxWidth: 520,
-              boxShadow: '0 24px 80px rgba(0,0,0,0.18)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>New Pipeline</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Agent will generate contacts matching your ICP</div>
-              </div>
-              <button onClick={() => { setModalOpen(false); setSelectedEventTypes([]); setSelectedRoles([]); }} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: 'var(--light)', padding: 0, lineHeight: 1 }}>×</button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div>
-                <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 5 }}>Pipeline name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Healthcare Enterprise Q3"
-                  value={newPipelineName}
-                  onChange={(e) => setNewPipelineName(e.target.value)}
-                  style={{ width: '100%' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <div>
-                  <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 5 }}>Industry</label>
-                  <select value={newPipelineIndustry} onChange={(e) => setNewPipelineIndustry(e.target.value)} style={{ width: '100%' }}>
-                    <option value="">Select…</option>
-                    <option>Corporate Communications</option>
-                    <option>Healthcare / Pharma</option>
-                    <option>Technology / SaaS</option>
-                    <option>Financial Services</option>
-                    <option>Professional Services</option>
-                    <option>Media &amp; Entertainment</option>
-                    <option>Energy &amp; Utilities</option>
-                    <option>Consumer Goods</option>
-                    <option>Government / Public Sector</option>
-                    <option>Non-Profit / Education</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 5 }}>Company size</label>
-                  <select value={newPipelineSize} onChange={(e) => setNewPipelineSize(e.target.value)} style={{ width: '100%' }}>
-                    <option value="">Select…</option>
-                    <option>50–200</option>
-                    <option>200–500</option>
-                    <option>500–2000</option>
-                    <option>2000+</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 7 }}>Event types</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {['Investor Days', 'Earnings Calls', 'Town Halls', 'Webcasts', 'Hybrid Events'].map((type) => {
-                    const active = selectedEventTypes.includes(type);
-                    return (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setSelectedEventTypes(prev => active ? prev.filter(t => t !== type) : [...prev, type])}
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 500,
-                          padding: '4px 11px',
-                          borderRadius: 20,
-                          border: '1px solid ' + (active ? 'var(--teal-mid)' : 'var(--border)'),
-                          background: active ? 'var(--teal-light)' : 'var(--surface)',
-                          color: active ? 'var(--teal)' : 'var(--muted)',
-                          cursor: 'pointer',
-                          transition: 'all 0.12s',
-                        }}
-                      >{type}</button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 7 }}>Target roles</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {['VP Corporate Communications', 'Director Events', 'Head of IR', 'SVP Marketing', 'Chief Communications Officer', 'Director Comms', 'VP Investor Relations', 'Events Manager'].map((role) => {
-                    const active = selectedRoles.includes(role);
-                    return (
-                      <button
-                        key={role}
-                        type="button"
-                        onClick={() => setSelectedRoles(prev => active ? prev.filter(r => r !== role) : [...prev, role])}
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 500,
-                          padding: '4px 11px',
-                          borderRadius: 20,
-                          border: '1px solid ' + (active ? 'var(--teal-mid)' : 'var(--border)'),
-                          background: active ? 'var(--teal-light)' : 'var(--surface)',
-                          color: active ? 'var(--teal)' : 'var(--muted)',
-                          cursor: 'pointer',
-                          transition: 'all 0.12s',
-                        }}
-                      >{role}</button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* ICP Preview */}
-              <div style={{
-                background: 'var(--teal-light)',
-                border: '1px solid var(--teal-mid)',
-                borderRadius: 8,
-                padding: '12px 14px',
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--teal)', marginBottom: 6 }}>ICP Preview</div>
-                <div style={{ fontSize: 12, color: 'var(--teal)', lineHeight: 1.5 }}>
-                  {selectedRoles.length > 0 ? `Titles: ${selectedRoles.slice(0, 3).join(', ')}${selectedRoles.length > 3 ? ` +${selectedRoles.length - 3} more` : ''}` : 'Titles: To be set'}
-                  {' · '}Size: {newPipelineSize || 'To be set'}
-                  {' · '}Industry: {newPipelineIndustry || 'To be set'}
-                  {selectedEventTypes.length > 0 ? ` · Events: ${selectedEventTypes.join(', ')}` : ' · Signals: Event volume, Zoom usage, Town hall cadence'}
-                </div>
-              </div>
-
-              <button
-                onClick={generatePipeline}
-                disabled={modalGenerating || !newPipelineName}
-                style={{
-                  background: modalGenerating || !newPipelineName ? '#e5e7eb' : 'var(--teal)',
-                  color: modalGenerating || !newPipelineName ? 'var(--light)' : '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '11px 20px',
-                  fontSize: 13.5,
-                  fontWeight: 600,
-                  cursor: modalGenerating || !newPipelineName ? 'default' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  transition: 'background 0.15s',
-                  marginTop: 4,
-                }}
-              >
-                {modalGenerating && (
-                  <svg className="spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M21 12a9 9 0 11-6.219-8.56" />
-                  </svg>
-                )}
-                {modalGenerating ? 'Agent generating…' : 'Generate pipeline →'}
-              </button>
-              {modalError && (
-                <div style={{ fontSize: 12, color: '#dc2626', marginTop: 8, padding: '8px 12px', background: '#fef2f2', borderRadius: 6, border: '1px solid #fecaca' }}>
-                  {modalError}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Add Pipeline Modal ───────────────────────────────────── */}
+      <AddPipelineModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreatePipeline={handleCreatePipeline}
+        nextId={allPipelines.length}
+      />
 
     </>
   );

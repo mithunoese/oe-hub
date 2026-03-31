@@ -2,26 +2,50 @@
   {
     "name": "The Grossman Group",
     "why": "Leadership communication consultancy that specializes in executive town halls, internal announcements, and employee-facing events for Fortune 500 companies — a direct buyer of broadcast/webcast infrastructure.",
-    "website": "https://www.yourthoughtpartner.com"
+    "website": "https://www.yourthoughtpartner.com",
+    "contact": "David Grossman",
+    "title": "Founder & CEO",
+    "linkedin_url": "https://www.linkedin.com/in/davidgrossmanaprabc/",
+    "alt_contact": "Kate Bushnell",
+    "alt_title": "President and Senior thoughtpartner",
+    "alt_linkedin_url": "https://www.linkedin.com/in/kate-bushnell-582b033/"
   },
   {
     "name": "Gagen MacDonald",
     "why": "Employee engagement and organizational communications firm known for producing large-scale internal events, leadership webcasts, and hybrid town halls for enterprise clients.",
-    "website": "https://www.gagenmcdonald.com"
+    "website": "https://www.gagenmcdonald.com",
+    "contact": "Maril Gagen MacDonald",
+    "title": "Founder & CEO",
+    "linkedin_url": "https://www.linkedin.com/in/marilmacdonald/"
   },
   {
     "name": "Ketchum",
     "why": "Global PR agency with a dedicated employee communications practice that produces hybrid town halls and executive webcasts for major enterprise brands including P&G and Unilever.",
-    "website": "https://www.ketchum.com"
+    "website": "https://www.ketchum.com",
+    "contact": "Lauren Butler",
+    "title": "Managing Director, Employee Communications and Engagement",
+    "linkedin_url": "https://www.linkedin.com/in/lauren-butler-ab20542/",
+    "alt_contact": "Hilary McKean",
+    "alt_title": "President, Global Marketing & Corporate Communications",
+    "alt_linkedin_url": "https://www.linkedin.com/in/hilary-mckean-b8133b/"
   },
   {
     "name": "H+K Strategies (Hill+Knowlton)",
-    "why": "Global communications agency with a specialized Employee Experience practice producing executive communications, internal events, and high-production hybrid town halls for large corporations.",
-    "website": "https://www.hkstrategies.com"
+    "why": "Global communications agency with a specialized Employee Experience practice producing executive communications, internal events, and high-production hybrid town halls. Now merged into Burson.",
+    "website": "https://www.hkstrategies.com",
+    "contact": "Dan Coles",
+    "title": "Senior Associate Director, Change & Employee Experience at Burson",
+    "linkedin_url": "https://www.linkedin.com/in/dancoles1/"
   },
   {
     "name": "Porter Novelli",
     "why": "Purpose-driven PR agency with a people/employee experience practice that designs executive communications programs and hybrid internal event strategies for Fortune 500 enterprises.",
-    "website": "https://www.porternovelli.com"
+    "website": "https://www.porternovelli.com",
+    "contact": "Heidi P.T. Upton",
+    "title": "Vice President, Employee Communications",
+    "linkedin_url": "https://www.linkedin.com/in/heidiupton/",
+    "alt_contact": "Sandy Skees",
+    "alt_title": "EVP, Global Lead, Purpose & Impact",
+    "alt_linkedin_url": "https://www.linkedin.com/in/sandyskees/"
   }
 ]

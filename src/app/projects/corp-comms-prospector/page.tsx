@@ -68,6 +68,16 @@ const FIRM_GROUPS = [
       "Ruder Finn",
     ],
   },
+  {
+    label: "New — Comms & Employee",
+    firms: [
+      "The Grossman Group",
+      "Gagen MacDonald",
+      "Ketchum",
+      "H+K Strategies",
+      "Porter Novelli",
+    ],
+  },
 ];
 
 const ALL_FIRMS = FIRM_GROUPS.flatMap((g) => g.firms);

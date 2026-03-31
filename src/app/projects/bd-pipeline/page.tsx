@@ -154,7 +154,7 @@ export default function BDPipelinePage() {
   }, [pipelineRows]);
 
   // Load from Neon on mount — reset stale data if it lacks LinkedIn-verified contacts
-  const DATA_VERSION = 2; // bump to force reset of old DB data
+  const DATA_VERSION = 3; // bump to force reset — all 3 pipelines now have real LinkedIn-verified contacts
   useEffect(() => {
     fetch('/api/pipeline-state')
       .then(r => r.json())

@@ -8,6 +8,7 @@ export interface PipelineRow {
   score: number;
   status: 'none' | 'emailed' | 'replied';
   li: boolean;
+  liUsername?: string;
   by: string;
   lastAct: string;
   dim?: boolean;

@@ -12,6 +12,7 @@ interface ContactInfo {
   score: number;
   status: string;
   li: boolean;
+  liUsername?: string;
 }
 
 interface AuditEntry {
@@ -152,6 +153,11 @@ export default function BDPipelinePage() {
   const [followupLoading, setFollowupLoading] = useState(false);
   const [followupData, setFollowupData] = useState<{ subject: string; body: string } | null>(null);
 
+  // Live LinkedIn posts
+  const [liPosts, setLiPosts] = useState<Array<{ date: string; text: string; hook: string }> | null>(null);
+  const [liPostsLoading, setLiPostsLoading] = useState(false);
+  const [liPostsContact, setLiPostsContact] = useState<string | null>(null);
+
   // DB sync status
   const [dbSynced, setDbSynced] = useState(false);
 
@@ -286,6 +292,7 @@ export default function BDPipelinePage() {
       score: row.score,
       status: row.status,
       li: row.li,
+      liUsername: row.liUsername,
     });
     setCurrentRow(row);
     setActiveTab(0);
@@ -1706,47 +1713,116 @@ export default function BDPipelinePage() {
               )}
 
               {/* ── Tab 1: LinkedIn Posts ── */}
-              {activeTab === 1 && (
-                <div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 18 }}>Recent activity from {currentContact.name}'s LinkedIn profile</div>
-                  {(CONTACT_LINKEDIN_POSTS[currentContact.name] || CONTACT_LINKEDIN_POSTS['default']).map(({ date, text, hook }) => (
-                    <div key={date} style={{
-                      border: '1px solid var(--border)',
-                      borderRadius: 9,
-                      padding: '14px 16px',
-                      marginBottom: 14,
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1d4ed8' }} />
-                          <span style={{ fontSize: 11, color: 'var(--light)', fontFamily: 'var(--font-mono)' }}>{date}</span>
-                        </div>
-                        <span style={{
-                          fontSize: 10.5,
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: 4,
-                          background: '#dbeafe',
-                          color: '#1d4ed8',
-                          letterSpacing: '0.04em',
-                        }}>LinkedIn</span>
-                      </div>
-                      <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, marginBottom: 12 }}>{text}</p>
-                      <div style={{
-                        background: 'var(--teal-light)',
-                        borderRadius: 7,
-                        padding: '9px 12px',
-                        fontSize: 12,
-                        color: 'var(--teal)',
-                        fontStyle: 'italic',
-                        lineHeight: 1.5,
-                      }}>
-                        <span style={{ fontStyle: 'normal', fontWeight: 700 }}>AI suggested: </span>{hook}
-                      </div>
+              {activeTab === 1 && (() => {
+                // Auto-fetch when tab opens for a new contact
+                if (currentContact.name !== liPostsContact && !liPostsLoading) {
+                  setLiPostsContact(currentContact.name);
+                  setLiPosts(null);
+                  setLiPostsLoading(true);
+                  fetch('/api/linkedin/person-posts', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({
+                      contact: currentContact.name,
+                      title: currentContact.title,
+                      firm: currentContact.firm,
+                      linkedinUsername: currentContact.liUsername || undefined,
+                    }),
+                  })
+                    .then(r => r.json())
+                    .then(d => { setLiPosts(d.posts || []); setLiPostsLoading(false); })
+                    .catch(() => { setLiPosts([]); setLiPostsLoading(false); });
+                }
+                const posts = liPosts || [];
+                const guessedUsername = currentContact.name.toLowerCase().trim().split(/\s+/).join('-');
+                const profileUrl = currentContact.liUsername
+                  ? `https://linkedin.com/in/${currentContact.liUsername}`
+                  : `https://linkedin.com/in/${guessedUsername}`;
+                return (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <div style={{ fontSize: 12, color: 'var(--muted)' }}>Recent activity from {currentContact.name}&apos;s LinkedIn profile</div>
+                      <button
+                        onClick={() => {
+                          setLiPostsContact(null);
+                          setLiPosts(null);
+                        }}
+                        style={{ fontSize: 11, color: 'var(--light)', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >refresh</button>
                     </div>
-                  ))}
-                </div>
-              )}
+                    {/* LinkedIn profile link + source badge */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                      <a
+                        href={profileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: 11.5, color: '#1d4ed8', textDecoration: 'none', fontFamily: 'var(--font-mono)' }}
+                      >
+                        {profileUrl.replace('https://', '')} ↗
+                      </a>
+                      <span style={{
+                        fontSize: 9.5,
+                        fontWeight: 700,
+                        padding: '1px 6px',
+                        borderRadius: 3,
+                        background: currentContact.liUsername ? '#dcfce7' : '#fef3c7',
+                        color: currentContact.liUsername ? '#166534' : '#92400e',
+                        letterSpacing: '0.03em',
+                        textTransform: 'uppercase',
+                      }}>
+                        {currentContact.liUsername ? 'Verified' : 'AI-generated'}
+                      </span>
+                    </div>
+                    {liPostsLoading && (
+                      <div style={{ background: '#f9f8f6', borderRadius: 9, padding: '14px 16px', fontSize: 12.5, color: 'var(--muted)', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <svg className="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+                        Fetching LinkedIn activity for {currentContact.name}…
+                      </div>
+                    )}
+                    {!liPostsLoading && posts.length === 0 && (
+                      <div style={{ background: '#f9f8f6', borderRadius: 9, padding: '14px 16px', fontSize: 12.5, color: 'var(--muted)' }}>
+                        No LinkedIn posts found for this contact. Add their LinkedIn URL to pull recent activity.
+                      </div>
+                    )}
+                    {posts.map(({ date, text, hook }, i) => (
+                      <div key={i} style={{
+                        border: '1px solid var(--border)',
+                        borderRadius: 9,
+                        padding: '14px 16px',
+                        marginBottom: 14,
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1d4ed8' }} />
+                            <span style={{ fontSize: 11, color: 'var(--light)', fontFamily: 'var(--font-mono)' }}>{date}</span>
+                          </div>
+                          <span style={{
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: 4,
+                            background: '#dbeafe',
+                            color: '#1d4ed8',
+                            letterSpacing: '0.04em',
+                          }}>LinkedIn</span>
+                        </div>
+                        <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6, marginBottom: 12 }}>{text}</p>
+                        <div style={{
+                          background: 'var(--teal-light)',
+                          borderRadius: 7,
+                          padding: '9px 12px',
+                          fontSize: 12,
+                          color: 'var(--teal)',
+                          fontStyle: 'italic',
+                          lineHeight: 1.5,
+                        }}>
+                          <span style={{ fontStyle: 'normal', fontWeight: 700 }}>AI suggested: </span>{hook}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
 
               {/* ── Tab 2: Draft Email ── */}
               {activeTab === 2 && (

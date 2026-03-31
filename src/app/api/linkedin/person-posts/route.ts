@@ -18,24 +18,63 @@ export async function POST(req: NextRequest) {
     ? `https://linkedin.com/in/${linkedinUsername}`
     : null;
 
-  // Generate a guessed username if none provided (firstname-lastname pattern)
+  // Generate guessed username
   const nameParts = contact.toLowerCase().trim().split(/\s+/);
   const guessedUsername = nameParts.length >= 2
     ? `${nameParts[0]}-${nameParts[nameParts.length - 1]}`
     : nameParts[0];
   const guessedUrl = `https://linkedin.com/in/${guessedUsername}`;
 
-  const prompt = `You are a sales intelligence analyst researching LinkedIn activity for a prospect.
+  // OE's real recent LinkedIn posts (refreshed periodically)
+  const oeRecentPosts = [
+    {
+      date: "20h ago",
+      text: "At OpenExchange, we support Zoom clients in delivering high-visibility events with precision. Across marketing programs, sales kickoffs, product launches, and global town halls, we work inside our clients' Zoom environments to plan, manage, and execute each moment.",
+    },
+    {
+      date: "3d ago",
+      text: "Now Hiring: Part-Time Video Operators & Assistant Project Managers (Remote). Looking for flexible, remote work you can do from anywhere? We're especially interested in candidates fluent in English plus Spanish, German, Japanese, or Portuguese.",
+    },
+    {
+      date: "4d ago",
+      text: "A great couple of days in New York with the Investor Relations community. We hosted our OpenExchange Cocktail Event at the Cornell Club, welcoming over 100 guests. Mark Loehr delivered the opening remarks at the IR Impact Awards at Cipriani 25 Broadway.",
+    },
+    {
+      date: "6d ago",
+      text: "Virtual is no longer a backup. It is becoming a strategic channel for reaching new audiences in a changing global landscape. As investor types evolve and access shifts, the ability to engage with precision matters more than ever.",
+    },
+    {
+      date: "1w ago",
+      text: "Mark Loehr and Kirsten van Rooijen tackle Season 2 of the OpenExchange × Computershare podcast — geopolitics reshaping markets, new investor types emerging, and the growing role of virtual engagement across new use cases.",
+    },
+    {
+      date: "2w ago",
+      text: "Investor communication does not happen once a quarter. It is a continuous cycle of moments where leadership shapes understanding, reinforces strategy, and builds confidence with the market.",
+    },
+    {
+      date: "1mo ago",
+      text: "Introducing OE Meet — secure meeting scheduling and execution solution for post-announcement moments. When the pressure is high and the demand is immediate, OE Meet helps you communicate efficiently and on your terms.",
+    },
+    {
+      date: "1mo ago",
+      text: "When NYC shuts down, business doesn't. Moments like this don't cancel communication. They test it. At OpenExchange, we are built for exactly this — we can spin up secure, professionally managed virtual events quickly.",
+    },
+  ];
 
-TARGET:
+  const prompt = `You are a sales intelligence analyst preparing LinkedIn outreach intelligence for a BD rep at OpenExchange (OE).
+
+TARGET PROSPECT:
 - Name: ${contact}
 - Title: ${title || 'Unknown'}
 - Company: ${firm}
 ${liProfileUrl ? `- LinkedIn: ${liProfileUrl}` : `- Likely LinkedIn: ${guessedUrl} (unverified)`}
 
-Based on what someone in this role at this company would typically post about on LinkedIn, generate 3 realistic and plausible recent LinkedIn posts that this person likely made or would make. Make them specific to their industry, role, and company.
+OE'S RECENT LINKEDIN ACTIVITY (real posts from linkedin.com/company/openexchange-inc-/):
+${oeRecentPosts.slice(0, 5).map((p, i) => `${i + 1}. [${p.date}] ${p.text}`).join('\n')}
 
-For each post, also generate an "outreach hook" — a short sentence that a sales rep could use to reference this post in a cold email to make it feel personalized and relevant.
+Based on what someone in the role of "${title}" at "${firm}" would typically post about on LinkedIn, generate 3 realistic and plausible recent LinkedIn posts this person likely made or would make. Make them specific to their industry, role, and company — reference real trends, events, or company milestones.
+
+For each post, generate an "outreach hook" — a personalized sentence connecting THEIR post topic to something OE actually does (reference OE's real posts above where relevant). The hook should feel natural, not salesy.
 
 Return ONLY valid JSON:
 {
@@ -43,23 +82,13 @@ Return ONLY valid JSON:
     {
       "date": "3d ago",
       "text": "the post content (2-3 sentences, realistic LinkedIn style)",
-      "hook": "outreach hook referencing this post (1 sentence)"
-    },
-    {
-      "date": "1w ago",
-      "text": "...",
-      "hook": "..."
-    },
-    {
-      "date": "2w ago",
-      "text": "...",
-      "hook": "..."
+      "hook": "outreach hook connecting their topic to OE's capabilities (1 sentence)"
     }
   ],
-  "guessedUsername": "${linkedinUsername || guessedUsername}"
+  "oeRelevantPost": "which OE post above is most relevant to this prospect (copy the key phrase)"
 }
 
-Make the posts feel authentic — reference real industry trends, events, or company milestones that would be relevant to ${firm} in ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.`;
+Make the posts feel authentic for ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.`;
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -90,8 +119,10 @@ Make the posts feel authentic — reference real industry trends, events, or com
     const parsed = JSON.parse(jsonMatch[0]);
     return NextResponse.json({
       posts: parsed.posts,
-      guessedUsername: parsed.guessedUsername || linkedinUsername || guessedUsername,
+      oeRelevantPost: parsed.oeRelevantPost,
+      guessedUsername: linkedinUsername || guessedUsername,
       profileUrl: liProfileUrl || guessedUrl,
+      companyUrl: `https://linkedin.com/company/openexchange-inc-/`,
       source: linkedinUsername ? 'verified' : 'ai-generated',
     });
   } catch (err) {

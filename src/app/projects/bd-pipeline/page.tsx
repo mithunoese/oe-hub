@@ -1497,6 +1497,49 @@ export default function BDPipelinePage() {
                         </div>
                       </div>
                     ))}
+
+                    {/* OE LinkedIn — real recent posts for outreach reference */}
+                    {!liPostsLoading && posts.length > 0 && (
+                      <div style={{ marginTop: 20 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                          <div style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>OE LinkedIn — share in outreach</div>
+                          <a
+                            href="https://linkedin.com/company/openexchange-inc-/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 10.5, color: '#1d4ed8', textDecoration: 'none', fontFamily: 'var(--font-mono)' }}
+                          >openexchange-inc- ↗</a>
+                        </div>
+                        {[
+                          { date: '20h', text: 'Supporting Zoom clients in delivering high-visibility events with precision — marketing programs, sales kickoffs, product launches, and global town halls.' },
+                          { date: '4d', text: 'Cocktail Event at the Cornell Club welcoming 100+ guests. Mark Loehr delivered opening remarks at the IR Impact Awards at Cipriani 25 Broadway.' },
+                          { date: '6d', text: 'Virtual is no longer a backup. It is becoming a strategic channel for reaching new audiences in a changing global landscape.' },
+                          { date: '1mo', text: 'Introducing OE Meet — secure meeting scheduling and execution for post-announcement moments. Handles surge meeting requests after acquisitions, FDA approvals, earnings.' },
+                        ].map((p, i) => (
+                          <div key={`oe-${i}`} style={{
+                            border: '1px solid #e0e7ef',
+                            borderRadius: 7,
+                            padding: '10px 14px',
+                            marginBottom: 8,
+                            background: '#f8fafc',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                              <span style={{ fontSize: 10, color: 'var(--light)', fontFamily: 'var(--font-mono)' }}>{p.date}</span>
+                              <span style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                padding: '1px 5px',
+                                borderRadius: 3,
+                                background: '#dcfce7',
+                                color: '#166534',
+                                letterSpacing: '0.03em',
+                              }}>OE POST</span>
+                            </div>
+                            <p style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.5, margin: 0 }}>{p.text}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })()}

@@ -63,8 +63,9 @@ Return ONLY valid JSON:
     const parsed = JSON.parse(jsonMatch[0]);
     return NextResponse.json(parsed);
   } catch (err) {
+    console.error('[linkedin/verify]', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Unknown error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

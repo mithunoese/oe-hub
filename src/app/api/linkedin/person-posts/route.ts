@@ -126,8 +126,9 @@ Make the posts feel authentic for ${new Date().toLocaleDateString('en-US', { mon
       source: linkedinUsername ? 'verified' : 'ai-generated',
     });
   } catch (err) {
+    console.error('[linkedin/person-posts]', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Unknown error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

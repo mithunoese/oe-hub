@@ -1,46 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { REP_NAMES, buildEmailHtml } from '@/lib/email-template';
+import { requireAuth } from '@/lib/api-auth';
 
-const FROM_EMAIL = 'mithun.manjunatha@openexc.com';
-const FROM_NAME = 'Mithun Manjunatha';
-
-const REP_NAMES: Record<string, string> = {
-  cara: 'Cara Dingenthal',
-  kristen: 'Kristen Conklin',
-  peter: 'Peter Georgiou',
-};
-
-function buildHtml(firstName: string, firm: string, repKey: string, oePost: boolean) {
-  const rep = REP_NAMES[repKey] || 'Cara Dingenthal';
-  const month = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-  const year = new Date().getFullYear();
-  return `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>OpenExchange</title></head>
-<body style="font-family:system-ui,sans-serif;margin:0;padding:0;background:#f8f8f7;">
-<div style="max-width:600px;margin:0 auto;background:#fff;">
-  <div style="background:#1a1a1a;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
-    <span style="color:#fff;font-weight:700;font-size:14px;letter-spacing:.05em;">OPEN EXCHANGE</span>
-    <span style="color:#666;font-size:11px;font-family:monospace;">BD Outreach · ${month}</span>
-  </div>
-  <div style="padding:24px 28px;">
-    <p style="margin:0 0 16px;color:#111827;font-weight:500;font-size:14px;">Hi ${firstName},</p>
-    <p style="margin:0 0 14px;color:#374151;">I came across your work at ${firm} and was impressed by how your team is approaching corporate communications at scale. We're seeing a major shift in the market toward broadcast-quality virtual events — and OpenExchange is built specifically for that transition.</p>
-    <p style="margin:0 0 20px;color:#374151;">OE delivers a fully managed, broadcast-grade platform for town halls, webcasts, and hybrid events — with 99.99% uptime, AI-powered analytics, and a dedicated operator team. Our clients include Fortune 500 comms teams running 100+ events annually.</p>
-    ${oePost ? `<div style="background:#f0fafa;border-left:3px solid #007a7d;border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:20px;font-size:13px;color:#007a7d;">I thought this might be relevant: <a href="https://www.linkedin.com/company/openexchange-inc-/posts/" style="color:#007a7d;">See what OpenExchange is doing →</a></div>` : ''}
-    <div style="margin-bottom:24px;">
-      <a href="mailto:${rep.toLowerCase().replace(' ', '.')}@openexc.com?subject=OpenExchange%20-%2015%20min%20chat" style="display:inline-block;background:#007a7d;color:#fff;padding:11px 22px;border-radius:8px;font-size:13.5px;font-weight:600;text-decoration:none;">Let's connect →</a>
-    </div>
-    <div style="border-top:1px solid #e5e7eb;padding-top:16px;">
-      <div style="font-weight:600;font-size:13.5px;color:#111827;">${rep}</div>
-      <div style="font-size:12px;color:#6b7280;">Business Development · OpenExchange</div>
-      <div style="font-family:monospace;font-size:11.5px;color:#9ca3af;margin-top:2px;">openexchange.com</div>
-    </div>
-  </div>
-  <div style="background:#f6f5f2;padding:12px 28px;font-size:11px;color:#9ca3af;text-align:center;border-top:1px solid #e5e7eb;">
-    © ${year} OpenExchange · All rights reserved
-  </div>
-</div>
-</body></html>`;
-}
+const FROM_EMAIL = process.env.FROM_EMAIL || 'outreach@openexc.com';
+const FROM_NAME = process.env.FROM_NAME || 'OpenExchange';
 
 async function getOrCreateList(base: string, headers: Record<string, string>): Promise<string> {
   const res = await fetch(`${base}/lists?count=10`, { headers });
@@ -82,6 +45,9 @@ async function getOrCreateList(base: string, headers: Record<string, string>): P
 }
 
 export async function POST(req: NextRequest) {
+  const authError = requireAuth(req);
+  if (authError) return authError;
+
   const { to, firstName, firm, sigFrom, oePostEnabled } = await req.json();
 
   const apiKey = process.env.MAILCHIMP_API_KEY?.trim();
@@ -97,11 +63,17 @@ export async function POST(req: NextRequest) {
   try {
     listId = await getOrCreateList(base, headers);
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    console.error('[email/test]', e);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 
   const rep = REP_NAMES[sigFrom] || 'Cara Dingenthal';
-  const html = buildHtml(firstName || 'there', firm || 'your company', sigFrom, oePostEnabled ?? true);
+  const html = buildEmailHtml({
+    firstName: firstName || 'there',
+    firm: firm || 'your company',
+    rep: sigFrom,
+    oePost: oePostEnabled ?? true,
+  });
 
   // Create draft campaign
   const campRes = await fetch(`${base}/campaigns`, {

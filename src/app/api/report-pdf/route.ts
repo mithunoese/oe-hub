@@ -7,8 +7,11 @@ function getDb() {
   return neon(url);
 }
 
+let reportPdfSchemaMigrated = false;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function ensureTable(sql: NeonQueryFunction<any, any>) {
+  if (reportPdfSchemaMigrated) return;
   await sql`
     CREATE TABLE IF NOT EXISTS report_pdfs (
       week       TEXT PRIMARY KEY,
@@ -17,6 +20,7 @@ async function ensureTable(sql: NeonQueryFunction<any, any>) {
       uploaded_at TIMESTAMPTZ DEFAULT NOW()
     )
   `;
+  reportPdfSchemaMigrated = true;
 }
 
 // GET /api/report-pdf — list all available PDFs
@@ -27,14 +31,15 @@ export async function GET() {
     const rows = await sql`SELECT week, filename, uploaded_at FROM report_pdfs ORDER BY uploaded_at DESC`;
     return NextResponse.json({ pdfs: rows });
   } catch (err) {
-    return NextResponse.json({ pdfs: [], error: String(err) });
+    console.error('[report-pdf GET]', err);
+    return NextResponse.json({ pdfs: [], error: 'Internal server error' });
   }
 }
 
 // POST /api/report-pdf — upload a PDF (multipart form: week, file)
 export async function POST(req: NextRequest) {
   const pin = req.headers.get('x-admin-pin');
-  if (pin !== (process.env.ADMIN_PIN ?? '1234')) {
+  if (!process.env.ADMIN_PIN || pin !== process.env.ADMIN_PIN) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -60,14 +65,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, week, filename: file.name });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error('[report-pdf POST]', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 // DELETE /api/report-pdf — remove a PDF
 export async function DELETE(req: NextRequest) {
   const pin = req.headers.get('x-admin-pin');
-  if (pin !== (process.env.ADMIN_PIN ?? '1234')) {
+  if (!process.env.ADMIN_PIN || pin !== process.env.ADMIN_PIN) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { week } = await req.json();

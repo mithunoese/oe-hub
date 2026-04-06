@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { neon, NeonQueryFunction } from '@neondatabase/serverless';
 
-async function getDb() {
-  const sql = neon(process.env.DATABASE_URL!);
+let schemaMigrated = false;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function ensureSchema(sql: NeonQueryFunction<any, any>) {
+  if (schemaMigrated) return;
   await sql`
     CREATE TABLE IF NOT EXISTS email_sends (
       id SERIAL PRIMARY KEY,
@@ -15,7 +18,7 @@ async function getDb() {
       send_type TEXT DEFAULT 'campaign'
     )
   `;
-  return sql;
+  schemaMigrated = true;
 }
 
 export async function POST(req: NextRequest) {
@@ -26,7 +29,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'contactEmail required' }, { status: 400 });
 
   try {
-    const sql = await getDb();
+    const sql = neon(process.env.DATABASE_URL!);
+    await ensureSchema(sql);
     await sql`
       INSERT INTO email_sends (contact_email, contact_name, firm, pipeline_name, sent_by, send_type)
       VALUES (${contactEmail}, ${contactName || ''}, ${firm || ''}, ${pipelineName || ''}, ${sentBy || ''}, ${sendType || 'campaign'})
@@ -44,7 +48,8 @@ export async function GET(req: NextRequest) {
   if (!email) return NextResponse.json({ sends: [] });
 
   try {
-    const sql = await getDb();
+    const sql = neon(process.env.DATABASE_URL!);
+    await ensureSchema(sql);
     const sends = await sql`
       SELECT id, contact_name, firm, pipeline_name, sent_by, sent_at, send_type
       FROM email_sends

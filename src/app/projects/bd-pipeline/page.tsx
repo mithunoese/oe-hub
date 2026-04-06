@@ -143,17 +143,6 @@ export default function BDPipelinePage() {
 
   const pipeline = allPipelines[activePipeline] || allPipelines[0];
 
-  // Persist to DB on changes (no localStorage)
-  useEffect(() => {
-    if (!dbSynced) return;
-    fetch('/api/pipeline-state', {
-      method: 'PUT',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ rows: pipelineRows, pipelines: allPipelines, version: DATA_VERSION }),
-    }).catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pipelineRows]);
-
   // Load from Neon on mount — reset stale data if it lacks LinkedIn-verified contacts
   const DATA_VERSION = 3; // bump to force reset — all 3 pipelines now have real LinkedIn-verified contacts
   useEffect(() => {
@@ -187,13 +176,35 @@ export default function BDPipelinePage() {
     if (!dbSynced) return;
     const t = setTimeout(() => {
       fetch('/api/pipeline-state', {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ rows: pipelineRows, pipelines: allPipelines }),
+        body: JSON.stringify({ rows: pipelineRows, pipelines: allPipelines, version: DATA_VERSION }),
       }).catch(() => {});
     }, 1500);
     return () => clearTimeout(t);
   }, [pipelineRows, allPipelines, dbSynced]);
+
+  // Auto-fetch LinkedIn posts when the LinkedIn tab opens for a new contact
+  useEffect(() => {
+    if (activeTab !== 1 || !currentContact) return;
+    if (currentContact.name === liPostsContact || liPostsLoading) return;
+    setLiPostsContact(currentContact.name);
+    setLiPosts(null);
+    setLiPostsLoading(true);
+    fetch('/api/linkedin/person-posts', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        contact: currentContact.name,
+        title: currentContact.title,
+        firm: currentContact.firm,
+        linkedinUsername: currentContact.liUsername || undefined,
+      }),
+    })
+      .then(r => r.json())
+      .then(d => { setLiPosts(d.posts || []); setLiPostsLoading(false); })
+      .catch(() => { setLiPosts([]); setLiPostsLoading(false); });
+  }, [activeTab, currentContact, liPostsContact, liPostsLoading]);
 
   const activeSegMinScore = segments[activeSegment]?.minScore ?? 0;
   const effectiveMinScore = Math.max(minScore, activeSegMinScore);
@@ -1233,13 +1244,19 @@ export default function BDPipelinePage() {
                       </>
                     ) : (
                       <>
-                        <IcpBarSignal label="Firmographic fit" score={Math.round(currentContact.score * 0.9)} color={scoreColor(currentContact.score)} />
-                        <IcpBarSignal label="Event volume signal" score={Math.round(currentContact.score * 0.85)} color={scoreColor(currentContact.score)} />
-                        <IcpBarSignal label="Tech stack alignment" score={Math.round(currentContact.score * 0.75)} color={scoreColor(currentContact.score)} />
-                        <IcpBarSignal label="LinkedIn engagement" score={currentContact.li ? Math.round(currentContact.score * 0.8) : 20} color={currentContact.li ? scoreColor(currentContact.score) : 'var(--score-lo)'} />
-                        <IcpBarSignal label="Buying intent" score={Math.round(currentContact.score * 0.65)} color={scoreColor(currentContact.score)} />
-                        <div style={{ marginTop: 10, fontSize: 11, color: 'var(--light)', borderTop: '1px solid var(--border)', paddingTop: 10 }}>
-                          Scores are estimates — click <strong>✦ Score with AI</strong> for real analysis
+                        {['Firmographic fit', 'Event volume signal', 'Tech stack alignment', 'LinkedIn engagement', 'Buying intent'].map((label) => (
+                          <div key={label} style={{ marginBottom: 10 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                              <span style={{ fontSize: 11.5, color: 'var(--light)' }}>{label}</span>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11.5, color: 'var(--light)' }}>--</span>
+                            </div>
+                            <div style={{ height: 4, background: '#f0eeeb', borderRadius: 2, overflow: 'hidden', border: '1px dashed #d5d3cf' }}>
+                              <div style={{ width: '0%', height: '100%' }} />
+                            </div>
+                          </div>
+                        ))}
+                        <div style={{ marginTop: 10, fontSize: 11, color: 'var(--light)', borderTop: '1px dashed var(--border)', paddingTop: 10 }}>
+                          No breakdown available — click <strong>✦ Score with AI</strong> to run AI scoring for real breakdown
                         </div>
                       </>
                     )}
@@ -1314,7 +1331,14 @@ export default function BDPipelinePage() {
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--light)', marginBottom: 10 }}>Next-Best Alternative</div>
                     {(() => {
-                      const nba = CONTACT_NEXT_BEST[currentContact.firm] || { name: 'Rachel Kim', title: 'Director of Events', initials: 'RK', score: 72, color: '#8b5cf6' };
+                      const nba = CONTACT_NEXT_BEST[currentContact.firm] || null;
+                      if (!nba) {
+                        return (
+                          <div style={{ border: '1px solid var(--border)', borderRadius: 9, padding: '12px 16px', fontSize: 12.5, color: 'var(--muted)' }}>
+                            No alternative contact identified yet.
+                          </div>
+                        );
+                      }
                       return (
                         <div style={{
                           border: '1px solid var(--border)',
@@ -1360,25 +1384,6 @@ export default function BDPipelinePage() {
 
               {/* ── Tab 1: LinkedIn Posts ── */}
               {activeTab === 1 && (() => {
-                // Auto-fetch when tab opens for a new contact
-                if (currentContact.name !== liPostsContact && !liPostsLoading) {
-                  setLiPostsContact(currentContact.name);
-                  setLiPosts(null);
-                  setLiPostsLoading(true);
-                  fetch('/api/linkedin/person-posts', {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/json' },
-                    body: JSON.stringify({
-                      contact: currentContact.name,
-                      title: currentContact.title,
-                      firm: currentContact.firm,
-                      linkedinUsername: currentContact.liUsername || undefined,
-                    }),
-                  })
-                    .then(r => r.json())
-                    .then(d => { setLiPosts(d.posts || []); setLiPostsLoading(false); })
-                    .catch(() => { setLiPosts([]); setLiPostsLoading(false); });
-                }
                 const posts = liPosts || [];
                 const guessedUsername = currentContact.name.toLowerCase().trim().split(/\s+/).join('-');
                 const profileUrl = currentContact.liUsername
@@ -1638,6 +1643,11 @@ export default function BDPipelinePage() {
                       </a>
                     </div>
                   )}
+
+                  {/* Preview-only notice */}
+                  <div style={{ fontSize: 11, color: 'var(--light)', marginBottom: 8, fontStyle: 'italic' }}>
+                    Note: Edits here are for preview only — the template is sent as-is via Mailchimp.
+                  </div>
 
                   {/* Email preview */}
                   <div style={{

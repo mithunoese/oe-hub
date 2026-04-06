@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/api-auth';
 
 interface SFContact {
   firstName: string;
@@ -69,7 +70,17 @@ function mapRecords(records: SFQueryRecord[], includeIndustry: boolean): SFConta
   });
 }
 
+const ALLOWED_INDUSTRIES = [
+  'Healthcare', 'Technology', 'Financial Services', 'Energy',
+  'Manufacturing', 'Media', 'Retail', 'Education', 'Communications',
+  'Pharmaceuticals', 'Biotechnology', 'Insurance', 'Real Estate',
+  'Government', 'Nonprofit', 'Professional Services', 'Consulting',
+];
+
 export async function GET(req: NextRequest) {
+  const authError = requireAuth(req);
+  if (authError) return authError;
+
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type');
 
@@ -94,16 +105,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Missing industry param for prospects query' }, { status: 400 });
     }
 
-    // Sanitize industry to prevent SOQL injection
-    const safeIndustry = industry.replace(/'/g, "\\'");
-    const soql = `SELECT FirstName, LastName, Email, Title, Account.Name, Account.Industry FROM Contact WHERE AccountId NOT IN (SELECT AccountId FROM Order WHERE End_Date__c >= 2024-01-01) AND Account.Industry = '${safeIndustry}' AND Email != null`;
+    if (!ALLOWED_INDUSTRIES.includes(industry)) {
+      return NextResponse.json({ error: 'Invalid industry value' }, { status: 400 });
+    }
+    // Industry is from allowlist, safe to interpolate
+    const soql = `SELECT FirstName, LastName, Email, Title, Account.Name, Account.Industry FROM Contact WHERE AccountId NOT IN (SELECT AccountId FROM Order WHERE End_Date__c >= 2024-01-01) AND Account.Industry = '${industry}' AND Email != null`;
     const records = await querySalesforce(soql);
     const contacts = mapRecords(records, true);
     return NextResponse.json({ contacts, total: contacts.length });
   } catch (err) {
     console.error('[sf-query GET]', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 },
     );
   }

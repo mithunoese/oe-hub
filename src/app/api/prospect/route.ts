@@ -104,6 +104,7 @@ Spread contacts across different firm types. Use real, verifiable people where p
       pipelineName,
     });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : "Unknown error" }, { status: 500 });
+    console.error('[prospect]', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

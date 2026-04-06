@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { neon, NeonQueryFunction } from '@neondatabase/serverless';
 import type { PipelineRow } from '@/data/pipelines';
+
+let blocklistSchemaMigrated = false;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function ensureBlocklistSchema(sql: NeonQueryFunction<any, any>) {
+  if (blocklistSchemaMigrated) return;
+  await sql`
+    CREATE TABLE IF NOT EXISTS sf_blocklist (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL,
+      first_name TEXT,
+      last_name TEXT,
+      title TEXT,
+      account_name TEXT,
+      domain TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(email)
+    )
+  `;
+  blocklistSchemaMigrated = true;
+}
 
 interface SFContact {
   firstName: string;
@@ -72,21 +93,7 @@ export async function POST(req: NextRequest) {
     }
 
     const sql = neon(dbUrl);
-
-    // Ensure blocklist table exists
-    await sql`
-      CREATE TABLE IF NOT EXISTS sf_blocklist (
-        id SERIAL PRIMARY KEY,
-        email TEXT NOT NULL,
-        first_name TEXT,
-        last_name TEXT,
-        title TEXT,
-        account_name TEXT,
-        domain TEXT,
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        UNIQUE(email)
-      )
-    `;
+    await ensureBlocklistSchema(sql);
 
     if (mode === 'blocklist') {
       // Insert contacts into blocklist table, skip duplicates
@@ -192,7 +199,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[sf-dedup POST]', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 },
     );
   }

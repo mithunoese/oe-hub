@@ -110,8 +110,9 @@ Assessment guidance:
         });
       }
     } catch (err) {
+      console.error('[linkedin/enrich]', err);
       return NextResponse.json(
-        { error: err instanceof Error ? err.message : 'Unknown error', enrichedSoFar: enriched },
+        { error: 'Internal server error', enrichedSoFar: enriched },
         { status: 500 },
       );
     }

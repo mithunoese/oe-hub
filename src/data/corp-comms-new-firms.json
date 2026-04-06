@@ -1,51 +1,30 @@
 [
   {
-    "name": "The Grossman Group",
-    "why": "Leadership communication consultancy that specializes in executive town halls, internal announcements, and employee-facing events for Fortune 500 companies — a direct buyer of broadcast/webcast infrastructure.",
-    "website": "https://www.yourthoughtpartner.com",
-    "contact": "David Grossman",
-    "title": "Founder & CEO",
-    "linkedin_url": "https://www.linkedin.com/in/davidgrossmanaprabc/",
-    "alt_contact": "Kate Bushnell",
-    "alt_title": "President and Senior thoughtpartner",
-    "alt_linkedin_url": "https://www.linkedin.com/in/kate-bushnell-582b033/"
+    "name": "blue goose",
+    "why": "Award-winning UK internal communications agency (M&S, McDonald's, BBC, BNP Paribas) that delivers employee engagement campaigns, live events, and channel strategy — directly runs town halls and hybrid events requiring broadcast infrastructure.",
+    "website": "https://bluegoose.co.uk",
+    "contact": "Milly James",
+    "title": "Owner & Director",
+    "linkedin_url": "https://www.linkedin.com/in/milly-james-752985b/"
   },
   {
-    "name": "Gagen MacDonald",
-    "why": "Employee engagement and organizational communications firm known for producing large-scale internal events, leadership webcasts, and hybrid town halls for enterprise clients.",
-    "website": "https://www.gagenmcdonald.com",
-    "contact": "Maril Gagen MacDonald",
-    "title": "Founder & CEO",
-    "linkedin_url": "https://www.linkedin.com/in/marilmacdonald/"
+    "name": "ICF Next",
+    "why": "1,700-person marketing and communications agency with a dedicated corporate event management practice running enterprise town halls, leadership summits, and hybrid broadcast events globally for large-enterprise clients.",
+    "website": "https://www.icf.com/next"
   },
   {
-    "name": "Ketchum",
-    "why": "Global PR agency with a dedicated employee communications practice that produces hybrid town halls and executive webcasts for major enterprise brands including P&G and Unilever.",
-    "website": "https://www.ketchum.com",
-    "contact": "Lauren Butler",
-    "title": "Managing Director, Employee Communications and Engagement",
-    "linkedin_url": "https://www.linkedin.com/in/lauren-butler-ab20542/",
-    "alt_contact": "Hilary McKean",
-    "alt_title": "President, Global Marketing & Corporate Communications",
-    "alt_linkedin_url": "https://www.linkedin.com/in/hilary-mckean-b8133b/"
+    "name": "Cramer",
+    "why": "Boston-based B2B experiential agency specializing in hybrid events, executive town halls, and broadcast-quality video production for Fortune 500 — deep familiarity with live event infrastructure and webcasting workflows.",
+    "website": "https://www.cramer.com"
   },
   {
-    "name": "H+K Strategies (Hill+Knowlton)",
-    "why": "Global communications agency with a specialized Employee Experience practice producing executive communications, internal events, and high-production hybrid town halls. Now merged into Burson.",
-    "website": "https://www.hkstrategies.com",
-    "contact": "Dan Coles",
-    "title": "Senior Associate Director, Change & Employee Experience at Burson",
-    "linkedin_url": "https://www.linkedin.com/in/dancoles1/"
+    "name": "Golin",
+    "why": "Global PR agency with a dedicated employee communications unit (Insidedge) that runs international all-hands meetings, executive webcasts, and town halls for enterprise clients — an active buyer of broadcast and streaming solutions.",
+    "website": "https://golin.com"
   },
   {
-    "name": "Porter Novelli",
-    "why": "Purpose-driven PR agency with a people/employee experience practice that designs executive communications programs and hybrid internal event strategies for Fortune 500 enterprises.",
-    "website": "https://www.porternovelli.com",
-    "contact": "Heidi P.T. Upton",
-    "title": "Vice President, Employee Communications",
-    "linkedin_url": "https://www.linkedin.com/in/heidiupton/",
-    "alt_contact": "Sandy Skees",
-    "alt_title": "EVP, Global Lead, Purpose & Impact",
-    "alt_linkedin_url": "https://www.linkedin.com/in/sandyskees/"
+    "name": "Greentarget",
+    "why": "Strategic B2B communications consultancy with a growing internal comms practice advising professional-services firms on M&A communications, change programs, and leadership messaging — increasingly running hybrid town hall events.",
+    "website": "https://greentarget.com"
   }
 ]

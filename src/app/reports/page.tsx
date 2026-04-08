@@ -18,7 +18,7 @@ const weeks = [
     date: "Mar 23–27, 2026",
     summary: "10 meetings across IFRS client dry-run planning, migration pricing endorsed by Zoom VP, first Zoom integrations training with Ren, and NYC cocktail networking event.",
     count: "10 meetings",
-    badge: "null",
+    badge: null,
     pdf: "/weekly_report_week6.pdf",
   },
   {

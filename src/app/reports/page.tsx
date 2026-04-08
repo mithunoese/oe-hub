@@ -4,12 +4,21 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-7",
+    week: "Week 7",
+    date: "Mar 30–Apr 4, 2026",
+    summary: "19 meetings across Q1 close ($10M+), IFRS dry run confirmed with Veltris onboarded, MemberClicks integration resolved and documented, Laurentian University Panopto migration scoped, and two client deliverables shipped.",
+    count: "19 meetings",
+    badge: "New",
+    pdf: "/weekly_report_week7.pdf",
+  },
+  {
     href: "/reports/week-6",
     week: "Week 6",
     date: "Mar 23–27, 2026",
     summary: "10 meetings across IFRS client dry-run planning, migration pricing endorsed by Zoom VP, first Zoom integrations training with Ren, and NYC cocktail networking event.",
     count: "10 meetings",
-    badge: "New",
+    badge: "null",
     pdf: "/weekly_report_week6.pdf",
   },
   {

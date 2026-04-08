@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IR Intelligence Agent — Concept Deck</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --accent: #4a9eff;
+    --accent2: #7c5cff;
+    --green: #34d399;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --cyan: #22d3ee;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+    background: rgba(19, 19, 26, 0.9);
+    backdrop-filter: blur(20px);
+    padding: 8px 16px;
+    border-radius: 40px;
+    border: 1px solid var(--border);
+  }
+
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .nav-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    width: 28px;
+    border-radius: 5px;
+  }
+
+  .nav-dot:hover { background: var(--text-dim); }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .slide-counter {
+    color: var(--text-dim);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Slides */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* Slide 0: Title */
+  .title-slide {
+    text-align: center;
+  }
+
+  .title-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.3s forwards;
+  }
+
+  .title-main {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+
+  .title-main span { color: var(--accent); }
+
+  .title-sub {
+    font-size: 22px;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.5;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.7s forwards;
+  }
+
+  .title-meta {
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--text-dim);
+    opacity: 0;
+    animation: fadeUp 0.6s 0.9s forwards;
+  }
+
+  /* Slide 1: The Problem */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .problem-left h2 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  .problem-left p {
+    font-size: 18px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .problem-left .highlight {
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .analyst-queue {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .analyst-queue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .analyst-queue-header h3 {
+    font-size: 14px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    animation: pulse 2s infinite;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  .analyst-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(42, 42, 58, 0.5);
+    opacity: 0;
+    animation: slideIn 0.4s forwards;
+  }
+
+  .analyst-row:last-child { border: none; }
+
+  .analyst-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .analyst-info { flex: 1; }
+  .analyst-name { font-size: 14px; font-weight: 500; }
+  .analyst-firm { font-size: 12px; color: var(--text-dim); }
+
+  .analyst-status {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--red);
+  }
+
+  .no-intel {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* Slide 2: The Solution */
+  .solution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .solution-left h2 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  .solution-left h2 span { color: var(--green); }
+
+  .solution-left p {
+    font-size: 18px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .analyst-card-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .card-name { font-size: 18px; font-weight: 600; }
+  .card-firm { font-size: 13px; color: var(--text-dim); }
+
+  .card-section {
+    margin-bottom: 16px;
+  }
+
+  .card-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .sentiment-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .sentiment-block {
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .past-questions {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .past-questions li {
+    list-style: none;
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .past-questions li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .q-bullish::before { background: var(--green); }
+  .q-bearish::before { background: var(--red); }
+  .q-neutral::before { background: var(--orange); }
+
+  .predicted-q {
+    background: rgba(74, 158, 255, 0.1);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--accent);
+  }
+
+  .predicted-q::before {
+    content: 'AI PREDICTED';
+    display: block;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  /* Slide 3: Data Stack */
+  .data-slide {
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .data-slide h2 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .data-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .data-layer {
+    display: flex;
+    align-items: stretch;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s;
+  }
+
+  .data-layer.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .layer-badge {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 16px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+  }
+
+  .layer-content {
+    padding: 20px 24px;
+    flex: 1;
+    background: var(--surface);
+  }
+
+  .layer-content h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .layer-content p { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+
+  .layer-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+
+  .layer-public .layer-badge { background: var(--green); color: var(--bg); }
+  .layer-public .layer-tag { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+
+  .layer-platform .layer-badge { background: var(--accent); color: var(--bg); }
+  .layer-platform .layer-tag { background: rgba(74, 158, 255, 0.15); color: var(--accent); }
+
+  .layer-private .layer-badge { background: var(--accent2); color: white; }
+  .layer-private .layer-tag { background: rgba(124, 92, 255, 0.15); color: var(--accent2); }
+
+  .moat-indicator {
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px;
+    border: 1px dashed var(--accent2);
+    border-radius: 12px;
+    background: rgba(124, 92, 255, 0.05);
+  }
+
+  .moat-indicator span {
+    font-size: 13px;
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* Slide 4: The Ontology */
+  .ontology-slide {
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .ontology-slide h2 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .ontology-slide .subtitle {
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-bottom: 40px;
+  }
+
+  .ontology-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    min-width: 180px;
+    position: relative;
+    transition: all 0.4s;
+  }
+
+  .flow-box:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .flow-box h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .flow-box p {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .flow-box.moat-box {
+    border-color: var(--accent2);
+    background: rgba(124, 92, 255, 0.08);
+    min-width: 220px;
+  }
+
+  .flow-box.moat-box h4 { color: var(--accent2); }
+
+  .ontology-example {
+    margin-top: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .ontology-example h4 {
+    font-size: 13px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .keyword-map {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .keyword-center {
+    background: var(--accent2);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .keyword-arrow {
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .keyword-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .keyword-chip {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    opacity: 0;
+    animation: chipIn 0.3s forwards;
+  }
+
+  .sme-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 16px;
+    background: rgba(52, 211, 153, 0.08);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  /* Slide 5: GTM */
+  .gtm-slide {
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .gtm-slide h2 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 40px;
+  }
+
+  .gtm-phases {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .gtm-phase {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: left;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .gtm-phase:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .gtm-phase-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--surface2);
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    line-height: 1;
+  }
+
+  .gtm-phase h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  .gtm-phase p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .gtm-logos {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .gtm-logo {
+    padding: 8px 20px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+  }
+
+  /* Slide 6: Next Steps */
+  .next-slide {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .next-slide h2 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 40px;
+  }
+
+  .next-steps-list {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .next-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+
+  .next-step:hover { border-color: var(--accent); }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .step-content p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  .prototype-note {
+    padding: 20px;
+    border: 1px dashed var(--green);
+    border-radius: 12px;
+    background: rgba(52, 211, 153, 0.05);
+    font-size: 15px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes chipIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    font-size: 11px;
+    color: var(--text-dim);
+    opacity: 0.5;
+    z-index: 100;
+  }
+
+  .key-hint kbd {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 11px;
+    margin: 0 2px;
+  }
+
+  /* OE branding */
+  .oe-logo {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dim);
+    z-index: 100;
+    letter-spacing: 1px;
+  }
+
+  .oe-logo span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="oe-logo">OPEN <span>EXCHANGE</span></div>
+<div class="key-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate</div>
+
+<!-- Slide 0: Title -->
+<div class="slide active title-slide" data-slide="0">
+  <div class="title-badge">Concept Brief</div>
+  <h1 class="title-main">IR <span>Intelligence</span> Agent</h1>
+  <p class="title-sub">Real-time analyst intelligence for IR officers during earnings calls and private meetings</p>
+  <p class="title-meta">OE Podium &middot; Mithun &amp; Devin &middot; April 2026</p>
+</div>
+
+<!-- Slide 1: The Problem -->
+<div class="slide" data-slide="1">
+  <div class="problem-grid">
+    <div class="problem-left">
+      <h2>IR officers fly blind into Q&A</h2>
+      <p>Every quarter, IR officers at the world's largest financial institutions walk into earnings call Q&A with ten analysts raising their hands. They know names and firms. <span class="highlight">That's it.</span></p>
+      <p>They don't know what each analyst asked last quarter, what they pressed competitors on, or whether their sentiment is shifting. For companies where a single misstep moves the stock price, this is an unacceptable gap.</p>
+    </div>
+    <div>
+      <div class="analyst-queue">
+        <div class="analyst-queue-header">
+          <h3><span class="live-dot"></span> Live Q&A Queue</h3>
+          <span style="font-size:12px;color:var(--text-dim)">10 waiting</span>
+        </div>
+        <div class="analyst-row" style="animation-delay:0.1s">
+          <div class="analyst-avatar" style="background:linear-gradient(135deg,#4a9eff,#7c5cff)">MM</div>
+          <div class="analyst-info">
+            <div class="analyst-name">Mike Mayo</div>
+            <div class="analyst-firm">Wells Fargo Securities</div>
+          </div>
+          <div class="no-intel">No intel available</div>
+        </div>
+        <div class="analyst-row" style="animation-delay:0.2s">
+          <div class="analyst-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">GB</div>
+          <div class="analyst-info">
+            <div class="analyst-name">Glenn Schorr</div>
+            <div class="analyst-firm">Evercore ISI</div>
+          </div>
+          <div class="no-intel">No intel available</div>
+        </div>
+        <div class="analyst-row" style="animation-delay:0.3s">
+          <div class="analyst-avatar" style="background:linear-gradient(135deg,#34d399,#22d3ee)">BK</div>
+          <div class="analyst-info">
+            <div class="analyst-name">Betsy Graseck</div>
+            <div class="analyst-firm">Morgan Stanley</div>
+          </div>
+          <div class="no-intel">No intel available</div>
+        </div>
+        <div class="analyst-row" style="animation-delay:0.4s">
+          <div class="analyst-avatar" style="background:linear-gradient(135deg,#ef4444,#f59e0b)">JM</div>
+          <div class="analyst-info">
+            <div class="analyst-name">Jason Goldberg</div>
+            <div class="analyst-firm">Barclays</div>
+          </div>
+          <div class="no-intel">No intel available</div>
+        </div>
+        <div class="analyst-row" style="animation-delay:0.5s">
+          <div class="analyst-avatar" style="background:linear-gradient(135deg,#7c5cff,#4a9eff)">SE</div>
+          <div class="analyst-info">
+            <div class="analyst-name">Matt O'Connor</div>
+            <div class="analyst-firm">Deutsche Bank</div>
+          </div>
+          <div class="no-intel">No intel available</div>
+        </div>
+        <div style="text-align:center;padding:12px 0 4px;font-size:12px;color:var(--text-dim)">+ 5 more waiting</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: The Solution -->
+<div class="slide" data-slide="2">
+  <div class="solution-grid">
+    <div class="solution-left">
+      <h2>Now they walk in <span>prepared</span></h2>
+      <p>The IR Intelligence Agent surfaces a card for every analyst in the queue. Historical patterns, sentiment trajectory, competitor questions, and AI-predicted questions based on the latest financials.</p>
+      <p style="margin-top:16px">The IR officer doesn't guess. They have a prepared read on every voice in the room.</p>
+    </div>
+    <div>
+      <div class="analyst-card-demo">
+        <div class="card-header">
+          <div class="card-avatar">MM</div>
+          <div>
+            <div class="card-name">Mike Mayo</div>
+            <div class="card-firm">Wells Fargo Securities &middot; Senior Analyst</div>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <div class="card-section-label">Sentiment Trajectory (Last 4 Quarters)</div>
+          <div class="sentiment-bar">
+            <div class="sentiment-block" style="flex:1;background:rgba(52,211,153,0.2);color:var(--green)">Q1 +</div>
+            <div class="sentiment-block" style="flex:1;background:rgba(52,211,153,0.3);color:var(--green)">Q2 +</div>
+            <div class="sentiment-block" style="flex:1;background:rgba(245,158,11,0.2);color:var(--orange)">Q3 ~</div>
+            <div class="sentiment-block" style="flex:1;background:rgba(239,68,68,0.2);color:var(--red)">Q4 &minus;</div>
+          </div>
+          <div style="font-size:11px;color:var(--orange);margin-top:4px">Sentiment shifting bearish &darr;</div>
+        </div>
+
+        <div class="card-section">
+          <div class="card-section-label">Recent Questions (Your Calls + Peers)</div>
+          <ul class="past-questions">
+            <li class="q-bearish">"What's the timeline for the $400M cost reduction target?" <span style="font-size:10px;color:var(--text-dim)">&mdash; Your Q3</span></li>
+            <li class="q-bearish">"Can you break out NII sensitivity to a 50bp rate cut?" <span style="font-size:10px;color:var(--text-dim)">&mdash; JPM Q4</span></li>
+            <li class="q-neutral">"Walk me through the fee compression in wealth management" <span style="font-size:10px;color:var(--text-dim)">&mdash; GS Q4</span></li>
+          </ul>
+        </div>
+
+        <div class="card-section">
+          <div class="predicted-q">Based on your latest 10-K filing and peer questioning patterns, Mayo is likely to probe NII guidance under multiple rate scenarios and whether the cost program is front-loaded or back-loaded into H2.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Data Stack -->
+<div class="slide" data-slide="3">
+  <div class="data-slide">
+    <h2>Three layers of data nobody else can assemble</h2>
+    <div class="data-layers">
+      <div class="data-layer layer-public">
+        <div class="layer-badge">PUBLIC</div>
+        <div class="layer-content">
+          <h3>Public Earnings Transcripts</h3>
+          <p>Every major company's earnings call transcripts are freely available. The agent ingests them all, building a complete picture of what any analyst has asked anyone, anywhere.</p>
+          <span class="layer-tag">Available to competitors</span>
+        </div>
+      </div>
+      <div class="data-layer layer-platform">
+        <div class="layer-badge">PLATFORM</div>
+        <div class="layer-content">
+          <h3>OE Central Attendee Intelligence</h3>
+          <p>Rich engagement data already captured: who joined, who dropped, audio-only vs. video, who asked questions, full interaction reports across 82+ client accounts.</p>
+          <span class="layer-tag">OE platform exclusive</span>
+        </div>
+      </div>
+      <div class="data-layer layer-private">
+        <div class="layer-badge">PRIVATE</div>
+        <div class="layer-content">
+          <h3>Private Non-Deal Roadshow Transcripts</h3>
+          <p>Meetings brokered through banking clients that are never published. Not on Bloomberg, not on S&P, not anywhere. They only exist on OE. This is the dimension of analyst intelligence that is structurally impossible for anyone else to offer.</p>
+          <span class="layer-tag">Structurally impossible to replicate</span>
+        </div>
+      </div>
+    </div>
+    <div class="moat-indicator">
+      <span>Public data is table stakes. Platform data is an advantage. Private data is the moat.</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: The Ontology -->
+<div class="slide" data-slide="4">
+  <div class="ontology-slide">
+    <h2>The Ontology: Why This Can't Be Copied</h2>
+    <p class="subtitle">Raw data + foundation models = commodity. Domain expertise encoded as structured filters = proprietary edge.</p>
+
+    <div class="ontology-flow">
+      <div class="flow-box">
+        <h4>Raw Transcripts</h4>
+        <p>Public + private earnings call data</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box moat-box">
+        <h4>Ontology Filter</h4>
+        <p>SME knowledge encoded as structured concept maps and keywords</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box">
+        <h4>AI Model</h4>
+        <p>Foundation model processes pre-filtered, structured data</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box">
+        <h4>Analyst Card</h4>
+        <p>Proprietary intelligence output</p>
+      </div>
+    </div>
+
+    <div class="ontology-example">
+      <h4>Example: How SME Knowledge Becomes a Filter</h4>
+      <div class="keyword-map">
+        <div class="keyword-center">Fee Compression</div>
+        <div class="keyword-arrow">&rarr;</div>
+        <div class="keyword-chips">
+          <div class="keyword-chip" style="animation-delay:0.1s">margin erosion</div>
+          <div class="keyword-chip" style="animation-delay:0.2s">pricing pressure</div>
+          <div class="keyword-chip" style="animation-delay:0.3s">basis point decline</div>
+          <div class="keyword-chip" style="animation-delay:0.4s">advisory fee</div>
+          <div class="keyword-chip" style="animation-delay:0.5s">passive migration</div>
+          <div class="keyword-chip" style="animation-delay:0.6s">AUM yield</div>
+        </div>
+      </div>
+      <div class="sme-badge">
+        <span style="font-size:16px">&#9733;</span>
+        Curated by Gib Smith &middot; 30 years in financial services &middot; Competitors can buy the same AI models. They cannot buy this.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Go-to-Market -->
+<div class="slide" data-slide="5">
+  <div class="gtm-slide">
+    <h2>Go-to-Market</h2>
+    <div class="gtm-phases">
+      <div class="gtm-phase">
+        <div class="gtm-phase-num">1</div>
+        <h3>Prove It</h3>
+        <p>Build the MVP with 2-3 flagship IR teams at existing financial services accounts. One earnings call, one set of analyst cards, one IR officer's feedback.</p>
+      </div>
+      <div class="gtm-phase">
+        <div class="gtm-phase-num">2</div>
+        <h3>Package It</h3>
+        <p>Unify fragmented post-event data (attendees, transcripts, Q&A logs) into a single intelligence deliverable. The agent helps during AND after the call.</p>
+      </div>
+      <div class="gtm-phase">
+        <div class="gtm-phase-num">3</div>
+        <h3>Scale It</h3>
+        <p>Use financial services logos as proof points. Expand across verticals. Mature from a Podium feature into a standalone product.</p>
+      </div>
+    </div>
+    <div class="gtm-logos">
+      <div class="gtm-logo">Goldman Sachs</div>
+      <div class="gtm-logo">Citi</div>
+      <div class="gtm-logo">JP Morgan</div>
+      <div class="gtm-logo">Wells Fargo</div>
+      <div class="gtm-logo">Barclays</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Next Steps -->
+<div class="slide" data-slide="6">
+  <div class="next-slide">
+    <h2>Next Steps</h2>
+    <div class="next-steps-list">
+      <div class="next-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Connect with Tommaso on API Access</h4>
+          <p>Understand OE Central endpoints, what data is programmatically accessible, and how to normalize it for the agent.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Scope the Ontology Build with Gib</h4>
+          <p>How much structured knowledge already exists vs. what needs to be created? Start with 3-5 financial concepts as proof of concept.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Align with Product Team</h4>
+          <p>Accelerate their roadmap, don't run parallel. Integrate with what's already being built for post-event analytics.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Build the MVP</h4>
+          <p>One earnings call, one set of analyst cards, real IR officer feedback. Prototype can be ready within a week.</p>
+        </div>
+      </div>
+    </div>
+    <div class="prototype-note">
+      Working prototype target: next week. Let's make it real.
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" onclick="prev()">&larr;</button>
+  <div id="dots"></div>
+  <div class="slide-counter"><span id="counter">1 / 7</span></div>
+  <button class="nav-btn" onclick="next()">&rarr;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function updateSlides() {
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'exit');
+      if (i === current) s.classList.add('active');
+      else if (i < current) s.classList.add('exit');
+    });
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    document.getElementById('counter').textContent = `${current + 1} / ${totalSlides}`;
+
+    // Animate data layers on slide 3
+    if (current === 3) {
+      const layers = document.querySelectorAll('.data-layer');
+      layers.forEach((l, i) => {
+        setTimeout(() => l.classList.add('visible'), i * 300);
+      });
+    }
+  }
+
+  function next() {
+    if (current < totalSlides - 1) { current++; updateSlides(); }
+  }
+
+  function prev() {
+    if (current > 0) { current--; updateSlides(); }
+  }
+
+  function goTo(i) {
+    current = i;
+    updateSlides();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); }
+  });
+</script>
+
+</body>
+</html>

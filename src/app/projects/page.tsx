@@ -77,8 +77,38 @@ const categories: Category[] = [
     ],
   },
   {
+    label: "Zoom Partnership",
+    projects: [
+      {
+        slug: "zvm-migration",
+        title: "Video Migration Practice",
+        description:
+          "End-to-end video content migration from Kaltura, Panopto, and ON24 to Zoom — IFRS, Laurentian University, and Anderson & Strudwick engagements with automated pipeline tooling.",
+        badge: "Active",
+        status: "active",
+      },
+      {
+        slug: "zoom-integrations",
+        title: "Integration Effort",
+        description:
+          "Connecting Zoom Events to enterprise MAP and CRM stacks — HubSpot, Marketo, Eloqua, Pardot, Salesforce connectors with Workato and Zapier middleware.",
+        badge: "Active",
+        status: "active",
+      },
+    ],
+  },
+  {
     label: "SE & Ideas",
     projects: [
+      {
+        href: "/ir-intelligence-agent.html",
+        external: true,
+        title: "IR Intelligence Agent",
+        description:
+          "Concept deck for an AI-powered IR intelligence agent — automated earnings analysis, peer benchmarking, and investor sentiment tracking.",
+        badge: "Concept",
+        status: "live",
+      },
       {
         slug: "se",
         title: "Golden Demo Scripts",

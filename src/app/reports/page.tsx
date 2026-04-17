@@ -4,12 +4,21 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-8",
+    week: "Week 8",
+    date: "Apr 7–11, 2026",
+    summary: "21 meetings across IFRS and Veltris dry runs, Zoom managed agent concept pitched, Cargill API integration priced, Okta/Circle HD discovery underway, and AI video production POC scoped.",
+    count: "21 meetings",
+    badge: "New",
+    pdf: null,
+  },
+  {
     href: "/reports/week-7",
     week: "Week 7",
     date: "Mar 30–Apr 4, 2026",
     summary: "19 meetings across Q1 close ($10M+), IFRS dry run confirmed with Veltris onboarded, MemberClicks integration resolved and documented, Laurentian University Panopto migration scoped, and two client deliverables shipped.",
     count: "19 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/weekly_report_week7.pdf",
   },
   {

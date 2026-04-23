@@ -4,12 +4,21 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-9",
+    week: "Week 9",
+    date: "Apr 13–18, 2026",
+    summary: "Okta discovery call lands in a single week, IFRS pre-migration validation gates on April 18th Zoom release, Open Montage crosses into working prototype, and OE’s internal AI support agent goes live.",
+    count: "23 meetings",
+    badge: "New",
+    pdf: "/weekly_report_week9.pdf",
+  },
+  {
     href: "/reports/week-8",
     week: "Week 8",
     date: "Apr 7–11, 2026",
     summary: "21 meetings across IFRS and Veltris dry runs, Zoom managed agent concept pitched, Cargill API integration priced, Okta/Circle HD discovery underway, and AI video production POC scoped.",
     count: "21 meetings",
-    badge: "New",
+    badge: null,
     pdf: null,
   },
   {

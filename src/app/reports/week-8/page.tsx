@@ -38,7 +38,7 @@ const COMMENTS_STORAGE_KEY = "oe-hub-comments-week-8";
 const themes: Theme[] = [
   {
     title: "Migration Platform at an Inflection Point",
-    text: "IFRS and Veltris dry runs exposed systemic gaps in Zoom\u2019s API readiness: ZVM has no metadata API, tag limits break real content, SRT captions are unsupported, and the dual-stream Kaltura encoding issue remains unresolved. The April 18 Zoom release is the gate for everything \u2014 tag limits expand from 5 to 30, caption upload unblocks, and the April 23 full migration run becomes possible. Until then, OE is effectively acting as Zoom\u2019s QA team.",
+    text: "IFRS and Veltris dry runs exposed systemic gaps in Zoom\u2019s API readiness: ZVM has no metadata API, tag limits break real content, SRT captions are unsupported, and the dual-stream Kaltura encoding issue remains unresolved. The April 18 Zoom release is the gate for everything \u2014 tag limits expand from 5 to 30, caption upload unblocks, and the April 23 full migration run becomes possible. Until then, OE\u2019s dry runs are generating real-world platform validation data that feeds directly into the Zoom roadmap.",
   },
   {
     title: "Managed Agent as the Next Product Bet",
@@ -165,7 +165,7 @@ const days: DayData[] = [
       {
         title: "Okta Internal Debrief \u2014 Max, Mithun, Kara",
         summary: "Kara\u2019s read: the questionnaire walkthrough was not a real discovery call. Need an actual conversation with decision-makers before any quote goes out. SSO gap is a red flag that needs direct resolution. Another university RFP in from Nick Porter. Kara worked through the night on an OE Central issue for the Sparkle conference. Max is out Mon\u2013Wed next week. Consensus: no quote without a proper discovery call.",
-        angle: "Kara is right. Quoting without discovery is how scope creep starts. Farah is a pushy closer \u2014 don\u2019t let urgency substitute for diligence.",
+        angle: "Kara is right. Quoting without discovery is how scope creep starts. The right next step is a proper stakeholder conversation before any number goes out.",
       },
     ],
   },

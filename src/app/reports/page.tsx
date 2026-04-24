@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-10",
+    week: "Week 10",
+    date: "Apr 20–24, 2026",
+    summary: "Okta $38K implementation proposal presented to committee, Indeed scoped at $22,100 via automated pricing tool, IFRS all technical blockers cleared and client review scheduled, and three internal AI initiatives advanced in parallel.",
+    count: "23 meetings",
+    badge: "New",
+    pdf: "/weekly_report_week10.pdf",
+    month: "April 2026",
+  },
+  {
     href: "/reports/week-9",
     week: "Week 9",
     date: "Apr 13–18, 2026",
     summary: "Okta discovery call lands in a single week, IFRS pre-migration validation gates on April 18th Zoom release, Open Montage crosses into working prototype, and OE’s internal AI support agent goes live.",
     count: "23 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/weekly_report_week9.pdf",
     month: "April 2026",
   },
@@ -123,7 +133,7 @@ export default function Reports() {
                 textAlign: "center",
               }}
             >
-              ↑ Upload PDF
+              \u2191 Upload PDF
             </Link>
             <Link
               href="/se-kpi"
@@ -140,7 +150,7 @@ export default function Reports() {
                 textAlign: "center",
               }}
             >
-              Q2 KPI →
+              Q2 KPI \u2192
             </Link>
           </div>
         </div>
@@ -195,7 +205,7 @@ export default function Reports() {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{r.week}</span>
-                          <span style={{ fontSize: 12, color: "var(--muted)" }}>· {r.date}</span>
+                          <span style={{ fontSize: 12, color: "var(--muted)" }}>\u00b7 {r.date}</span>
                           {r.badge && (
                             <span
                               style={{
@@ -234,7 +244,7 @@ export default function Reports() {
                               gap: 4,
                             }}
                           >
-                            ↓ PDF
+                            \u2193 PDF
                           </a>
                         )}
                       </div>
@@ -257,7 +267,7 @@ export default function Reports() {
           }}
         >
           <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-            Track Q2 KPI progress week by week →{" "}
+            Track Q2 KPI progress week by week \u2192{" "}
             <Link
               href="/se-kpi"
               style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
@@ -275,12 +285,12 @@ export default function Reports() {
           }}
         >
           <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-            View the live BD Pipeline dashboard →{" "}
+            View the live BD Pipeline dashboard \u2192{" "}
             <Link
               href="/projects/bd-pipeline"
               style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
             >
-              Corp Comms · ASCO 2026 · Zoom
+              Corp Comms \u00b7 ASCO 2026 \u00b7 Zoom
             </Link>
           </div>
         </div>

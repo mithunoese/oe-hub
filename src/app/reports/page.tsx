@@ -107,24 +107,42 @@ export default function Reports() {
               Week-by-week updates, pipeline activity, and progress tracking.
             </p>
           </div>
-          <Link
-            href="/admin"
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: "var(--teal)",
-              background: "var(--teal-light)",
-              border: "1px solid var(--teal-mid)",
-              borderRadius: 8,
-              padding: "8px 14px",
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              marginTop: 4,
-            }}
-          >
-            ↑ Upload PDF
-          </Link>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0, marginTop: 4 }}>
+            <Link
+              href="/admin"
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: "var(--teal)",
+                background: "var(--teal-light)",
+                border: "1px solid var(--teal-mid)",
+                borderRadius: 8,
+                padding: "8px 14px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+                textAlign: "center",
+              }}
+            >
+              ↑ Upload PDF
+            </Link>
+            <Link
+              href="/se-kpi"
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: "var(--teal)",
+                background: "var(--teal-light)",
+                border: "1px solid var(--teal-mid)",
+                borderRadius: 8,
+                padding: "8px 14px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+                textAlign: "center",
+              }}
+            >
+              Q2 KPI →
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -229,23 +247,42 @@ export default function Reports() {
         ))}
       </div>
 
-      <div
-        style={{
-          marginTop: 32,
-          padding: "16px 24px",
-          background: "var(--teal-light)",
-          borderRadius: 10,
-          border: "1px solid var(--teal-mid)",
-        }}
-      >
-        <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-          View the live BD Pipeline dashboard →{" "}
-          <Link
-            href="/projects/bd-pipeline"
-            style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
-          >
-            Corp Comms · ASCO 2026 · Zoom
-          </Link>
+      <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div
+          style={{
+            padding: "16px 24px",
+            background: "var(--teal-light)",
+            borderRadius: 10,
+            border: "1px solid var(--teal-mid)",
+          }}
+        >
+          <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
+            Track Q2 KPI progress week by week →{" "}
+            <Link
+              href="/se-kpi"
+              style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
+            >
+              SE KPI Dashboard
+            </Link>
+          </div>
+        </div>
+        <div
+          style={{
+            padding: "16px 24px",
+            background: "var(--teal-light)",
+            borderRadius: 10,
+            border: "1px solid var(--teal-mid)",
+          }}
+        >
+          <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
+            View the live BD Pipeline dashboard →{" "}
+            <Link
+              href="/projects/bd-pipeline"
+              style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
+            >
+              Corp Comms · ASCO 2026 · Zoom
+            </Link>
+          </div>
         </div>
       </div>
     </main>

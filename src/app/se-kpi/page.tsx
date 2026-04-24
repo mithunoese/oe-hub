@@ -102,7 +102,7 @@ const weeks: WeekData[] = [
     dates: "Apr 20–25",
     status: "current",
     label: "Okta Proposal + Indeed Priced",
-    stats: { pipelineUSD: 60100, assetsCreated: 5, rescopings: 0, insightsFiled: 34, formalHandoffs: 1 },
+    stats: { pipelineUSD: 60100, assetsCreated: 5, rescopings: 0, insightsFiled: 4, formalHandoffs: 1 },
     contributions: {
       revenue: [
         "Okta $38K implementation proposal presented to committee (Apr 24)",
@@ -122,10 +122,10 @@ const weeks: WeekData[] = [
         "Zero re-scoping on IFRS throughout full validation cycle",
       ],
       product: [
-        "ZCM-118 (thumbnail), ZCM-119 (report), ZCM-121 (VOD channel) filed",
-        "30+ Okta feature requests submitted to Zoom product via Farah/Adam",
-        "Circle HD API spike closed (ZCM-96)",
-        "D2L ZVM upload blocker formally escalated to Zoom",
+        "ZCM-118 (thumbnail fix), ZCM-119 (report enhancement), ZCM-121 (VOD channel step) filed",
+        "Circle HD API spike closed — ZCM-96 complete",
+        "D2L ZVM external file upload blocker formally escalated to Zoom",
+        "S3-to-S3 flow architecture scoped with Max for Okta post-IFRS",
       ],
       delivery: [
         "Okta 6-phase SOW — first formal ZCM migration PM handoff template",
@@ -227,14 +227,12 @@ function StatusChip({ status }: { status: "exceeds" | "on-track" | "building" })
 export default function SEKPIDashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const selected = selectedWeek !== null ? weeks.find((w) => w.week === selectedWeek) : null;
-
-  // Active dataset: either selected week or all weeks
   const activeWeeks = selected ? [selected] : weeks;
 
   return (
     <main style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 24px 72px" }}>
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <Link href="/reports" style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
           &larr; Back to Reports
@@ -256,10 +254,10 @@ export default function SEKPIDashboard() {
         </div>
       </div>
 
-      {/* ── Q2 Snapshot row ── */}
+      {/* Q2 Snapshot row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 28 }}>
         {categories.map((cat) => {
-          const val = cat.statValue(weeks); // always Q2 total for snapshot
+          const val = cat.statValue(weeks);
           const status = cat.getStatus(val);
           return (
             <div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 16px" }}>
@@ -272,7 +270,7 @@ export default function SEKPIDashboard() {
         })}
       </div>
 
-      {/* ── Two-column layout ── */}
+      {/* Two-column layout */}
       <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
 
         {/* Left: Week list */}
@@ -317,14 +315,12 @@ export default function SEKPIDashboard() {
           </div>
           <div style={{ marginTop: 12, padding: "10px 12px", background: "#f9fafb", borderRadius: 8, border: `1px solid ${BORDER}` }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: DARK, marginBottom: 4 }}>Adding Week 11+</div>
-            <div style={{ fontSize: 10, color: MUTED, lineHeight: 1.5 }}>Add a new entry to the <code style={{ fontSize: 9, background: BORDER, padding: "1px 3px", borderRadius: 3 }}>weeks</code> array in <code style={{ fontSize: 9, background: BORDER, padding: "1px 3px", borderRadius: 3 }}>se-kpi/page.tsx</code>. Snapshot and totals update automatically.</div>
+            <div style={{ fontSize: 10, color: MUTED, lineHeight: 1.5 }}>Append to the <code style={{ fontSize: 9, background: BORDER, padding: "1px 3px", borderRadius: 3 }}>weeks</code> array in <code style={{ fontSize: 9, background: BORDER, padding: "1px 3px", borderRadius: 3 }}>se-kpi/page.tsx</code>. Stats and totals update automatically.</div>
           </div>
         </div>
 
         {/* Right: Category cards */}
         <div style={{ flex: 1, minWidth: 0 }}>
-
-          {/* Context bar */}
           <div style={{ marginBottom: 14, padding: "10px 16px", background: selected ? TEAL_LIGHT : "#f9fafb", borderRadius: 8, border: `1px solid ${selected ? TEAL_MID : BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             {selected ? (
               <><span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>Week {selected.week}</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>{selected.dates} — {selected.label}</span></>
@@ -339,11 +335,10 @@ export default function SEKPIDashboard() {
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {categories.map((cat) => {
               const val = cat.statValue(activeWeeks);
-              const status = cat.getStatus(cat.statValue(weeks)); // status always from Q2 total
+              const status = cat.getStatus(cat.statValue(weeks));
               const items = activeWeeks.flatMap((w) => w.contributions[cat.key]);
               return (
                 <div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "16px 20px" }}>
-                  {/* Card header */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 14, fontWeight: 700, color: DARK }}>{cat.name}</span>
@@ -351,15 +346,9 @@ export default function SEKPIDashboard() {
                       <span style={{ fontSize: 10, fontWeight: 600, color: "#16a34a", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 4, padding: "2px 7px" }}>Mine {cat.myWeight}%</span>
                       <StatusChip status={status} />
                     </div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: TEAL, flexShrink: 0, marginLeft: 12 }}>
-                      {cat.statLabel(val)}
-                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: TEAL, flexShrink: 0, marginLeft: 12 }}>{cat.statLabel(val)}</div>
                   </div>
-
-                  {/* Target */}
                   <div style={{ fontSize: 11, color: LIGHT, fontStyle: "italic", marginBottom: 12 }}>Target: {cat.oeTarget}</div>
-
-                  {/* Evidence */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     {items.map((item, i) => (
                       <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>

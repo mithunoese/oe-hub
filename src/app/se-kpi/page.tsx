@@ -24,9 +24,9 @@ interface WeekContributions {
 interface WeekData {
   week: number;
   dates: string;
-  status: "complete" | "current" | "upcoming";
+  status: "complete" | "current";
   label: string;
-  contributions?: WeekContributions;
+  contributions: WeekContributions;
 }
 
 interface KPICategory {
@@ -139,15 +139,6 @@ const weeks: WeekData[] = [
       ],
     },
   },
-  { week: 11, dates: "Apr 27–May 1", status: "upcoming", label: "" },
-  { week: 12, dates: "May 4–9", status: "upcoming", label: "" },
-  { week: 13, dates: "May 11–16", status: "upcoming", label: "" },
-  { week: 14, dates: "May 18–23", status: "upcoming", label: "" },
-  { week: 15, dates: "May 25–30", status: "upcoming", label: "" },
-  { week: 16, dates: "Jun 1–6", status: "upcoming", label: "" },
-  { week: 17, dates: "Jun 8–13", status: "upcoming", label: "" },
-  { week: 18, dates: "Jun 15–20", status: "upcoming", label: "" },
-  { week: 19, dates: "Jun 22–27", status: "upcoming", label: "" },
 ];
 
 const categories: KPICategory[] = [
@@ -240,40 +231,26 @@ const categories: KPICategory[] = [
 
 export default function SEKPIDashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
-
   const selected = selectedWeek !== null ? weeks.find((w) => w.week === selectedWeek) : null;
 
   return (
     <main style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 24px 72px" }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <Link
-          href="/reports"
-          style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}
-        >
+        <Link href="/reports" style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
           &larr; Back to Reports
         </Link>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: LIGHT, marginBottom: 6 }}>SE Performance</div>
             <h1 style={{ fontSize: 28, fontWeight: 700, color: DARK, marginBottom: 4, letterSpacing: "-0.02em" }}>Q2 KPI Dashboard</h1>
-            <p style={{ fontSize: 13, color: MUTED }}>April – June 2026 · Weeks 8–19 · 3 of 12 weeks tracked</p>
+            <p style={{ fontSize: 13, color: MUTED }}>April – June 2026 · 3 weeks tracked so far</p>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <a
-              href="/solutions_engineer_kpi.pdf"
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 6, padding: "7px 12px", textDecoration: "none", whiteSpace: "nowrap" }}
-            >
+            <a href="/solutions_engineer_kpi.pdf" target="_blank" rel="noreferrer" style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 6, padding: "7px 12px", textDecoration: "none", whiteSpace: "nowrap" }}>
               ↓ Original KPI Plan
             </a>
-            <a
-              href="/se_kpi_response.pdf"
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 6, padding: "7px 12px", textDecoration: "none", whiteSpace: "nowrap" }}
-            >
+            <a href="/se_kpi_response.pdf" target="_blank" rel="noreferrer" style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 6, padding: "7px 12px", textDecoration: "none", whiteSpace: "nowrap" }}>
               ↓ My Q2 Response
             </a>
           </div>
@@ -304,24 +281,23 @@ export default function SEKPIDashboard() {
             {weeks.map((w) => (
               <button
                 key={w.week}
-                onClick={() => w.status !== "upcoming" && setSelectedWeek(selectedWeek === w.week ? null : w.week)}
+                onClick={() => setSelectedWeek(selectedWeek === w.week ? null : w.week)}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  padding: "9px 12px",
+                  padding: "10px 12px",
                   borderRadius: 8,
                   border: selectedWeek === w.week ? `1.5px solid ${TEAL}` : `1px solid ${BORDER}`,
-                  background: selectedWeek === w.week ? TEAL_LIGHT : w.status === "upcoming" ? "#fafafa" : "#fff",
-                  cursor: w.status === "upcoming" ? "default" : "pointer",
+                  background: selectedWeek === w.week ? TEAL_LIGHT : "#fff",
+                  cursor: "pointer",
                   textAlign: "left",
                   width: "100%",
-                  opacity: w.status === "upcoming" ? 0.55 : 1,
                 }}
               >
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: w.status === "current" ? TEAL : w.status === "upcoming" ? LIGHT : DARK }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: w.status === "current" ? TEAL : DARK }}>
                       Week {w.week}
                     </span>
                     {w.status === "current" && (
@@ -329,7 +305,7 @@ export default function SEKPIDashboard() {
                     )}
                   </div>
                   <div style={{ fontSize: 10, color: LIGHT }}>{w.dates}</div>
-                  {w.label && <div style={{ fontSize: 10, color: MUTED, marginTop: 2, lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{w.label}</div>}
+                  <div style={{ fontSize: 10, color: MUTED, marginTop: 2, lineHeight: 1.3 }}>{w.label}</div>
                 </div>
                 <div style={{ flexShrink: 0, marginLeft: 8 }}>
                   {w.status === "complete" && (
@@ -340,19 +316,16 @@ export default function SEKPIDashboard() {
                   {w.status === "current" && (
                     <div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL_LIGHT, border: `2px solid ${TEAL}` }} />
                   )}
-                  {w.status === "upcoming" && (
-                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: BORDER }} />
-                  )}
                 </div>
               </button>
             ))}
           </div>
           <div style={{ marginTop: 12, fontSize: 10, color: LIGHT, lineHeight: 1.6 }}>
-            Click a week to filter the dashboard. Click again to return to Q2 totals.
+            Click a week to filter by its contributions. Click again to return to Q2 totals.
           </div>
         </div>
 
-        {/* Right: KPI Dashboard */}
+        {/* Right: KPI cards */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Context bar */}
           <div style={{ marginBottom: 14, padding: "10px 16px", background: selected ? TEAL_LIGHT : "#f9fafb", borderRadius: 8, border: `1px solid ${selected ? TEAL_MID : BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -360,7 +333,7 @@ export default function SEKPIDashboard() {
               {selected ? (
                 <>
                   <span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>Week {selected.week}</span>
-                  <span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>{selected.dates}{selected.label ? ` — ${selected.label}` : ""}</span>
+                  <span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>{selected.dates} — {selected.label}</span>
                 </>
               ) : (
                 <>
@@ -370,10 +343,7 @@ export default function SEKPIDashboard() {
               )}
             </div>
             {selected && (
-              <button
-                onClick={() => setSelectedWeek(null)}
-                style={{ fontSize: 11, color: MUTED, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}
-              >
+              <button onClick={() => setSelectedWeek(null)} style={{ fontSize: 11, color: MUTED, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}>
                 × Show Q2 totals
               </button>
             )}
@@ -382,51 +352,34 @@ export default function SEKPIDashboard() {
           {/* Category cards */}
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {categories.map((cat) => {
-              const items = selected?.contributions ? selected.contributions[cat.key] : cat.q2Totals;
+              const items = selected ? selected.contributions[cat.key] : cat.q2Totals;
               return (
                 <div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "18px 20px" }}>
-                  {/* Card header */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
                     <div>
                       <div style={{ fontSize: 14, fontWeight: 700, color: DARK, marginBottom: 6 }}>{cat.name}</div>
-                      <div style={{ display: "flex", gap: 6 }}>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 4, padding: "2px 8px" }}>
-                          OE: {cat.oeWeight}%
-                        </span>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: "#16a34a", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 4, padding: "2px 8px" }}>
-                          My Q2: {cat.myWeight}%
-                        </span>
-                        {cat.myWeight > cat.oeWeight && (
-                          <span style={{ fontSize: 10, color: "#16a34a", background: "#f0fdf4", borderRadius: 4, padding: "2px 8px" }}>↑ proposed up</span>
-                        )}
-                        {cat.myWeight < cat.oeWeight && (
-                          <span style={{ fontSize: 10, color: MUTED, background: "#f9fafb", borderRadius: 4, padding: "2px 8px" }}>↓ proposed down</span>
-                        )}
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 4, padding: "2px 8px" }}>OE: {cat.oeWeight}%</span>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: "#16a34a", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 4, padding: "2px 8px" }}>My Q2: {cat.myWeight}%</span>
+                        {cat.myWeight > cat.oeWeight && <span style={{ fontSize: 10, color: "#16a34a", background: "#f0fdf4", borderRadius: 4, padding: "2px 8px" }}>↑ proposed up</span>}
+                        {cat.myWeight < cat.oeWeight && <span style={{ fontSize: 10, color: MUTED, background: "#f9fafb", borderRadius: 4, padding: "2px 8px" }}>↓ proposed down</span>}
                       </div>
                     </div>
-                    {!selected && (
-                      <div style={{ fontSize: 13, fontWeight: 700, color: TEAL, textAlign: "right", flexShrink: 0, marginLeft: 12 }}>{cat.q2Stat}</div>
-                    )}
+                    {!selected && <div style={{ fontSize: 13, fontWeight: 700, color: TEAL, flexShrink: 0, marginLeft: 12 }}>{cat.q2Stat}</div>}
                   </div>
 
-                  {/* Metrics comparison */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
                     <div style={{ background: "#f9fafb", borderRadius: 7, padding: "10px 12px" }}>
                       <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: LIGHT, marginBottom: 5 }}>OE Metrics</div>
-                      {cat.oeMetrics.map((m, i) => (
-                        <div key={i} style={{ fontSize: 11, color: MUTED, marginBottom: 3 }}>· {m}</div>
-                      ))}
+                      {cat.oeMetrics.map((m, i) => <div key={i} style={{ fontSize: 11, color: MUTED, marginBottom: 3 }}>· {m}</div>)}
                       <div style={{ fontSize: 10, color: LIGHT, fontStyle: "italic", marginTop: 5 }}>{cat.oeTargets}</div>
                     </div>
                     <div style={{ background: "#f0fdf4", borderRadius: 7, padding: "10px 12px" }}>
                       <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#86efac", marginBottom: 5 }}>My Q2 Metrics</div>
-                      {cat.myMetrics.map((m, i) => (
-                        <div key={i} style={{ fontSize: 11, color: MUTED, marginBottom: 3 }}>· {m}</div>
-                      ))}
+                      {cat.myMetrics.map((m, i) => <div key={i} style={{ fontSize: 11, color: MUTED, marginBottom: 3 }}>· {m}</div>)}
                     </div>
                   </div>
 
-                  {/* Evidence list */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {items.map((item, i) => (
                       <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
@@ -434,9 +387,6 @@ export default function SEKPIDashboard() {
                         <div style={{ fontSize: 12, color: DARK, lineHeight: 1.55 }}>{item}</div>
                       </div>
                     ))}
-                    {items.length === 0 && (
-                      <div style={{ fontSize: 12, color: LIGHT, fontStyle: "italic" }}>No entries for this week yet.</div>
-                    )}
                   </div>
                 </div>
               );

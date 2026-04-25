@@ -122,7 +122,7 @@ const days: DayData[] = [
       },
       {
         title: "Okta Implementation Plan Review — Max 1:1",
-        summary: "Mithun and Max refined the Okta implementation document. Key edits: SSO push group mapping replaced with “channel access control configuration” to avoid committing to ZVM user group auto-provisioning via SSO; chapter migration removed from implementation scope (Zoom API not ready, deferred to post-Oktane); ownership remapping simplified to a document mapping Circle HD accounts to Zoom accounts; “parent-child channel relationships” changed to “channel-playlist relationships.” Max also proposed a post-migration completion report as a standard handoff artifact for every future engagement.",
+        summary: "Mithun and Max refined the Okta implementation document. Key edits: SSO push group mapping replaced with ‘channel access control configuration’ to avoid committing to ZVM user group auto-provisioning via SSO; chapter migration removed from implementation scope (Zoom API not ready, deferred to post-Oktane); ownership remapping simplified to a document mapping Circle HD accounts to Zoom accounts; ‘parent-child channel relationships’ changed to ‘channel-playlist relationships.’ Max also proposed a post-migration completion report as a standard handoff artifact for every future engagement.",
         angle: "Cleaning up the scope language now prevents the same contract exposure that slowed down the IFRS engagement — precise wording on channels and chapters is foundational for every future ZCM proposal.",
       },
       {
@@ -218,12 +218,22 @@ const days: DayData[] = [
   {
     day: "Friday",
     date: "April 24",
-    meetingCount: 1,
+    meetingCount: 3,
     meetings: [
       {
         title: "ZCM Technical Standup — Friday Wrap",
         summary: "Akash confirmed the thumbnail fix is visible and working in the IFRS Zoom account. The enhanced migration report will be ready by Monday. Max requested a CSV of this week’s validated IFRS content for the client to begin embed replacement work. ZCM-121 (VOD channel assignment) queued for Monday. The team aligned on starting full migration processing the following week pending client review approval. The Zoom preview rendering bug was acknowledged as a Zoom-side UI issue — content plays correctly in the published channel.",
         angle: "With every blocker resolved and the client review meeting scheduled, the IFRS migration has the clearest path to go-live of any engagement in Q2.",
+      },
+      {
+        title: "IFRS Pre-Standup Credential Check — Internal",
+        summary: "Mithun and a colleague pulled up Kaltura KMC credentials immediately before the IFRS ZCM standup. Mithun confirmed login to the IFRS Kaltura account after working through a Dashlane access issue and identified the correct customer-specific KMC subdomain. The group noted IFRS remains stuck on the slide-and-speaker-view rendering piece and that Kaltura has declined to provide further cooperation as the customer is transitioning off the platform.",
+        angle: "Having KMC credentials accessible during live standups removes the friction that has slowed troubleshooting in previous sessions — Dashlane organization for all IFRS platform credentials is worth a quick cleanup pass.",
+      },
+      {
+        title: "IFRS ZCM Migration Status Standup — Fan, Vishnu, ZCM Engineering",
+        summary: "Fan led a cross-team review of IFRS migration progress for the week. Tag cap increase from 20 to 30 is confirmed working in the load metadata jobs. A Zoom Video preview player bug surfaced: a new unified player being rolled out for the IFRS account returns 404 errors for thumbnail images in the hub preview UI, while content plays correctly in published channels. The XZM trace ID was captured and will be routed to Prasad for investigation. On captions, William flagged a 500 error that occurs when load metadata runs before Zoom finishes processing the uploaded file — retry logic exists but the team needs processing time benchmarks for large files before scaling batch jobs. The categories UI update is in progress with Kim and will surface as part of the next main release. VOD channel auto-assignment for the 2,000-video IFRS library will be handled by a post-migration script from Zoom’s China engineering team, covering both initial bulk assignment and automatic addition of future recordings — outside OE’s migration scope. Fan confirmed comfort sharing the migration progress report with IFRS directly and will reply to Stefan (Zoom sales POC) with a status update covering the week’s progress.",
+        angle: "The new Zoom Video player bug is a platform-side issue surfacing in a client account mid-migration — routing the trace ID directly to Prasad protects OE’s delivery timeline from delays outside the team’s control.",
       },
     ],
   },
@@ -306,7 +316,7 @@ export default function Week10Report() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 32 }}>
         {[
-          { n: "23", l: "Meetings" },
+          { n: "25", l: "Meetings" },
           { n: "5", l: "Days" },
           { n: "4", l: "Themes" },
           { n: "10", l: "Week" },
@@ -325,7 +335,7 @@ export default function Week10Report() {
 
       <h2 style={{ ...serif, fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 12 }}>Overview</h2>
       <p style={{ ...serif, fontSize: 15, color: "#374151", lineHeight: 1.75, marginBottom: 32 }}>
-        Week 10 was the week the migration practice converted months of pipeline work into formal commercial motion. Two proposals went out &mdash; a $38K six-phase implementation plan to Okta&rsquo;s committee and a $22,100 automated quote to Indeed &mdash; while a 72-hour engineering sprint cleared every outstanding IFRS technical blocker, bringing the first client-scale ZCM migration to the edge of go-live. Mithun built and deployed the automated migration pricing tool, delivered a Camden ZCM onboarding session, and advanced three internal AI initiatives in parallel: the OE Video Editor prototype, a Power BI-to-Claude daily briefing agent, and Devin&rsquo;s Podium 2.0 IR platform. The week closed with IFRS scheduled for client review, Okta in front of its procurement committee, and the May 5th Zoom AE pitch confirmed across 23 meetings.
+        Week 10 was the week the migration practice converted months of pipeline work into formal commercial motion. Two proposals went out &mdash; a $38K six-phase implementation plan to Okta&rsquo;s committee and a $22,100 automated quote to Indeed &mdash; while a 72-hour engineering sprint cleared every outstanding IFRS technical blocker, bringing the first client-scale ZCM migration to the edge of go-live. Mithun built and deployed the automated migration pricing tool, delivered a Camden ZCM onboarding session, and advanced three internal AI initiatives in parallel: the OE Video Editor prototype, a Power BI-to-Claude daily briefing agent, and Devin&rsquo;s Podium 2.0 IR platform. The week closed with IFRS scheduled for client review, Okta in front of its procurement committee, and the May 5th Zoom AE pitch confirmed across 25 meetings.
       </p>
 
       <h2 style={{ ...serif, fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 16 }}>Themes</h2>

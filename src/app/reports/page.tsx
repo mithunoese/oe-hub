@@ -133,7 +133,7 @@ export default function Reports() {
                 textAlign: "center",
               }}
             >
-              \u2191 Upload PDF
+              ↑ Upload PDF
             </Link>
             <Link
               href="/se-kpi"
@@ -150,7 +150,7 @@ export default function Reports() {
                 textAlign: "center",
               }}
             >
-              Q2 KPI \u2192
+              Q2 KPI →
             </Link>
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function Reports() {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{r.week}</span>
-                          <span style={{ fontSize: 12, color: "var(--muted)" }}>\u00b7 {r.date}</span>
+                          <span style={{ fontSize: 12, color: "var(--muted)" }}>· {r.date}</span>
                           {r.badge && (
                             <span
                               style={{
@@ -244,7 +244,7 @@ export default function Reports() {
                               gap: 4,
                             }}
                           >
-                            \u2193 PDF
+                            ↓ PDF
                           </a>
                         )}
                       </div>
@@ -267,7 +267,7 @@ export default function Reports() {
           }}
         >
           <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-            Track Q2 KPI progress week by week \u2192{" "}
+            Track Q2 KPI progress week by week →{" "}
             <Link
               href="/se-kpi"
               style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
@@ -285,12 +285,12 @@ export default function Reports() {
           }}
         >
           <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-            View the live BD Pipeline dashboard \u2192{" "}
+            View the live BD Pipeline dashboard →{" "}
             <Link
               href="/projects/bd-pipeline"
               style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
             >
-              Corp Comms \u00b7 ASCO 2026 \u00b7 Zoom
+              Corp Comms · ASCO 2026 · Zoom
             </Link>
           </div>
         </div>

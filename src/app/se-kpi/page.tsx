@@ -129,7 +129,7 @@ const weeks: WeekData[] = [
       ],
       delivery: [
         "Okta 6-phase SOW — first formal ZCM migration PM handoff template",
-        "Migration report spec’d with attachment-level fidelity tracking",
+        "Migration report spec'd with attachment-level fidelity tracking",
         "IFRS CSV delivered for client embed replacement work",
       ],
     },
@@ -142,7 +142,6 @@ const categories: {
   id: string;
   name: string;
   oeWeight: number;
-  myWeight: number;
   oeTarget: string;
   key: ContribKey;
   statLabel: (v: number) => string;
@@ -153,7 +152,6 @@ const categories: {
     id: "revenue",
     name: "Revenue Influence",
     oeWeight: 35,
-    myWeight: 25,
     oeTarget: "ACV set quarterly · Win Rate >x%",
     key: "revenue",
     statLabel: (v) => `$${(v / 1000).toFixed(0)}K pipeline`,
@@ -164,7 +162,6 @@ const categories: {
     id: "preSales",
     name: "Pre-Sales Enablement",
     oeWeight: 15,
-    myWeight: 25,
     oeTarget: "2–3 assets per quarter · Demo score ≥4.5",
     key: "preSales",
     statLabel: (v) => `${v} assets`,
@@ -175,7 +172,6 @@ const categories: {
     id: "clientOutcomes",
     name: "Client Outcomes",
     oeWeight: 25,
-    myWeight: 20,
     oeTarget: "≥95% launch without re-scoping · PM satisfaction ≥4.5",
     key: "clientOutcomes",
     statLabel: (v) => `${v} re-scopings`,
@@ -186,7 +182,6 @@ const categories: {
     id: "product",
     name: "Product & Partner Impact",
     oeWeight: 15,
-    myWeight: 20,
     oeTarget: "3–4 insights · ≥40% adoption rate",
     key: "product",
     statLabel: (v) => `${v} insights filed`,
@@ -197,7 +192,6 @@ const categories: {
     id: "delivery",
     name: "Delivery Readiness",
     oeWeight: 10,
-    myWeight: 10,
     oeTarget: "PM Readiness Score ≥4.5",
     key: "delivery",
     statLabel: (v) => `${v} handoff${v !== 1 ? "s" : ""}`,
@@ -264,7 +258,7 @@ export default function SEKPIDashboard() {
               <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, marginBottom: 6, letterSpacing: "0.03em" }}>{cat.name}</div>
               <div style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 6 }}>{cat.statLabel(val)}</div>
               <StatusChip status={status} />
-              <div style={{ marginTop: 8, fontSize: 10, color: LIGHT }}>OE {cat.oeWeight}% · Mine {cat.myWeight}%</div>
+              <div style={{ marginTop: 8, fontSize: 10, color: LIGHT }}>Target {cat.oeWeight}%</div>
             </div>
           );
         })}
@@ -342,8 +336,7 @@ export default function SEKPIDashboard() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 14, fontWeight: 700, color: DARK }}>{cat.name}</span>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 4, padding: "2px 7px" }}>OE {cat.oeWeight}%</span>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: "#16a34a", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 4, padding: "2px 7px" }}>Mine {cat.myWeight}%</span>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 4, padding: "2px 7px" }}>Target {cat.oeWeight}%</span>
                       <StatusChip status={status} />
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: TEAL, flexShrink: 0, marginLeft: 12 }}>{cat.statLabel(val)}</div>

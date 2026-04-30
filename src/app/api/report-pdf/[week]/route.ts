@@ -8,9 +8,6 @@ export async function GET(
 ) {
   const { week } = await params;
 
-  // First try the public folder (statically committed PDFs)
-  // This is handled by Next.js static serving, so we only need DB fallback here
-
   try {
     const url = process.env.DATABASE_URL;
     if (!url) return new NextResponse('No DB', { status: 500 });
@@ -27,7 +24,7 @@ export async function GET(
     return new NextResponse(buffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="${filename}"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
         'Content-Length': buffer.length.toString(),
         'Cache-Control': 'public, max-age=3600',
       },

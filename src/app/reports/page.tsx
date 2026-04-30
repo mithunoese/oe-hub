@@ -10,7 +10,7 @@ const weeks = [
     summary: "Okta $38K implementation proposal presented to committee, Indeed scoped at $22,100 via automated pricing tool, IFRS all technical blockers cleared and client review scheduled, and three internal AI initiatives advanced in parallel.",
     count: "23 meetings",
     badge: "New",
-    pdf: "/weekly_report_week10.pdf",
+    pdf: "/api/report-pdf/week-10",
     month: "April 2026",
   },
   {
@@ -20,7 +20,7 @@ const weeks = [
     summary: "Okta discovery call lands in a single week, IFRS pre-migration validation gates on April 18th Zoom release, Open Montage crosses into working prototype, and OE’s internal AI support agent goes live.",
     count: "23 meetings",
     badge: null,
-    pdf: "/weekly_report_week9.pdf",
+    pdf: "/api/report-pdf/week-9",
     month: "April 2026",
   },
   {
@@ -30,7 +30,7 @@ const weeks = [
     summary: "21 meetings across IFRS and Veltris dry runs, Zoom managed agent concept pitched, Cargill API integration priced, Okta/Circle HD discovery underway, and AI video production POC scoped.",
     count: "21 meetings",
     badge: null,
-    pdf: "/weekly_report_week8.pdf",
+    pdf: "/api/report-pdf/week-8",
     month: "April 2026",
   },
   {
@@ -40,7 +40,7 @@ const weeks = [
     summary: "19 meetings across Q1 close ($10M+), IFRS dry run confirmed with Veltris onboarded, MemberClicks integration resolved and documented, Laurentian University Panopto migration scoped, and two client deliverables shipped.",
     count: "19 meetings",
     badge: null,
-    pdf: "/weekly_report_week7.pdf",
+    pdf: "/api/report-pdf/week-7",
     month: "April 2026",
   },
   {
@@ -50,7 +50,7 @@ const weeks = [
     summary: "10 meetings across IFRS client dry-run planning, migration pricing endorsed by Zoom VP, first Zoom integrations training with Ren, and NYC cocktail networking event.",
     count: "10 meetings",
     badge: null,
-    pdf: "/weekly_report_week6.pdf",
+    pdf: "/api/report-pdf/week-6",
     month: "March 2026",
   },
   {
@@ -60,7 +60,7 @@ const weeks = [
     summary: "20 meetings across Q1 close sprint, Zoom API gaps resolved, integrations go-to-market confirmed, and prospecting tools shipped.",
     count: "20 meetings",
     badge: null,
-    pdf: "/weekly_report_week5.pdf",
+    pdf: "/api/report-pdf/week-5",
     month: "March 2026",
   },
   {
@@ -70,7 +70,7 @@ const weeks = [
     summary: "17 meetings across migration pricing launch, Zoom platform enablement, EMEA intro, Workato partnership discovery, and the Zoom API gap.",
     count: "17 meetings",
     badge: null,
-    pdf: "/weekly_report_week4.pdf",
+    pdf: "/api/report-pdf/week-4",
     month: "March 2026",
   },
   {
@@ -80,7 +80,7 @@ const weeks = [
     summary: "22 meetings across migration engineering, CMS pricing, first client demos, and SE cadence.",
     count: "22 meetings",
     badge: null,
-    pdf: "/weekly_report_week3.pdf",
+    pdf: "/api/report-pdf/week-3",
     month: "March 2026",
   },
   {
@@ -90,7 +90,7 @@ const weeks = [
     summary: "27 meetings across sales, delivery, product, engineering, and the Zoom partnership.",
     count: "27 meetings",
     badge: null,
-    pdf: "/weekly_report_week2.pdf",
+    pdf: "/api/report-pdf/week-2",
     month: "February 2026",
   },
 ];

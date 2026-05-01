@@ -30,9 +30,6 @@ interface WeekData {
   contributions: Record<ContribKey, string[]>;
 }
 
-// ── DATA ─────────────────────────────────────────────────────────────────────
-// To add a new week: append a new entry here. Dashboard auto-updates.
-
 const weeks: WeekData[] = [
   {
     week: 8,
@@ -134,9 +131,41 @@ const weeks: WeekData[] = [
       ],
     },
   },
+  {
+    week: 11,
+    dates: "Apr 27–May 1",
+    status: "current",
+    label: "Board Visibility + S3 Architecture",
+    stats: { pipelineUSD: 15000, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 0 },
+    contributions: {
+      revenue: [
+        "Indeed $15K implementation proposal sent to Zoom AE Jason (6,949 videos, 79TB)",
+        "Okta procurement activated vendor onboarding — Monday Zoom AE meeting confirmed",
+        "Named at Q1 all-hands as driver of Zoom revenue trajectory toward $1M/month",
+      ],
+      preSales: [
+        "Professional services migration presentation finalized for Zoom AE team meeting (30+ reps)",
+        "Migration questionnaire refined with data residency questions and simplified formatting",
+        "Salesforce CMS discovery agent scoped with Eric and Ali — auto-populates opportunity fields from transcripts",
+      ],
+      clientOutcomes: [
+        "IFRS cleared last technical blocker (ZCM-104 resolved) — greenlit for live migration execution",
+        "Caption prioritization logic locked: VTT selected over SRT to avoid conversion errors",
+        "Zero re-scopings across IFRS throughout full validation cycle",
+      ],
+      product: [
+        "S3-to-S3 import architecture confirmed with Zoom ZVM engineering — APIs releasing mid-May",
+        "ZCM-104 two-phase batch approach confirmed and resolved",
+        "Migration bot tiered gating model defined: sub-threshold automated, large deals trigger OE contact flow",
+        "Citi transcription pipeline scoped: ~1,500 legacy Veracast recordings via AWS Transcribe",
+      ],
+      delivery: [
+        "50-video S3 smoke test planned before any live client migration data is used",
+        "Citi transcription project scoped as new data services offering — potential expansion to Bank of America",
+      ],
+    },
+  },
 ];
-
-// ── CATEGORY DEFINITIONS ─────────────────────────────────────────────────────
 
 const categories: {
   id: string;
@@ -200,8 +229,6 @@ const categories: {
   },
 ];
 
-// ── STATUS CHIP ───────────────────────────────────────────────────────────────
-
 function StatusChip({ status }: { status: "exceeds" | "on-track" | "building" }) {
   const cfg = {
     exceeds: { label: "Exceeds", bg: "#dcfce7", color: "#16a34a", dot: "#16a34a" },
@@ -215,8 +242,6 @@ function StatusChip({ status }: { status: "exceeds" | "on-track" | "building" })
     </span>
   );
 }
-
-// ── PAGE ──────────────────────────────────────────────────────────────────────
 
 export default function SEKPIDashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);

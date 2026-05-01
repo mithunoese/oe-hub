@@ -267,7 +267,7 @@ export default function Reports() {
         ))}
       </div>
 
-      <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ marginTop: 32 }}>
         <div
           style={{
             padding: "16px 24px",
@@ -283,24 +283,6 @@ export default function Reports() {
               style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
             >
               SE KPI Dashboard
-            </Link>
-          </div>
-        </div>
-        <div
-          style={{
-            padding: "16px 24px",
-            background: "var(--teal-light)",
-            borderRadius: 10,
-            border: "1px solid var(--teal-mid)",
-          }}
-        >
-          <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-            View the live BD Pipeline dashboard →{" "}
-            <Link
-              href="/projects/bd-pipeline"
-              style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
-            >
-              Corp Comms · ASCO 2026 · Zoom
             </Link>
           </div>
         </div>

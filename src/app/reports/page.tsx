@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-11",
+    week: "Week 11",
+    date: "Apr 27 – May 1, 2026",
+    summary: "IFRS migration greenlit for live execution, Indeed $15K proposal sent and Okta onboarding activated, S3-to-S3 Zoom architecture confirmed for mid-May, and CMS migration named at the Q1 company all-hands alongside the SpaceX, Anthropic, and OpenAI IPO engagements.",
+    count: "27 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-11",
+    month: "May 2026",
+  },
+  {
     href: "/reports/week-10",
     week: "Week 10",
     date: "Apr 20–24, 2026",
     summary: "Okta $38K implementation proposal presented to committee, Indeed scoped at $22,100 via automated pricing tool, IFRS all technical blockers cleared and client review scheduled, and three internal AI initiatives advanced in parallel.",
     count: "23 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-10",
     month: "April 2026",
   },

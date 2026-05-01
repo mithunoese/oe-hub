@@ -100,7 +100,7 @@ const weeks: WeekData[] = [
   {
     week: 10,
     dates: "Apr 20–25",
-    status: "current",
+    status: "complete",
     label: "Okta Proposal + Indeed Priced",
     stats: { pipelineUSD: 60100, assetsCreated: 5, rescopings: 0, insightsFiled: 4, formalHandoffs: 1 },
     contributions: {
@@ -305,11 +305,7 @@ export default function SEKPIDashboard() {
             ))}
           </div>
           <div style={{ marginTop: 10, fontSize: 10, color: LIGHT, lineHeight: 1.6 }}>
-            Click a week to see that week only. Click again for Q2 totals.
-          </div>
-          <div style={{ marginTop: 12, padding: "10px 12px", background: "#f9fafb", borderRadius: 8, border: `1px solid ${BORDER}` }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: DARK, marginBottom: 4 }}>Adding Week 11+</div>
-            <div style={{ fontSize: 10, color: MUTED, lineHeight: 1.5 }}>Append to the <code style={{ fontSize: 9, background: BORDER, padding: "1px 3px", borderRadius: 3 }}>weeks</code> array in <code style={{ fontSize: 9, background: BORDER, padding: "1px 3px", borderRadius: 3 }}>se-kpi/page.tsx</code>. Stats and totals update automatically.</div>
+            Click a week to filter. Click again for Q2 totals.
           </div>
         </div>
 

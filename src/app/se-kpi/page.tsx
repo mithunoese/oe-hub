@@ -126,7 +126,7 @@ const weeks: WeekData[] = [
       ],
       delivery: [
         "Okta 6-phase SOW — first formal ZCM migration PM handoff template",
-        "Migration report spec'd with attachment-level fidelity tracking",
+        "Migration report spec’d with attachment-level fidelity tracking",
         "IFRS CSV delivered for client embed replacement work",
       ],
     },
@@ -134,7 +134,7 @@ const weeks: WeekData[] = [
   {
     week: 11,
     dates: "Apr 27–May 1",
-    status: "current",
+    status: "complete",
     label: "Board Visibility + S3 Architecture",
     stats: { pipelineUSD: 15000, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 0 },
     contributions: {
@@ -162,6 +162,41 @@ const weeks: WeekData[] = [
       delivery: [
         "50-video S3 smoke test planned before any live client migration data is used",
         "Citi transcription project scoped as new data services offering — potential expansion to Bank of America",
+      ],
+    },
+  },
+  {
+    week: 12,
+    dates: "May 4–8",
+    status: "current",
+    label: "IFRS Unblocked, Zest Activated",
+    stats: { pipelineUSD: 10000, assetsCreated: 2, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 },
+    contributions: {
+      revenue: [
+        "Amgen Zoom webinar integration engagement opened — $10K+ proposal in progress",
+        "Farah’s on-camera integration enthusiasm opens direct referral channel from 30+ Zoom reps",
+        "IFRS migration validated and unblocked; delivery revenue event tied to live go-live in Week 13",
+      ],
+      preSales: [
+        "CMS migration six-step go-to-market presented to 30–35 Zoom ZVM specialists on Zest global call",
+        "Okta implementation document shared live during Zest call as scoping proof point",
+        "Migration questionnaire and one-pager distributed via updated referral form link",
+      ],
+      clientOutcomes: [
+        "IFRS dry run metadata confirmed: Video IDs and categories/subcategories migrating correctly from Kaltura",
+        "Thumbnail retention mitigated 7 days → 30 days; permanent fix in Zoom May release",
+        "AEM iframe validation teed up with Tudor for mid-Week 13 — final gate before live migration",
+      ],
+      product: [
+        "JSON file storage gap reported to Fan Wang; file-dump workaround agreed",
+        "Slide attachment API gap escalated: no programmatic path exists, manual only",
+        "Admin-side new player configuration bug confirmed and reported to Fan",
+        "Caption download removal for VOD (May 18) flagged as client-facing change affecting IFRS",
+        "MFA and service account requirements formally defined for migration bot client onboarding",
+      ],
+      delivery: [
+        "IFRS migration environment validated end-to-end; ready for live run pending AEM iframe test",
+        "Citi Veracast extraction scoped and handed to Andrew Classen; ColdFusion script in progress",
       ],
     },
   },

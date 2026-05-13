@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-12",
+    week: "Week 12",
+    date: "May 4–8, 2026",
+    summary: "IFRS migration validated and unblocked, CMS migration pitch delivered to 30-plus Zoom specialists on the Zest global call, Amgen pharma integration discovery opened, and migration bot security architecture formally defined.",
+    count: "15 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-12",
+    month: "May 2026",
+  },
+  {
     href: "/reports/week-11",
     week: "Week 11",
     date: "Apr 27 – May 1, 2026",
     summary: "IFRS migration greenlit for live execution, Indeed $15K proposal sent and Okta onboarding activated, S3-to-S3 Zoom architecture confirmed for mid-May, and CMS migration named at the Q1 company all-hands alongside the SpaceX, Anthropic, and OpenAI IPO engagements.",
     count: "27 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-11",
     month: "May 2026",
   },

@@ -146,7 +146,7 @@ const weeks: WeekData[] = [
       preSales: [
         "Professional services migration presentation finalized for Zoom AE team meeting (30+ reps)",
         "Migration questionnaire refined with data residency questions and simplified formatting",
-        "Salesforce CMS discovery agent scoped with Eric and Ali — auto-populates opportunity fields from transcripts",
+        "Salesforce CMS discovery agent scoped with Eric and Ali",
       ],
       clientOutcomes: [
         "IFRS cleared last technical blocker (ZCM-104 resolved) — greenlit for live migration execution",
@@ -156,26 +156,26 @@ const weeks: WeekData[] = [
       product: [
         "S3-to-S3 import architecture confirmed with Zoom ZVM engineering — APIs releasing mid-May",
         "ZCM-104 two-phase batch approach confirmed and resolved",
-        "Migration bot tiered gating model defined: sub-threshold automated, large deals trigger OE contact flow",
+        "Migration bot tiered gating model defined",
         "Citi transcription pipeline scoped: ~1,500 legacy Veracast recordings via AWS Transcribe",
       ],
       delivery: [
         "50-video S3 smoke test planned before any live client migration data is used",
-        "Citi transcription project scoped as new data services offering — potential expansion to Bank of America",
+        "Citi transcription project scoped as new data services offering",
       ],
     },
   },
   {
     week: 12,
     dates: "May 4–8",
-    status: "current",
+    status: "complete",
     label: "IFRS Unblocked, Zest Activated",
     stats: { pipelineUSD: 10000, assetsCreated: 2, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 },
     contributions: {
       revenue: [
         "Amgen Zoom webinar integration engagement opened — $10K+ proposal in progress",
         "Farah’s on-camera integration enthusiasm opens direct referral channel from 30+ Zoom reps",
-        "IFRS migration validated and unblocked; delivery revenue event tied to live go-live in Week 13",
+        "IFRS migration validated and unblocked; delivery revenue tied to live go-live in Week 13",
       ],
       preSales: [
         "CMS migration six-step go-to-market presented to 30–35 Zoom ZVM specialists on Zest global call",
@@ -183,20 +183,53 @@ const weeks: WeekData[] = [
         "Migration questionnaire and one-pager distributed via updated referral form link",
       ],
       clientOutcomes: [
-        "IFRS dry run metadata confirmed: Video IDs and categories/subcategories migrating correctly from Kaltura",
+        "IFRS dry run metadata confirmed: Video IDs and categories/subcategories migrating correctly",
         "Thumbnail retention mitigated 7 days → 30 days; permanent fix in Zoom May release",
-        "AEM iframe validation teed up with Tudor for mid-Week 13 — final gate before live migration",
+        "AEM iframe validation teed up with Tudor for mid-Week 13",
       ],
       product: [
         "JSON file storage gap reported to Fan Wang; file-dump workaround agreed",
         "Slide attachment API gap escalated: no programmatic path exists, manual only",
         "Admin-side new player configuration bug confirmed and reported to Fan",
-        "Caption download removal for VOD (May 18) flagged as client-facing change affecting IFRS",
-        "MFA and service account requirements formally defined for migration bot client onboarding",
+        "Caption download removal for VOD (May 18) flagged as client-facing change",
+        "MFA and service account requirements formally defined for migration bot",
       ],
       delivery: [
         "IFRS migration environment validated end-to-end; ready for live run pending AEM iframe test",
-        "Citi Veracast extraction scoped and handed to Andrew Classen; ColdFusion script in progress",
+        "Citi Veracast extraction scoped and handed to Andrew Classen",
+      ],
+    },
+  },
+  {
+    week: 13,
+    dates: "May 11–15",
+    status: "current",
+    label: "IFRS Launch Locked, Indeed Aligned",
+    stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
+    contributions: {
+      revenue: [
+        "Arziant/Baker Media RFQ submitted — targeting $100K–$200K OE contribution, shortlist pending",
+        "Indeed discovery call completed; Skyler confirmed “perfect” and circulated to leadership",
+        "First Computershare investor day referral win confirmed for mid-June delivery",
+      ],
+      preSales: [
+        "Indeed migration report and implementation plan delivered post-discovery call",
+        "Arziant RFQ integration pricing structure formalized ($3K/integration + $500/yr maintenance)",
+        "CSM tiered pricing model built: bundled above $100K, $3.5K–$5K/month below",
+      ],
+      clientOutcomes: [
+        "Indeed fully aligned on 10TB migration scope with leadership-ready materials confirmed",
+        "IFRS May 18 migration start confirmed with all technical blockers resolved",
+        "Zero re-scopings across all active engagements this week",
+      ],
+      product: [
+        "ZCM category assignment bug diagnosed and ticketed — per-entry filter fix before May 18",
+        "Zoom SDK embedding confirmed out-of-scope for OE at current stage (Menarini)",
+        "Zoom category feature went live — first visibility into category migration behavior",
+      ],
+      delivery: [
+        "Indeed implementation plan and migration report delivered as leadership-ready artifacts",
+        "IFRS migration environment fully validated; Monday May 18 start confirmed",
       ],
     },
   },
@@ -285,8 +318,6 @@ export default function SEKPIDashboard() {
 
   return (
     <main style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 24px 72px" }}>
-
-      {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <Link href="/reports" style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
           &larr; Back to Reports
@@ -308,7 +339,6 @@ export default function SEKPIDashboard() {
         </div>
       </div>
 
-      {/* Q2 Snapshot row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 28 }}>
         {categories.map((cat) => {
           const val = cat.statValue(weeks);
@@ -324,10 +354,7 @@ export default function SEKPIDashboard() {
         })}
       </div>
 
-      {/* Two-column layout */}
       <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-
-        {/* Left: Week list */}
         <div style={{ width: 200, flexShrink: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 10 }}>Q2 Weeks</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -369,7 +396,6 @@ export default function SEKPIDashboard() {
           </div>
         </div>
 
-        {/* Right: Category cards */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ marginBottom: 14, padding: "10px 16px", background: selected ? TEAL_LIGHT : "#f9fafb", borderRadius: 8, border: `1px solid ${selected ? TEAL_MID : BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             {selected ? (

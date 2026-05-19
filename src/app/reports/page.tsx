@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-13",
+    week: "Week 13",
+    date: "May 11–15, 2026",
+    summary: "IFRS migration start locked for May 18 with all technical blockers resolved, Indeed discovery call delivered leadership-ready materials confirmed as perfect, Arziant/Baker RFQ submitted with a formalized integration pricing playbook, and an earnings automation product concept emerged from conversations with Casey and Devin.",
+    count: "19 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-13",
+    month: "May 2026",
+  },
+  {
     href: "/reports/week-12",
     week: "Week 12",
     date: "May 4–8, 2026",
     summary: "IFRS migration validated and unblocked, CMS migration pitch delivered to 30-plus Zoom specialists on the Zest global call, Amgen pharma integration discovery opened, and migration bot security architecture formally defined.",
     count: "15 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-12",
     month: "May 2026",
   },

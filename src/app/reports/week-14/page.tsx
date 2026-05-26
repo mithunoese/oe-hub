@@ -37,43 +37,47 @@ const COMMENTS_STORAGE_KEY = "oe-hub-comments-week-14";
 
 const themes: Theme[] = [
   {
-    title: "IFRS Migration: All Technical Blockers Cleared",
-    text: "Five days of iterative engineering resolved every outstanding item before the Monday May 25 live start. Akash confirmed agenda slide extraction works by recovering the PowerPoint file via Kaltura cue point document IDs, the Zoom compressed-file June release provides a clean second phase for JSON attachments, and the video category over-assignment bug was diagnosed as an API scoping issue patchable via metadata update without re-uploading any video files. IFRS has a hard Kaltura license deadline driving the urgency, and the migration team enters next week with no technical unknowns.",
+    title: "IFRS Migration: Live Execution and Edge Cases in Real Time",
+    text: "Three distinct technical blockers surfaced and were resolved in sequence during live migration: the Zoom tag hub limit (revealed Friday to be 4,612 unique tags against a 1,000 ceiling), thumbnail patching timing requiring a wait-then-repatch cycle, and Zoom video processing delays affecting transcript metadata. Each was caught internally before the client saw the account. A late-breaking IFRS request to consolidate UK and US Zoom accounts was immediately escalated to Zoom commercially, with Peter confirming OE will charge for any repeated scope. The team completed Phase 1 extraction in under three days — a full week ahead of the original June 1 deadline.",
   },
   {
-    title: "CMS Pipeline: Five Active Enterprise Opportunities",
-    text: "Indeed, Okta, Arizent, University of Ottawa, and HubSpot all advanced this week at various stages. The Arizent RFQ response established OE’s first formal integration pricing model — $3,000 per integration with $500 per month maintenance — alongside a CSM threshold structure that bundles dedicated support for accounts above $100K annually. Submitting the Arizent RFQ and delivering the Indeed discovery call in the same week marks the moment migration services moved from pitch to parallel delivery pipeline.",
+    title: "CMS Pipeline: ABA, Lab Roots, and Four Concurrent Opportunities",
+    text: "The American Bankers Association discovery call confirmed 150 webinars per year across two programs and a clean On24 displacement narrative given Cvent’s acquisition by Blackstone. Lab Roots surfaced Thursday as a strong inbound lead: 500–600 annual webinars, 1,500 videos to migrate from WebinarNet and Chatty, paying $84K per year on current stack, with their Zoom AE not pitching migration. Together with Indeed at contract stage, Okta onboarding complete but contract silent, and the Workato integration partnership executed, Week 14 established the clearest multi-opportunity CMS pipeline view to date.",
   },
   {
-    title: "Strategic Market Consolidation",
-    text: "The Bullish acquisition of Acquinity for $500M reshuffled Computershare’s competitive position and is the direct reason they moved all business to OE, positioning OE as a strategically attractive asset in a consolidating transfer-agency and IR infrastructure market. A call with S&P Capital Access surfaced genuine complementary overlap between their investor CRM and OE’s event engagement data. Investment bankers are now engaged. Computershare also sourced OE into a mid-June investor day, the team’s first through that partnership channel.",
+    title: "Zoom Support Line: From 6-Month Plan to 90-Day Launch",
+    text: "Alan’s Friday session collapsed the support line timeline from a speculative six-month build to a 90-day active deployment. Core decisions: launch using the existing Passport website registration flow immediately without waiting for Zoom Contact Center, build a branded AE one-pager Mithun owns, have Max simplify the business plan to the 90-day arc, and schedule a call with Tyler at Zoom presenting four specific asks — free Contact Center for a year, OP access on existing laptops, a formal escalation path, and AE distribution materials. The support line is now a live project with deliverables assigned.",
   },
   {
-    title: "Earnings Automation: End-to-End Product Vision Emerging",
-    text: "Conversations with Casey and Devin this week mapped a modular end-to-end earnings call platform covering financial data ingestion, AI-assisted script drafting, teleprompter rehearsal, production delivery via OE platform, post-event video editing, and retail investor sentiment analysis from social platforms. Casey demonstrated a working teleprompter prototype built in Claude Code. Devin surfaced analysis of 40 earnings call transcripts showing that internal AI efficiency is the dominant corporate theme but investors are discounting it, suggesting a differentiated product and content angle. Lorna, a former Swiss IR Society president engaged as OE consultant, will validate the analyst dashboard before it reaches Computershare.",
+    title: "Internal Infrastructure: Workato, ZVM Architecture, and the AI Agent Foundation",
+    text: "The Workato referral agreement was negotiated across three sessions and sent to Workato for execution, establishing OE’s first formal integration middleware partnership at the Silver referral tier (10%). Max documented the ZVM API architecture differences from the IFRS Hub model — clip-first upload with per-video and per-channel ownership — to prepare for the next migration client. Alan formally assigned Mithun and Brian Copping to work with Alex Duncan on extending the Level 1 support agent with delivery-side Teams channel data, and both will shadow live events through Annalisa’s scheduling to build operational depth.",
   },
 ];
 
 const lookAhead: LookAhead[] = [
   {
-    title: "IFRS Live Migration Start",
-    text: "Max and Akash begin extracting and uploading the full Kaltura video library to Zoom on Monday May 25. Track extraction rate, verify the category metadata patch runs correctly on the first batch, and send a progress update to the IFRS client team by end of day. Owner: Max, Akash.",
+    title: "IFRS Tag Resolution and Metadata Repatch",
+    text: "Max to get Zoom’s position on the 4,612 unique tag ceiling — raise the hub limit or agree on a per-video cap with IFRS. Once resolved, run the full metadata repatch early in the week after Zoom finishes processing all uploaded videos. Owner: Max, Akash.",
   },
   {
-    title: "Indeed Contract",
-    text: "Kara to send the Indeed contract following the discovery call. Kenneth has not responded to three follow-up emails; escalate within Indeed to the procurement owner before the relationship goes cold. Owner: Kara, Mithun.",
+    title: "IFRS Account Consolidation — Commercial Path",
+    text: "Peter to email Chris Milne and Stefan to establish whether IFRS will defer the UK/US account consolidation. If remigration is required, price it at the original engagement rate with a minor discount. Route through Zoom first, not IFRS directly. Owner: Peter, Mithun.",
   },
   {
-    title: "Okta Contract Follow-up",
-    text: "Okta completed onboarding in three days but no contract has been sent and the primary contact is unresponsive. Identify the procurement decision-maker and send the contract before the engagement stalls. Owner: Kara.",
+    title: "ABA Pricing Package and POC Rehearsal",
+    text: "Kristen to deliver pricing across one-off, multi-pack, and full-prepay structures for 150 events per year and coordinate a proof-of-concept rehearsal event to advance the ABA engagement to contract. Owner: Kristen.",
   },
   {
-    title: "Arizent RFQ Shortlist Preparation",
-    text: "RFQ submitted. If OE is selected for the shortlist deep-dive, prepare a formal discovery questionnaire covering event support model, CMS content volume, and integration architecture requirements. Owner: Mithun, Kara, Max.",
+    title: "Lab Roots Discovery Call — Tuesday",
+    text: "Kara and Mithun to join the Lab Roots call. Mithun to assess WebinarNet extraction feasibility and scope the 1,500-video migration. Confirm whether Zoom AE Tyler Copeland will support the engagement or whether OE needs to self-source. Owner: Kara, Mithun.",
   },
   {
-    title: "Earnings Automation Flow Map",
-    text: "Mithun and Devin to document the end-to-end earnings call workflow from financial data ingestion to post-event video distribution, identifying the two or three highest-impact modules to prioritize for internal build approval. Share with Amelia and Alan by end of week. Owner: Mithun, Devin.",
+    title: "Zoom Support Line One-Pager and Tyler Call",
+    text: "Mithun to build the AE-facing one-pager with the Passport registration link. Max to update the business plan to a 90-day timeline removing the phased roadmap section. Schedule the Tyler call with Amelia and Alan this week. Owner: Mithun, Max.",
+  },
+  {
+    title: "ZVM Internal Testing and Brian Copping Onboarding",
+    text: "Max to write ZVM test tickets for Akash and Kiran to begin Zoom Video Management API exploration using the demo Kaltura account as source. Mithun and Max to run the Brian Copping delivery orientation session and connect with Alex Duncan on LLM hydration. Owner: Max, Mithun.",
   },
 ];
 
@@ -84,117 +88,137 @@ const days: DayData[] = [
     meetingCount: 4,
     meetings: [
       {
-        title: "ZCM Migration Standup — IFRS Agenda Files & Dashlane Setup",
-        summary: "Max opened the standup by announcing ZCM-133, targeting extraction of Kaltura agenda slide files that IFRS has been requesting. Akash committed to investigating the Kaltura API to determine whether agenda files can be fetched separately from the thumbnail format currently returned, and updating the ticket by the following day. The IFRS May 18 migration plan remained on hold pending a response from Priya. The standup concluded with Dashlane onboarding — Akash installed the browser extension so Max can securely share the Kaltura admin secret the migration chatbot requires.",
-        angle: "ZCM-133 moves the last pre-migration blocker forward; Dashlane setup removes the manual credential handoff risk before IFRS go-live.",
+        title: "IFRS Kaltura Migration — Engineering Kickoff",
+        summary: "The IFRS dev team (Agash, Kiran) walked Mithun and Max through the finalized two-phase migration plan ahead of Tuesday’s start. Phase 1 pulls all Kaltura content and metadata into OE’s S3 bucket; Phase 2 pushes from S3 to Zoom. The team decided to keep the existing staging infrastructure and agreed to run a metadata patch on all dry-run videos before the main migration begins, correcting thumbnails and category mappings updated since the dry run. Mithun requested that the final migration report include both the original Kaltura URL and the new Zoom URL per asset.",
+        angle: "Pre-migration metadata patch ensures IFRS’s Zoom account is clean at go-live, so the client’s first view of the full library reflects corrected categories and working thumbnails.",
       },
       {
-        title: "Menarini APAC SDK Feasibility Discussion — Peter, Max, Mithun",
-        summary: "Peter brought a new opportunity: Menarini (global group market cap $46B) wants to embed live Zoom webinars into a Drupal or WordPress marketing portal in the Philippines via the Zoom Meeting SDK, with a Korean dev agency building the site infrastructure. Mithun assessed the core technical piece as achievable but cautioned about maintenance ownership, expertise positioning, and the need for a co-build engagement rather than turnkey delivery. Amelia later confirmed SDK integrations are out of OE’s lane at this stage.",
-        angle: "Menarini was a useful capability boundary test — Amelia’s clear guidance prevents OE from overcommitting on unfamiliar SDK work.",
+        title: "OE Monday All-Hands — Weekly Sales Kickoff",
+        summary: "Andrew opened by welcoming Lorna, a new hire who spent 25 years at Credit Suisse on the sell side and IR and joins OE from Switzerland. Last week’s KPIs were the strongest on record: 52 meetings booked against a goal of 40, 38 opportunities created for $444K, and 19 closed. Standout developments included B of A’s Project Apex — described as the largest IPO in history, targeting retail financial advisors at scale with a June 3 go-live — and a Wells Fargo institutional investor campaign kicking off May 26. Kristen surfaced a 100K-plus ABA opportunity as a potential On24 takeaway. Mithun gave a brief update noting IFRS migration is officially launching this week.",
+        angle: "Mithun’s public callout of the IFRS migration start in front of the full sales team plants a live reference story for CMS migration and reinforces delivery credibility at a high-visibility moment.",
       },
       {
-        title: "Monday All-Hands Sales Kickoff",
-        summary: "Amelia reported 1,300 events delivered the prior week across capital markets, corporate services, conferences, and OE Connect, with 1,100-plus already booked for the current week including the UBS Best of Europe conference. Christian and Jamie shared LSEG IR Masterclass insights: under 7% of US investors back an EMEA company below $5B market cap, and 74% require at least one in-person meeting before committing. Kara debriefed her on-site Flextronics visit in Austin, where a 30,000-person town hall announced the company splitting into two publicly traded entities. Mithun reported OE won its first Computershare-sourced investor day, set for mid-June.",
-        angle: "The Flextronics split doubles the addressable opportunity within one enterprise relationship; the Computershare investor day validates the partner referral channel.",
+        title: "Technical Candidate Interview — Observer",
+        summary: "Mithun was present on a technical coding interview session, likely as an observer. The interviewer walked a candidate through a browser-based coding environment. Only the introduction of the session is captured in the transcript.",
+        angle: "Participation in technical hiring reflects OE’s growing engineering depth requirements as the platform’s integration and migration business scales.",
       },
       {
-        title: "Arizent RFQ Review — Kara and Mithun",
-        summary: "Kara walked Mithun through an RFQ from Arizent (American Banker, National Mortgage News) migrating from Cvent to Zoom Events and Webinars Plus. Integration requirements included Omeda, Stripe, Salesforce, and HubSpot/Marketo — all without Zapier. Mithun proposed $3,000 per integration plus $500 per month maintenance, citing the Cargill AI agent project as precedent. Zoom licensing was approximately $107K, leaving roughly $143K for OE professional services within a sub-$250K ceiling. Mithun drafted outreach to the Skyler contact at Arizent to initiate discovery.",
-        angle: "$3K/$500 sets a repeatable integration pricing template; 300 annual sponsored webinars makes Arizent a high-frequency recurring services opportunity.",
+        title: "Citi Veracast Media Extraction Review",
+        summary: "Mithun joined Andrew and a delivery team member to review progress on extracting Citi Velocity’s historical media archive from Veracast. Title-plus-date and speaker-plus-date cross-referencing yielded only partial matches across 144 events due to inconsistent naming. Very old events had S3 archive paths for potential recovery; the rest either exist in the current media project folder or are lost. The team resolved to deliver all available media without manual filtering and let Citi perform their own deduplication. SFTP delivery planned before Andrew’s leave the following week.",
+        angle: "Delivering the full set rather than filtering protects OE from liability over missed content and moves the project to client-side review before the end-of-month handoff deadline.",
       },
     ],
   },
   {
     day: "Tuesday",
     date: "May 19",
-    meetingCount: 7,
+    meetingCount: 4,
     meetings: [
       {
-        title: "ZCM Technical Standup — Agenda Slide API & June Zoom Release",
-        summary: "Akash confirmed agenda slide extraction is feasible and updated the ticket with findings matching Max’s prior investigation, noting that saving attachments to Zoom via the resources path was already working. Max shared that a Zoom June release will include compressed file upload support for the content hub, enabling JSON attachment files to be pushed as a second phase after core video migration. Max also raised a Zoom five-thumbnail-per-video limit and recommended filtering by object type before passing assets to avoid upload errors during the live run.",
-        angle: "ZCM-133 is unblocked and the June compressed file enhancement removes the last major technical unknown for IFRS delivery.",
+        title: "IFRS Kaltura Migration — Day 1 Status Update",
+        summary: "The engineering team reported approximately 300 entities successfully extracted from Kaltura to OE’s S3 staging bucket after starting at 4am with batches of 100, 200, then 400. Roughly 90 entries were placed in permanent hold due to missing media flavors. Max confirmed approximately 816 live-stream-only entries in the IFRS account, explaining the high hold volume. Target: finish extracting all 2,700 entities to S3 by Wednesday, begin the S3-to-Zoom phase Thursday. Akash moved ZCM-40 to in-progress. Separately, the Citi Veracast F4V audio files were discussed: approximately 450 webcast events need conversion to MP3 and SFTP delivery to Citi by June 1.",
+        angle: "Day 1 completing cleanly with 300 entities in staging confirms the two-phase pipeline is production-ready; the permanent hold logic prevents IFRS from receiving empty live-stream records at go-live.",
       },
       {
-        title: "Migration Chatbot 1:1 Demo — Akash and Mithun",
-        summary: "Akash walked Mithun through a live demo of the migration chatbot, which had accepted Kaltura admin credentials and returned a file inventory with video names, durations, and basic metadata. Attachment fetching was still in development. Mithun proposed a UX shift: rather than presenting a full file list at intake — impractical for libraries over five terabytes — the bot should ask users what they do not want to migrate, supporting responses by date range, tag, or title. The team aligned on prioritizing metadata completeness before refining the flow.",
-        angle: "Exclusion-first intake makes the bot enterprise-ready for large Kaltura libraries and strengthens the demo story for future migration prospects.",
+        title: "American Bankers Association Discovery Call",
+        summary: "OE presented to ABA’s webinar leadership team: Lauren St. Pierre and Kristen Shoop running 50 professional development webinars per year (up to 600 attendees), and Mark managing 80–100 complementary webinars per year (up to 1,000 registrants). ABA currently runs all events on On24 across both programs. The conversation focused on three concerns: content management without On24’s storyboard upload workflow, the multi-window complexity of Zoom production studio versus a single-pane producer view, and consistent dedicated team assignment across 150-plus events per year. OE addressed each point with Production Studio, a two-operator delivery model, and a named project manager with a client profile. Andrew positioned OE’s managed-services DNA as a structural advantage and noted On24’s acquisition by Cvent and Blackstone as a service degradation risk.",
+        angle: "ABA represents the archetypal On24 displacement opportunity: 150 events per year with a production-first culture, a platform mid-acquisition, and a client team already describing degraded service.",
       },
       {
-        title: "Amelia, Devin, and Mithun Weekly Sync",
-        summary: "Amelia and Devin recapped a productive S&P Capital Access call, noting genuine strategic overlap with S&P’s investor CRM database. Amelia flagged the Bullish acquisition of Acquinity for $500M as the direct reason Computershare moved all business to OE, noting investment bankers are now engaged. Capital markets QTD was at 58% of target after 5.5 weeks with last week’s revenue at $190K. Mithun updated on five active CMS pipeline opportunities and Amelia asked for a weekly email summary of open CMS opportunities going forward.",
-        angle: "Five named CMS opportunities in a single week signals that migration services are generating real commercial pull that warrants structured tracking.",
+        title: "Annalisa Sync — Brian Copping Onboarding and Staffing Tech",
+        summary: "Annalisa briefed Mithun on Brian Copping rejoining OE — a former employee from 2021–22 who understood the platform during the high-growth era and is returning to provide US-hours delivery coverage and reduce Diana’s overtime load. The conversation shifted to the staffing systems problem: Lasso was never designed for OE’s operating model (200-plus operators, global time zones, multi-event same-day scheduling) and no alternative evaluated has handled all requirements. Mithun acknowledged shared frustration around access and permission walls, citing the Teams AI agent for sales deal actions and S3 access as examples of things he could build if unblocked.",
+        angle: "Brian’s onboarding creates a new SE training partnership; the staffing system conversation surfaced a legitimate internal bottleneck that is worth escalating to Alan through Annalisa.",
       },
       {
-        title: "Arizent RFQ Pricing Strategy — Amelia, Kara, Max, Mithun",
-        summary: "The team worked through pricing dedicated CSM and 24/7 technical support within the Arizent RFQ’s $250K total ceiling. Amelia proposed a threshold model: accounts above $100K annually receive a dedicated CSM bundled; below that, $3,500–$5,000 per month. Power BI showed only Databricks and CNN currently above $100K in 2026 bookings, confirming the tier protects OE from extending high-touch support to low-spend clients. Standard event rates apply to the 300-webinar and 20–25 virtual event volumes, with production complexity scoped in the shortlist discovery call.",
-        angle: "The CSM pricing tier creates a reusable commercial structure for enterprise accounts beyond Arizent, turning one RFQ into a repeatable packaging model.",
-      },
-      {
-        title: "Indeed Demo Prep and Okta Check-in — Kara, Max, Mithun",
-        summary: "Kara, Max, and Mithun aligned on the structure for Thursday’s Indeed implementation call: Mithun to walk the implementation plan and a dummy migration report, Max to cover Zoom user onboarding including channels, permissions, and hub structure, and Kara to close with the onboarding process overview. Kara shared that Okta had completed onboarding in three days — well ahead of the months Zoom projected — but Kenneth had not responded to three follow-up emails and no contract had yet been sent.",
-        angle: "Okta completing onboarding in three days is exactly the client story that anchors the migration pitch; getting the contract signed converts a delivery win into revenue.",
-      },
-      {
-        title: "Casey and Mithun Sync — Earnings Automation Roadmap",
-        summary: "Casey and Mithun mapped an end-to-end earnings call product vision: financial data ingestion and AI-assisted script drafting, rehearsal with live teleprompter support, production delivery via OE platform, post-event video editing, and retail investor sentiment analysis from Reddit and X. Casey demonstrated a live teleprompter built in Claude Code with real-time scrolling and operator-controlled pacing. Mithun framed OE’s advantage as the only provider owning both event infrastructure and production services, meaning each workflow stage could be offered as a modular paid add-on.",
-        angle: "Even the teleprompter and video editing modules alone create a sticky, high-margin product layer that no pure-platform competitor in earnings can replicate.",
-      },
-      {
-        title: "Devin and Mithun Sync — IR Product Roadmap and Salesforce",
-        summary: "Devin and Mithun discussed his analyst dashboard project, agreeing that S&P and Computershare hold complementary data sets OE should partner with rather than rebuild. Devin shared a thought leadership experiment: 40 earnings call transcripts analyzed in Claude showed internal AI efficiency is the dominant corporate theme but investors are discounting it. Mithun worked through a Salesforce permissions fix live on the call. Diana’s newly delivered dashboard showed completely wrong numbers ($51M in closed deals) and a meeting with Ali was scheduled for next week.",
-        angle: "Devin’s earnings transcript analysis is exactly the differentiated IR insight that positions OE as a knowledgeable capital markets partner, not just a logistics provider.",
+        title: "Andrew — Claude Code Artifact Export (Informal)",
+        summary: "Andrew pulled Mithun into a brief informal session after using Claude to generate a list of ViAvid and GlobalMeet direct customers for BDR prospecting. He needed to make the HTML artifact shareable with Sean without requiring a Claude subscription. Mithun walked him through downloading the file locally, previewing it in the browser, and converting it to a PDF with clickable links via Claude Code.",
+        angle: "Mithun’s Claude Code fluency is now being pulled on directly by sales leadership for competitive prospecting workflows, quietly reinforcing the SE-as-AI-practitioner positioning.",
       },
     ],
   },
   {
     day: "Wednesday",
     date: "May 20",
-    meetingCount: 2,
+    meetingCount: 1,
     meetings: [
       {
-        title: "ZCM Pre-Launch Technical Standup — Akash, Max, Mithun",
-        summary: "Akash reported file transfer changes were complete but the demo Kaltura account had only five videos with no attachments, making agenda slide validation impossible there. Max clarified agenda slide functionality is a paid Kaltura add-on only available in IFRS’s live production account. Akash committed to running the original migration code against the IFRS account, with results expected by Friday and Monday remaining the go-live target. Max confirmed Zoom’s categories bug was fixed — category fields now visible — removing all remaining hard blockers. JSON files remain a second-phase item pending the June Zoom release.",
-        angle: "All technical blockers for May 25 IFRS migration start are resolved; the June JSON dump is documented as a planned follow-on step, not a risk.",
-      },
-      {
-        title: "Arizent RFQ Final Submission — MK, Kara, Mithun",
-        summary: "The team finalized the Arizent RFQ submission, working through the hardest line items where pricing 300 webinars at standard one-on-one rates would push the total far above the $250K ceiling. The agreed approach was to submit with ranges and include a cover note explaining that accurate pricing requires a discovery conversation about their actual event support model. Integration pricing was set at $3K per integration, CMS migration at $9K–$50K, technical onboarding at $2K. Kara targeted a grand total around $210K to signal competitiveness in the shortlist process. The submission was sent the same day.",
-        angle: "Submitting with ranges and a discovery-first cover note keeps OE in the shortlist conversation without over-committing on event support pricing that could create an unprofitable contract.",
+        title: "IFRS Migration Phase 2 Standup — Zoom Tag Limit Hit",
+        summary: "Moving into the S3-to-Zoom phase, the team immediately hit a blocker: Zoom’s content hub enforces a limit on unique tags and 35 entities failed with a tag-related error. Akash ran a Claude-assisted audit and confirmed 633 unique tags across the IFRS library — only 133 above Zoom’s current 999-tag hub limit. Max confirmed Zoom’s June release will raise the limit but the fix won’t land this week. The team aligned on the workaround: drop tags entirely for the current migration pass, load all other metadata cleanly, and patch tags back after the June Zoom release. Max will review the already-migrated content in the IFRS hub and give the go-ahead in the group chat for the team to resume the following morning without tags.",
+        angle: "Identifying the tag limit early — and immediately quantifying the 633 unique tag scope — allowed the team to make a clear proceed-without-tags decision the same day rather than stalling the migration waiting on Zoom’s roadmap.",
       },
     ],
   },
   {
     day: "Thursday",
     date: "May 21",
-    meetingCount: 3,
+    meetingCount: 7,
     meetings: [
       {
-        title: "ZCM Migration Standup — Agenda Slide Validated, Category Bug Found",
-        summary: "Akash confirmed success: a four-slide PowerPoint file had transferred cleanly from Kaltura to Zoom’s resources folder and was verified by Max as fully intact. A critical new issue emerged: all 232 Kaltura root categories were being assigned to every migrated video regardless of actual association. Joe joined and confirmed a likely bug — the entries.category API call appears to return every category that exists on the account rather than only those assigned to a specific entry. Since categories are metadata-only and patchable post-extraction without re-uploading video files, the team agreed it would not block Monday’s start.",
-        angle: "Catching the category bug before live migration — and confirming it is patchable — keeps Monday go-live on schedule and protects the client from receiving incorrectly tagged content.",
+        title: "IFRS Migration Day 3 Standup",
+        summary: "Phase 2 resumed without tags per Wednesday’s decision. Zoom confirmed the same day that the tag limit had been bumped to 1,000. Thumbnail validation was confirmed via API GET calls returning exact counts matching what was pushed. Citi MP3 conversion running in parallel: approximately 450 webcast events identified in S3, some already converted, full conversion expected by Friday. Max to review migrated content in the IFRS Zoom hub and give the go-ahead in the group chat before the next batch proceeds.",
+        angle: "Zoom’s same-day tag limit fix confirms the escalation channel to Zoom engineering is functioning; having 633 tags already documented means the repatch pass will be fast once the main upload clears.",
       },
       {
-        title: "Indeed Migration Discovery Call — Max, Mithun, Skyler",
-        summary: "Mithun and Max delivered the Indeed implementation walkthrough covering the migration process end to end: a high-level implementation plan with timeline, Zoom hub and channel structure with user ownership remapping, a dummy migration report showing client-facing output, and the onboarding process overview. The call served as a pre-sales alignment session to show Indeed exactly what the migration engagement would entail before contract finalization.",
-        angle: "Walking Indeed through a visual migration report and structured onboarding plan moves the conversation from pricing to delivery partnership, the right framing to close the $15K proposal.",
+        title: "OE Salesforce Monthly Review — Internal",
+        summary: "Ali ran the monthly Salesforce check-in. Key updates: the delivery/billing status split completes in two weeks, after which the main status bar becomes delivery-only. Ali asked all AEs to verify their names appear correctly as business leads on child orders to ensure commission mapping works. Camus requested a report of orders where non-sales staff appear as business leads. Jacob proposed an account-level earnings provider field to enable competitive tracking — Ali confirmed it is an admin-level change she can implement. Email domain matching was proposed as a more reliable duplicate account prevention method than fuzzy name matching. Dashboard migration from opportunity-based to order-based reporting committed before Q2 close.",
+        angle: "The account-level earnings provider field, if implemented, gives the full sales team a competitive intelligence layer that feeds directly into the earnings automation product concept Mithun and Casey have been developing.",
       },
       {
-        title: "Zoom Sales Weekly Standup",
-        summary: "Mithun joined the regular Thursday Zoom sales call covering pipeline activity, partner referrals, and cross-team coordination across the OE and Zoom partner teams, maintaining the consistent partner presence that has sourced IFRS, Indeed, and Okta.",
-        angle: "Consistent Zoom Weekly presence is the primary source of SE-relevant referrals in the CMS and migration pipeline.",
+        title: "OE PM/Delivery Weekly Standup — Kara",
+        summary: "Kara ran the Thursday delivery standup. David flagged Eastern Star Church as a live risk: a client on a 1-2K attendee license expecting 7,000 registrants, unwilling to upgrade or pay for operator helpline support. The group aligned on presenting three options and drawing a firm boundary on OE’s liability. Kristen updated on ABA: pricing being built across one-off, multi-pack, and full-prepay structures; a proof-of-concept rehearsal event is required before ABA commits. Mithun gave the first public IFRS migration update: all roughly 2,800 files are out of Kaltura and in S3, partial upload to Zoom underway. A significant new CMS opportunity surfaced through Kara — Lab Roots, which runs 500–600 webinars per year on WebinarNet and Chatty, has 1,500 videos to migrate, and pays $84K per year. The Zoom AE had told them not to migrate their content, making this a clear OE opportunity. Camden reported first cold calls and identified Zoom office hours attendees as warm prospects.",
+        angle: "Lab Roots is the strongest new CMS migration lead of the week: 500–600 events per year, 1,500 videos, $84K current spend, and a Zoom AE actively not pitching migration — exactly the gap OE fills.",
+      },
+      {
+        title: "Max and Mithun — Workato Redlines and ZVM Architecture",
+        summary: "Max and Mithun worked through Jamie’s Workato contract redlines before bringing the document to Alan: accepted the pre-sales use language edit, reverted OE’s two contested additions (post-termination referral protection, “no activity” definition) back to Workato’s original language. The session also covered ZVM API architecture planning for the next migration after IFRS. Unlike the current IFRS Zoom Hub model, ZVM requires creating clips first, then assigning them to channels with per-video and per-channel ownership — a multi-step flow. Max proposed a dry-run test using the demo Kaltura account to get familiar with ZVM endpoints before the next live client migration.",
+        angle: "Mapping ZVM API differences now — while the IFRS team has bandwidth — means OE enters the next migration without architectural unknowns, removing the discovery delay that slowed IFRS’s early weeks.",
+      },
+      {
+        title: "Mithun 1:1 Check-in — Andrew",
+        summary: "Andrew asked Mithun what he enjoys most, wants more of, and least enjoys. Mithun expressed genuine enthusiasm for the sales culture and team energy. He surfaced two frustrations: access barriers preventing him from going deeper into internal systems to build tools (S3 permissions, Salesforce seats, API access), and the sense that knowledge is too siloed for him to operate at full cross-functional impact. He named the Teams AI sales agent as an example of something he could build if unblocked. Andrew validated the observations and offered to raise the access issue with Alan and Amelia.",
+        angle: "The access and bottleneck issues Mithun raised with Annalisa earlier in the week are now on Andrew’s radar as well — two independent conversations surfacing the same structural blocker creates a stronger case for addressing it at the leadership level.",
+      },
+      {
+        title: "Workato Contract Final Review — Mithun and Alan",
+        summary: "Mithun briefed Alan on the final state of the Workato referral agreement after working through Jamie’s redlines with Max. He walked through three material changes: accepted the pre-sales use language (OE can use the platform for demonstrations and pre-sales activities to prospects), reverted OE’s two contested additions back to Workato’s original language, and confirmed the remaining clauses were clean. Alan reviewed the tracked changes on screen and gave approval to send the final document back to Workato for execution as a referral-only partner.",
+        angle: "Alan’s sign-off closes the Workato referral partnership — OE can now formally recommend Workato as the middleware layer for marketing integrations and begin earning referral commissions at the Silver tier.",
+      },
+      {
+        title: "Alan, Max, and Mithun — Strategic Session",
+        summary: "Three workstreams covered in one extended session. Workato contract: closed, approved for execution. LLM hydration: Alan tasked Mithun and Brian Copping to work with Alex Duncan on extending the existing Level 1 support agent — already strong on engineering knowledge — with delivery-side data including PM chat logs, event run-of-show documents, and client preferences stored in Teams channels. Brian will also shadow live events via Annalisa’s delivery scheduling. Zoom Support Line business plan: Max walked Alan through the full document. Alan’s feedback: rename “video specialist” to “certified Zoom platform expert,” lead with the free 30–90 day/5-visit tier before transitioning to subscription pricing, compress the launch timeline from 6 months to 60–90 days, and produce a one-pager for Zoom AE use.",
+        angle: "Alan’s endorsement of the support line with a 60–90 day target puts Mithun in position as technical co-architect alongside Max, and the IFRS migration experience creates direct credibility for the Zoom-facing pitch to Tyler and the partner team.",
       },
     ],
   },
   {
     day: "Friday",
     date: "May 22",
-    meetingCount: 1,
+    meetingCount: 5,
     meetings: [
       {
-        title: "End-of-Week Check-in — Mithun and Max",
-        summary: "Mithun connected briefly with Max to review IFRS migration readiness heading into the weekend, confirm Akash’s category bug fix was on track for Friday completion, and align on the Monday May 25 go-live plan with no remaining open items.",
-        angle: "A Friday pre-weekend sync ensures the team enters Monday’s IFRS migration start fully aligned with no ambiguity around open items.",
+        title: "IFRS Migration Day 4 — Final Standup",
+        summary: "Major correction surfaced: the 633 unique tag count reported Wednesday was calculated from only 100 entities. The actual count across all 1,942 entities is 4,612 — well above Zoom’s 1,000-tag hub limit. Max confirmed he is escalating to Zoom. Citi: approximately 80 videos remain to convert to MP3, all content is in OE’s US East 1 S3 bucket, and the team is waiting on Citi’s SFTP destination credentials. Metadata repatch postponed until early next week to give Zoom time to finish processing all uploaded videos. Max outlined that once IFRS wraps, the team will shift to internal ZVM testing using the demo Kaltura account to prepare for the next migration client.",
+        angle: "Discovering the 4,612 true tag count before the client sees the account gives OE time to escalate cleanly to Zoom and propose a path forward rather than hitting the limit mid-delivery in front of IFRS.",
+      },
+      {
+        title: "IFRS and Zoom Strategic Sync — Chris Milne Introduction",
+        summary: "Max and Mithun met Chris Milne, Zoom’s new EMEA and rest-of-world video specialist, who joined three weeks prior. Chris surfaced a new complication: IFRS wants to consolidate their separate UK and US Zoom accounts for SSO functionality, which would potentially require remigrating all content to a new account. Max clarified the remigration impact: approximately five days to rerun the import from OE’s S3 staging. Mithun flagged the conflict with IFRS’s own UK data residency requirement. Chris committed to pushing IFRS to defer the consolidation until after migration. The 4,612-tag issue was escalated to Fan and Zoom engineering. The agenda slide resource attachments were explained as a best-effort workaround. A bi-weekly check-in between Max, Mithun, Chris, and Andrew was proposed.",
+        angle: "Chris’s involvement — three weeks in, commercially motivated to make IFRS a reference account — gives OE an escalation path into Zoom that cuts through the normal partner channel and creates a named Zoom sponsor for both the migration and the future support line partnership.",
+      },
+      {
+        title: "Max and Mithun — Post-Call Debrief",
+        summary: "Both noted frustration with Ryan’s late communication and the contradiction between the UK data residency requirement IFRS originally insisted on and Ryan’s new US account consolidation request. Max confirmed the only viable near-term path is to propose a tag cap to IFRS (for instance, migrating only the top 10–15 tags per video) and build a pre-migration tag audit into the standard scoping process for all future clients. Max confirmed he will handle the Brian Copping onboarding orientation with Mithun joining as co-trainer.",
+        angle: "Institutionalizing a pre-migration metadata audit (tag count, category count, per-video limits) as a standard scoping step would prevent the tag ceiling issue from surfacing mid-delivery on future migrations at any scale.",
+      },
+      {
+        title: "IFRS Remigration Commercial Discussion — Mithun and Peter",
+        summary: "Mithun briefed Peter on the IFRS account consolidation scenario and whether OE should charge for a potential second migration. Peter was unambiguous: the scope change warrants a charge, framed at roughly the same rate as the initial engagement with a potential minor discount given the discovery work is already complete. Peter’s proposed approach — bring it to Zoom first rather than IFRS directly, and let Zoom decide whether to absorb the cost or pass it to IFRS — was aligned with what Max and Mithun had discussed with Chris. Peter offered to email Chris Milne and Stefan before the US holiday weekend. Mithun also mentioned a Spanish-language LATAM customer inquiry involving API integrations to discuss with Kara separately.",
+        angle: "Routing the commercial conversation through Zoom rather than IFRS directly protects the client relationship and positions OE as the professional party in the triangle — the right framing for a client that is supposed to become a reference account.",
+      },
+      {
+        title: "Zoom Support Line Launch Planning — Alan, Amelia, Max, Mithun",
+        summary: "Alan convened an urgent session to move the support line from planning to execution. He outlined four things OE needs from Zoom: Contact Center free for one year, OP access on current laptops, a defined escalation path back into Zoom support for L2 and L3 issues, and a review of a one-pager AEs can send clients to access the support line immediately. The group agreed to launch now using the existing Passport website registration flow and backfill Contact Center once it is stood up. Mithun was tasked with building the one-pager for AEs; Max was asked to revise the business plan to remove the phased roadmap section and compress to a 90-day rollout timeline. A call with Tyler at Zoom was proposed for next week to present all four asks together.",
+        angle: "Alan’s decision to launch without Contact Center removes the dependency that had been the primary blocker — the 90-day timeline with a live registration link means OE can begin generating Zoom AE referrals before the end of Q2.",
       },
     ],
   },
@@ -244,40 +268,22 @@ export default function Week14Report() {
         <a
           href="/api/report-pdf/week-14"
           download="Weekly_Report_Week14_final_1.pdf"
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: "#008285",
-            background: "#f0fafa",
-            border: "1px solid #e0f0f0",
-            borderRadius: 6,
-            padding: "7px 16px",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            textDecoration: "none",
-          }}
+          style={{ fontSize: 12, fontWeight: 600, color: "#008285", background: "#f0fafa", border: "1px solid #e0f0f0", borderRadius: 6, padding: "7px 16px", display: "flex", alignItems: "center", gap: 6, textDecoration: "none" }}
         >
           <span style={{ fontSize: 14 }}>&darr;</span> Download PDF
         </a>
       </div>
 
-      <p style={{ fontSize: 11, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
-        Weekly Report
-      </p>
-      <h1 style={{ ...serif, fontSize: 42, fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 4 }}>
-        Week 14
-      </h1>
+      <p style={{ fontSize: 11, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Weekly Report</p>
+      <h1 style={{ ...serif, fontSize: 42, fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 4 }}>Week 14</h1>
       <p style={{ ...serif, fontSize: 15, color: "#9ca3af" }}>May 18 &ndash; 22, 2026</p>
-      <p style={{ ...serif, fontSize: 14, color: "#9ca3af", marginTop: 2, marginBottom: 24 }}>
-        Mithun Manjunatha &mdash; Sales Engineer
-      </p>
+      <p style={{ ...serif, fontSize: 14, color: "#9ca3af", marginTop: 2, marginBottom: 24 }}>Mithun Manjunatha &mdash; Sales Engineer</p>
 
       <div style={{ width: 40, height: 3, background: "#111827", borderRadius: 2, marginBottom: 28 }} />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 32 }}>
         {[
-          { n: "17", l: "Meetings" },
+          { n: "21", l: "Meetings" },
           { n: "5", l: "Days" },
           { n: "4", l: "Themes" },
           { n: "14", l: "Week" },
@@ -290,13 +296,13 @@ export default function Week14Report() {
       </div>
 
       <div style={{ background: "#f9fafb", borderRadius: 8, padding: "14px 18px", marginBottom: 32, fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>
-        <strong style={{ color: "#111827" }}>Week 14 Analytics</strong> &nbsp;&middot;&nbsp; IFRS go-live Monday May 25 &nbsp;&middot;&nbsp; 5 CMS opportunities active &nbsp;&middot;&nbsp;{" "}
-        <strong style={{ color: teal }}>Active:</strong> IFRS &middot; Indeed &middot; Okta &middot; Arizent RFQ &middot; HubSpot &middot; Earnings Automation Concept
+        <strong style={{ color: "#111827" }}>Week 14 Analytics</strong> &nbsp;&middot;&nbsp; IFRS migration live and complete &nbsp;&middot;&nbsp; 5 CMS opportunities active &nbsp;&middot;&nbsp;{" "}
+        <strong style={{ color: teal }}>Active:</strong> IFRS &middot; ABA &middot; Lab Roots &middot; Indeed &middot; Okta &middot; Zoom Support Line
       </div>
 
       <h2 style={{ ...serif, fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 12 }}>Overview</h2>
       <p style={{ ...serif, fontSize: 15, color: "#374151", lineHeight: 1.75, marginBottom: 32 }}>
-        Week 14 was defined by the IFRS migration crossing from preparation to go-live readiness, a CMS pipeline deepening into five named enterprise opportunities, and the early architecture of an earnings automation product vision. The India engineering team validated agenda slide extraction and surfaced a video category bug that was quickly diagnosed and planned for a post-extraction patch, clearing all remaining technical blockers before Monday&rsquo;s live migration start. On the commercial side, the Arizent RFQ was submitted with OE&rsquo;s first formal integration pricing framework, and both the Indeed discovery call and Okta onboarding advanced toward contract. Strategically, the Bullish acquisition of Acquinity for $500M is reshaping the capital markets infrastructure landscape in OE&rsquo;s favor, and conversations with S&amp;P Capital Access and Computershare continued to deepen partnership optionality.
+        Week 14 was defined by the IFRS Kaltura migration executing live and clearing every major technical blocker in real time. The engineering team extracted roughly 2,800 files — nearly two terabytes of video content — from Kaltura to OE’s S3 staging bucket in under three days, a full week ahead of the original June 1 extraction deadline, with the S3-to-Zoom upload phase substantially complete by Friday. On the commercial side, the American Bankers Association emerged as the largest new opportunity of the week — 150 events per year, currently on On24 — while Lab Roots surfaced as a strong organic CMS migration lead with 500–600 annual webinars and 1,500 videos sitting on WebinarNet. The Workato referral partnership was formally executed, and Alan fast-tracked the Zoom Support Line from a six-month plan to a 90-day active launch with clear deliverables assigned to Mithun and Max.
       </p>
 
       <h2 style={{ ...serif, fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 16 }}>Themes</h2>
@@ -316,17 +322,7 @@ export default function Week14Report() {
           <div key={day.day} style={{ border: "1px solid #f0f0f0", borderRadius: 8, overflow: "hidden" }}>
             <button
               onClick={() => setOpenDay(openDay === day.day ? null : day.day)}
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "16px 20px",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                textAlign: "left",
-              }}
+              style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
             >
               <div>
                 <span style={{ ...serif, fontSize: 16, fontWeight: 700, color: "#111827" }}>{day.day}</span>
@@ -369,34 +365,9 @@ export default function Week14Report() {
         <h3 style={{ ...serif, fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 12 }}>Comments</h3>
         <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 16 }}>Leave feedback, questions, or notes. Stored in your browser.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-          <input
-            value={newAuthor}
-            onChange={(e) => setNewAuthor(e.target.value)}
-            placeholder="Name"
-            style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px", fontSize: 13 }}
-          />
-          <textarea
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            placeholder="Comment"
-            rows={3}
-            style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px", fontSize: 13, resize: "vertical" }}
-          />
-          <button
-            onClick={saveComment}
-            style={{
-              alignSelf: "flex-start",
-              background: "#111827",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              padding: "8px 16px",
-              fontSize: 13,
-              cursor: "pointer",
-            }}
-          >
-            Post Comment
-          </button>
+          <input value={newAuthor} onChange={(e) => setNewAuthor(e.target.value)} placeholder="Name" style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px", fontSize: 13 }} />
+          <textarea value={newText} onChange={(e) => setNewText(e.target.value)} placeholder="Comment" rows={3} style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: "8px 12px", fontSize: 13, resize: "vertical" }} />
+          <button onClick={saveComment} style={{ alignSelf: "flex-start", background: "#111827", color: "#fff", border: "none", borderRadius: 6, padding: "8px 16px", fontSize: 13, cursor: "pointer" }}>Post Comment</button>
         </div>
         {comments.map((c) => (
           <div key={c.id} style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: "12px 16px", marginBottom: 8 }}>

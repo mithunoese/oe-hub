@@ -7,8 +7,8 @@ const weeks = [
     href: "/reports/week-14",
     week: "Week 14",
     date: "May 18–22, 2026",
-    summary: "IFRS migration cleared all technical blockers for Monday go-live, Arizent RFQ submitted with OE’s first formal integration pricing framework, Indeed discovery call confirmed leadership-ready materials as perfect, and strategic M&A consolidation positions OE as an attractive asset in the capital markets infrastructure market.",
-    count: "17 meetings",
+    summary: "IFRS Kaltura migration executed live and completed a week ahead of schedule with 2,800 files extracted, ABA emerged as a 150-event On24 displacement opportunity, Lab Roots surfaced as a strong WebinarNet migration lead, and Alan fast-tracked the Zoom Support Line to a 90-day active launch.",
+    count: "21 meetings",
     badge: "New",
     pdf: "/api/report-pdf/week-14",
     month: "May 2026",
@@ -145,51 +145,17 @@ export default function Reports() {
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "40px 24px 72px" }}>
       <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--light)", marginBottom: 8 }}>
-          Reports
-        </div>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--light)", marginBottom: 8 }}>Reports</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.025em", color: "var(--text)", marginBottom: 6 }}>
-              Weekly Reports
-            </h1>
-            <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6 }}>
-              Week-by-week updates, pipeline activity, and progress tracking.
-            </p>
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.025em", color: "var(--text)", marginBottom: 6 }}>Weekly Reports</h1>
+            <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6 }}>Week-by-week updates, pipeline activity, and progress tracking.</p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0, marginTop: 4 }}>
-            <Link
-              href="/admin"
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: "var(--teal)",
-                background: "var(--teal-light)",
-                border: "1px solid var(--teal-mid)",
-                borderRadius: 8,
-                padding: "8px 14px",
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-                textAlign: "center",
-              }}
-            >
+            <Link href="/admin" style={{ fontSize: 12, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 8, padding: "8px 14px", textDecoration: "none", whiteSpace: "nowrap", textAlign: "center" }}>
               ↑ Upload PDF
             </Link>
-            <Link
-              href="/se-kpi"
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: "var(--teal)",
-                background: "var(--teal-light)",
-                border: "1px solid var(--teal-mid)",
-                borderRadius: 8,
-                padding: "8px 14px",
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-                textAlign: "center",
-              }}
-            >
+            <Link href="/se-kpi" style={{ fontSize: 12, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 8, padding: "8px 14px", textDecoration: "none", whiteSpace: "nowrap", textAlign: "center" }}>
               Q2 KPI →
             </Link>
           </div>
@@ -199,66 +165,23 @@ export default function Reports() {
       <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
         {months.map((month) => (
           <div key={month}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                marginBottom: 12,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "var(--teal)",
-                  background: "var(--teal-light)",
-                  border: "1px solid var(--teal-mid)",
-                  borderRadius: 20,
-                  padding: "4px 12px",
-                }}
-              >
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 20, padding: "4px 12px" }}>
                 {month}
               </div>
               <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
             </div>
-
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {byMonth[month].map((r) => (
                 <div key={r.href} style={{ position: "relative" }}>
                   <Link href={r.href} style={{ display: "block" }}>
-                    <div
-                      style={{
-                        background: "var(--surface)",
-                        border: "1px solid var(--border)",
-                        borderRadius: 10,
-                        padding: "20px 24px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        gap: 16,
-                        transition: "border-color 0.15s, box-shadow 0.15s",
-                      }}
-                    >
+                    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, transition: "border-color 0.15s, box-shadow 0.15s" }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{r.week}</span>
                           <span style={{ fontSize: 12, color: "var(--muted)" }}>· {r.date}</span>
                           {r.badge && (
-                            <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 600,
-                                color: "var(--teal)",
-                                background: "var(--teal-light)",
-                                padding: "2px 8px",
-                                borderRadius: 20,
-                              }}
-                            >
-                              {r.badge}
-                            </span>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", padding: "2px 8px", borderRadius: 20 }}>{r.badge}</span>
                           )}
                         </div>
                         <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>{r.summary}</p>
@@ -266,24 +189,7 @@ export default function Reports() {
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
                         <span style={{ fontSize: 11, color: "var(--muted)" }}>{r.count}</span>
                         {r.pdf && (
-                          <a
-                            href={r.pdf}
-                            download
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                              fontSize: 11,
-                              fontWeight: 600,
-                              color: "var(--teal)",
-                              background: "var(--teal-light)",
-                              border: "1px solid var(--teal-mid)",
-                              borderRadius: 6,
-                              padding: "4px 10px",
-                              textDecoration: "none",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 4,
-                            }}
-                          >
+                          <a href={r.pdf} download onClick={(e) => e.stopPropagation()} style={{ fontSize: 11, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 6, padding: "4px 10px", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
                             ↓ PDF
                           </a>
                         )}
@@ -298,22 +204,10 @@ export default function Reports() {
       </div>
 
       <div style={{ marginTop: 32 }}>
-        <div
-          style={{
-            padding: "16px 24px",
-            background: "var(--teal-light)",
-            borderRadius: 10,
-            border: "1px solid var(--teal-mid)",
-          }}
-        >
+        <div style={{ padding: "16px 24px", background: "var(--teal-light)", borderRadius: 10, border: "1px solid var(--teal-mid)" }}>
           <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
             Track Q2 KPI progress week by week →{" "}
-            <Link
-              href="/se-kpi"
-              style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}
-            >
-              SE KPI Dashboard
-            </Link>
+            <Link href="/se-kpi" style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}>SE KPI Dashboard</Link>
           </div>
         </div>
       </div>

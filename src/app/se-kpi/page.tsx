@@ -120,11 +120,12 @@ const weeks: WeekData[] = [
     dates: "May 18–22",
     status: "current",
     label: "IFRS Live, CMS Pipeline Building",
-    stats: { pipelineUSD: 25000, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
+    stats: { pipelineUSD: 33300, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
     contributions: {
       revenue: [
         "Lab Roots CMS migration scoped at ~$15K — 1,500 videos from WebinarNet, 500–600 events/year, Zoom AE not pitching migration",
         "IFRS account remigration priced contingently — Peter confirmed OE charges at original engagement rate if UK/US consolidation proceeds (~$10K)",
+        "Citi Veracast transcription engagement confirmed at $8,300 — ~1,500 legacy recordings, F4V-to-MP3 conversion pipeline executed with 450 files ready pending SFTP credentials",
         "Workato referral partnership executed — Silver tier (10% commission) on integration middleware deals, first formal integration revenue channel",
         "Zoom Support Line approved for 90-day launch — positions OE as the direct support provider for Zoom Webinar, Webinar+, and Events license holders",
       ],

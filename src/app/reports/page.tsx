@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-14",
+    week: "Week 14",
+    date: "May 18–22, 2026",
+    summary: "IFRS migration cleared all technical blockers for Monday go-live, Arizent RFQ submitted with OE’s first formal integration pricing framework, Indeed discovery call confirmed leadership-ready materials as perfect, and strategic M&A consolidation positions OE as an attractive asset in the capital markets infrastructure market.",
+    count: "17 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-14",
+    month: "May 2026",
+  },
+  {
     href: "/reports/week-13",
     week: "Week 13",
     date: "May 11–15, 2026",
     summary: "IFRS migration start locked for May 18 with all technical blockers resolved, Indeed discovery call delivered leadership-ready materials confirmed as perfect, Arziant/Baker RFQ submitted with a formalized integration pricing playbook, and an earnings automation product concept emerged from conversations with Casey and Devin.",
     count: "19 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-13",
     month: "May 2026",
   },

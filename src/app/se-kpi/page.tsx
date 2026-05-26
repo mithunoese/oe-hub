@@ -203,7 +203,7 @@ const weeks: WeekData[] = [
   {
     week: 13,
     dates: "May 11–15",
-    status: "current",
+    status: "complete",
     label: "IFRS Launch Locked, Indeed Aligned",
     stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
     contributions: {
@@ -230,6 +230,41 @@ const weeks: WeekData[] = [
       delivery: [
         "Indeed implementation plan and migration report delivered as leadership-ready artifacts",
         "IFRS migration environment fully validated; Monday May 18 start confirmed",
+      ],
+    },
+  },
+  {
+    week: 14,
+    dates: "May 18–22",
+    status: "current",
+    label: "IFRS Go-Live Ready, Five CMS Deals",
+    stats: { pipelineUSD: 143000, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
+    contributions: {
+      revenue: [
+        "Arizent RFQ submitted targeting ~$143K OE contribution within $250K ceiling; shortlist pending",
+        "Indeed discovery call delivered; leadership-ready materials confirmed as perfect",
+        "Computershare investor day mid-June confirmed; S&P Capital Access partnership call advanced",
+      ],
+      preSales: [
+        "Integration pricing framework formalized: $3K setup + $500/month maintenance per integration",
+        "CSM threshold model: dedicated support bundled above $100K, $3,500–$5,000/month below",
+        "Indeed implementation plan and dummy migration report delivered as pre-contract artifacts",
+        "Menarini SDK feasibility assessed; SDK integrations confirmed out-of-scope at current stage",
+      ],
+      clientOutcomes: [
+        "IFRS: all technical blockers resolved for Monday May 25 live migration start",
+        "Agenda slide extraction validated — PowerPoint file confirmed intact in Zoom resources folder",
+        "Okta onboarding completed in three days vs. months projected; contract follow-up in progress",
+      ],
+      product: [
+        "ZCM category over-assignment bug diagnosed: per-entry API filter fix, metadata patch only",
+        "JSON file second-phase path confirmed via Zoom June compressed file release",
+        "S&P Capital Access partnership surfaced genuine CRM/event data complementarity",
+      ],
+      delivery: [
+        "IFRS migration environment fully validated; Monday May 25 go-live confirmed with zero open items",
+        "Two-phase JSON delivery plan documented — video first, attachments after Zoom June release",
+        "Indeed implementation walkthrough delivered as leadership-ready pre-contract materials",
       ],
     },
   },

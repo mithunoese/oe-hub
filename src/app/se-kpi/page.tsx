@@ -119,10 +119,15 @@ const weeks: WeekData[] = [
     week: 14,
     dates: "May 18–22",
     status: "current",
-    label: "IFRS Live, ABA & Lab Roots Pipeline",
-    stats: { pipelineUSD: 155000, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
+    label: "IFRS Live, CMS Pipeline Building",
+    stats: { pipelineUSD: 25000, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
     contributions: {
-      revenue: ["ABA (150 events/year) entered active pricing stage — potential $100K+ On24 displacement", "Lab Roots (500–600 webinars/year) surfaced as CMS migration lead — 1,500 videos, $84K/year on WebinarNet", "Workato referral partnership executed — 10% referral commission tier on integration middleware deals"],
+      revenue: [
+        "Lab Roots CMS migration scoped at ~$15K — 1,500 videos from WebinarNet, 500–600 events/year, Zoom AE not pitching migration",
+        "IFRS account remigration priced contingently — Peter confirmed OE charges at original engagement rate if UK/US consolidation proceeds (~$10K)",
+        "Workato referral partnership executed — Silver tier (10% commission) on integration middleware deals, first formal integration revenue channel",
+        "Zoom Support Line approved for 90-day launch — positions OE as the direct support provider for Zoom Webinar, Webinar+, and Events license holders",
+      ],
       preSales: ["IFRS migration run-book and Citi implementation documentation delivered", "ABA discovery call fielded — dedicated team model, production studio workflow, and pricing path presented", "Zoom Support Line business plan finalized with Alan’s feedback: 90-day timeline, AE one-pager assigned", "Workato partner agreement negotiated and executed as OE’s first formal integration middleware partnership"],
       clientOutcomes: ["IFRS: 2,800 files extracted from Kaltura to S3 in under three days, a week ahead of the June 1 deadline", "Citi F4V-to-MP3 conversion pipeline executed — ~450 files ready pending SFTP credentials from client", "Zero re-scopings across all active CMS engagements despite tag ceiling, thumbnail, and SSO discoveries"],
       product: ["4,612-tag hub limit edge case discovered and escalated to Zoom engineering during live migration", "ZVM API architecture differences documented: clip-first upload model vs Hub for next migration client", "IFRS account consolidation SSO conflict flagged — UK data residency vs US account consolidation request"],

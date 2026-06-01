@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-15",
+    week: "Week 15",
+    date: "May 25–29, 2026",
+    summary: "IFRS migration reached its final mile with all 2,800 videos uploaded and seven failed entities under investigation, the ZVM migration bot cleared its first structured sprint review with Akash demoing live Kaltura connectivity, CrowdStrike surfaced as the first OE-originated Zoom CMS displacement opportunity, and the Zoom Contact Center received Elite licenses unlocking AI Smart Notes for the support line.",
+    count: "22 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-15",
+    month: "June 2026",
+  },
+  {
     href: "/reports/week-14",
     week: "Week 14",
     date: "May 18–22, 2026",
     summary: "IFRS Kaltura migration executed live and completed a week ahead of schedule with 2,800 files extracted, ABA emerged as a 150-event On24 displacement opportunity, Lab Roots surfaced as a strong WebinarNet migration lead, and Alan fast-tracked the Zoom Support Line to a 90-day active launch.",
     count: "21 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-14",
     month: "May 2026",
   },

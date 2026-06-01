@@ -42,7 +42,7 @@ const themes: Theme[] = [
   },
   {
     title: "CMS Pipeline: ABA, Lab Roots, and Four Concurrent Opportunities",
-    text: "The American Bankers Association discovery call confirmed 150 webinars per year across two programs and a clean On24 displacement narrative given Cvent’s acquisition by Blackstone. Lab Roots surfaced Thursday as a strong inbound lead: 500–600 annual webinars, 1,500 videos to migrate from WebinarNet and Chatty, paying $84K per year on current stack, with their Zoom AE not pitching migration. Together with Indeed at contract stage, Okta onboarding complete but contract silent, and the Workato integration partnership executed, Week 14 established the clearest multi-opportunity CMS pipeline view to date.",
+    text: "The American Bankers Association discovery call confirmed 150 webinars per year across two programs and a clean On24 displacement narrative given Cvent’s acquisition by Blackstone. Lab Roots surfaced Thursday as a strong inbound lead: 500–600 annual webinars, 1,500 videos to migrate from WebinarNet and Chatty, paying $84K per year on current stack, with their Zoom AE not pitching migration. Together with Indeed at contract stage, Okta onboarding complete, and the Workato integration partnership executed, Week 14 established the clearest multi-opportunity CMS pipeline view to date.",
   },
   {
     title: "Zoom Support Line: From 6-Month Plan to 90-Day Launch",
@@ -125,9 +125,9 @@ const days: DayData[] = [
         angle: "ABA represents the archetypal On24 displacement opportunity: 150 events per year with a production-first culture, a platform mid-acquisition, and a client team already describing degraded service.",
       },
       {
-        title: "Annalisa Sync — Brian Copping Onboarding and Staffing Tech",
-        summary: "Annalisa briefed Mithun on Brian Copping rejoining OE — a former employee from 2021–22 who understood the platform during the high-growth era and is returning to provide US-hours delivery coverage and reduce Diana’s overtime load. The conversation shifted to the staffing systems problem: Lasso was never designed for OE’s operating model (200-plus operators, global time zones, multi-event same-day scheduling) and no alternative evaluated has handled all requirements. Mithun acknowledged shared frustration around access and permission walls, citing the Teams AI agent for sales deal actions and S3 access as examples of things he could build if unblocked.",
-        angle: "Brian’s onboarding creates a new SE training partnership; the staffing system conversation surfaced a legitimate internal bottleneck that is worth escalating to Alan through Annalisa.",
+        title: "Annalisa Sync — Brian Copping Onboarding",
+        summary: "Annalisa briefed Mithun on Brian Copping rejoining OE — a former employee from 2021–22 who understood the platform during the high-growth era and is returning to provide US-hours delivery coverage. The conversation also touched on the challenge of finding staffing tooling that scales to OE’s operating complexity. Mithun noted several areas where deeper system access would let him build tools more quickly, citing the Teams AI agent and S3 access as examples.",
+        angle: "Brian’s onboarding creates a new SE training partnership; the access conversation surfaced a legitimate internal opportunity worth raising to Alan.",
       },
       {
         title: "Andrew — Claude Code Artifact Export (Informal)",
@@ -165,7 +165,7 @@ const days: DayData[] = [
       },
       {
         title: "OE PM/Delivery Weekly Standup — Kara",
-        summary: "Kara ran the Thursday delivery standup. David flagged Eastern Star Church as a live risk: a client on a 1-2K attendee license expecting 7,000 registrants, unwilling to upgrade or pay for operator helpline support. The group aligned on presenting three options and drawing a firm boundary on OE’s liability. Kristen updated on ABA: pricing being built across one-off, multi-pack, and full-prepay structures; a proof-of-concept rehearsal event is required before ABA commits. Mithun gave the first public IFRS migration update: all roughly 2,800 files are out of Kaltura and in S3, partial upload to Zoom underway. A significant new CMS opportunity surfaced through Kara — Lab Roots, which runs 500–600 webinars per year on WebinarNet and Chatty, has 1,500 videos to migrate, and pays $84K per year. The Zoom AE had told them not to migrate their content, making this a clear OE opportunity. Camden reported first cold calls and identified Zoom office hours attendees as warm prospects.",
+        summary: "Kara ran the Thursday delivery standup. David flagged Eastern Star Church as a live risk: a client on a 1-2K attendee license expecting 7,000 registrants, with a plan to present options and set clear boundaries on scope. Kristen updated on ABA: pricing being built across one-off, multi-pack, and full-prepay structures; a proof-of-concept rehearsal event is required before ABA commits. Mithun gave the first public IFRS migration update: all roughly 2,800 files are out of Kaltura and in S3, partial upload to Zoom underway. A significant new CMS opportunity surfaced through Kara — Lab Roots, which runs 500–600 webinars per year on WebinarNet and Chatty, has 1,500 videos to migrate, and pays $84K per year. The Zoom AE had told them not to migrate their content, making this a clear OE opportunity. Camden reported first cold calls and identified Zoom office hours attendees as warm prospects.",
         angle: "Lab Roots is the strongest new CMS migration lead of the week: 500–600 events per year, 1,500 videos, $84K current spend, and a Zoom AE actively not pitching migration — exactly the gap OE fills.",
       },
       {
@@ -175,8 +175,8 @@ const days: DayData[] = [
       },
       {
         title: "Mithun 1:1 Check-in — Andrew",
-        summary: "Andrew asked Mithun what he enjoys most, wants more of, and least enjoys. Mithun expressed genuine enthusiasm for the sales culture and team energy. He surfaced two frustrations: access barriers preventing him from going deeper into internal systems to build tools (S3 permissions, Salesforce seats, API access), and the sense that knowledge is too siloed for him to operate at full cross-functional impact. He named the Teams AI sales agent as an example of something he could build if unblocked. Andrew validated the observations and offered to raise the access issue with Alan and Amelia.",
-        angle: "The access and bottleneck issues Mithun raised with Annalisa earlier in the week are now on Andrew’s radar as well — two independent conversations surfacing the same structural blocker creates a stronger case for addressing it at the leadership level.",
+        summary: "Andrew asked Mithun what he enjoys most, wants more of, and least enjoys. Mithun expressed genuine enthusiasm for the sales culture and team energy. He surfaced two areas to develop: deeper access into internal systems to build tools more quickly, and stronger cross-functional knowledge sharing. He named the Teams AI sales agent as an example of something he could build with the right access. Andrew validated the observations and offered to raise the topic with Alan and Amelia.",
+        angle: "The access and knowledge-sharing themes Mithun raised with Annalisa earlier in the week are now on Andrew’s radar as well — two independent conversations surfacing the same opportunity creates a stronger case for addressing it at the leadership level.",
       },
       {
         title: "Workato Contract Final Review — Mithun and Alan",
@@ -207,7 +207,7 @@ const days: DayData[] = [
       },
       {
         title: "Max and Mithun — Post-Call Debrief",
-        summary: "Both noted frustration with Ryan’s late communication and the contradiction between the UK data residency requirement IFRS originally insisted on and Ryan’s new US account consolidation request. Max confirmed the only viable near-term path is to propose a tag cap to IFRS (for instance, migrating only the top 10–15 tags per video) and build a pre-migration tag audit into the standard scoping process for all future clients. Max confirmed he will handle the Brian Copping onboarding orientation with Mithun joining as co-trainer.",
+        summary: "Max confirmed the only viable near-term path is to propose a tag cap to IFRS (for instance, migrating only the top 10–15 tags per video) and build a pre-migration tag audit into the standard scoping process for all future clients. Max confirmed he will handle the Brian Copping onboarding orientation with Mithun joining as co-trainer.",
         angle: "Institutionalizing a pre-migration metadata audit (tag count, category count, per-video limits) as a standard scoping step would prevent the tag ceiling issue from surfacing mid-delivery on future migrations at any scale.",
       },
       {

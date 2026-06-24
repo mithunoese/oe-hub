@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-18",
+    week: "Week 18",
+    date: "Jun 15–19, 2026",
+    summary: "IFRS migration closed out after a mid-week discovery of 765 unmigrated livestream recordings that were identified, migrated, and delivered to the client within 48 hours. The Indeed ZVM contract moved to the edge of signature after a security clearance was approved, the OE Support Line staffing kickoff confirmed a July 6 go-live, and two new inbound ZVM migration opportunities arrived from Zoom’s London team.",
+    count: "26 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-18",
+    month: "June 2026",
+  },
+  {
     href: "/reports/week-17",
     week: "Week 17",
     date: "Jun 8–12, 2026",
-    summary: "IFRS delivered its full migration report Friday closing OE's first end-to-end Kaltura-to-Zoom engagement, the Indeed migration contract kicked off with starred-clips retention confirmed and SOW sent, the Vault Jump bot architecture was formalized with OE engineering leadership, and the OE Support Line cleared its final technical blocker.",
+    summary: "IFRS delivered its full migration report Friday closing OE’s first end-to-end Kaltura-to-Zoom engagement, the Indeed migration contract kicked off with starred-clips retention confirmed and SOW sent, the Vault Jump bot architecture was formalized with OE engineering leadership, and the OE Support Line cleared its final technical blocker.",
     count: "18 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-17",
     month: "June 2026",
   },
@@ -87,7 +97,7 @@ const weeks = [
     href: "/reports/week-9",
     week: "Week 9",
     date: "Apr 13–18, 2026",
-    summary: "Okta discovery call lands in a single week, IFRS pre-migration validation gates on April 18th Zoom release, Open Montage crosses into working prototype, and OE's internal AI support agent goes live.",
+    summary: "Okta discovery call lands in a single week, IFRS pre-migration validation gates on April 18th Zoom release, Open Montage crosses into working prototype, and OE’s internal AI support agent goes live.",
     count: "23 meetings",
     badge: null,
     pdf: "/api/report-pdf/week-9",

@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-16",
+    week: "Week 16",
+    date: "Jun 1–5, 2026",
+    summary: "IFRS migration reached its final mile with a cascade of late-stage caption bugs diagnosed and fixed, the Indeed retention-policy crisis was resolved with a Zoom product commitment for a bulk clip-starring API, the Vault Jump migration bot moved toward Zoom App Store productization, and the OE Support Line aligned on a June 15 go-live with Alan and Tyler.",
+    count: "19 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-16",
+    month: "June 2026",
+  },
+  {
     href: "/reports/week-15",
     week: "Week 15",
     date: "May 25–29, 2026",
     summary: "IFRS migration reached its final mile with all 2,800 videos uploaded and seven failed entities under investigation, the ZVM migration bot cleared its first structured sprint review with Akash demoing live Kaltura connectivity, CrowdStrike surfaced as the first OE-originated Zoom CMS displacement opportunity, and the Zoom Contact Center received Elite licenses unlocking AI Smart Notes for the support line.",
     count: "22 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-15",
     month: "June 2026",
   },
@@ -163,10 +173,10 @@ export default function Reports() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0, marginTop: 4 }}>
             <Link href="/admin" style={{ fontSize: 12, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 8, padding: "8px 14px", textDecoration: "none", whiteSpace: "nowrap", textAlign: "center" }}>
-              ↑ Upload PDF
+              &#8593; Upload PDF
             </Link>
             <Link href="/se-kpi" style={{ fontSize: 12, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 8, padding: "8px 14px", textDecoration: "none", whiteSpace: "nowrap", textAlign: "center" }}>
-              Q2 KPI →
+              Q2 KPI &rarr;
             </Link>
           </div>
         </div>
@@ -189,7 +199,7 @@ export default function Reports() {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{r.week}</span>
-                          <span style={{ fontSize: 12, color: "var(--muted)" }}>· {r.date}</span>
+                          <span style={{ fontSize: 12, color: "var(--muted)" }}>&middot; {r.date}</span>
                           {r.badge && (
                             <span style={{ fontSize: 10, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", padding: "2px 8px", borderRadius: 20 }}>{r.badge}</span>
                           )}
@@ -200,7 +210,7 @@ export default function Reports() {
                         <span style={{ fontSize: 11, color: "var(--muted)" }}>{r.count}</span>
                         {r.pdf && (
                           <a href={r.pdf} download onClick={(e) => e.stopPropagation()} style={{ fontSize: 11, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1px solid var(--teal-mid)", borderRadius: 6, padding: "4px 10px", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
-                            ↓ PDF
+                            &#8595; PDF
                           </a>
                         )}
                       </div>
@@ -216,7 +226,7 @@ export default function Reports() {
       <div style={{ marginTop: 32 }}>
         <div style={{ padding: "16px 24px", background: "var(--teal-light)", borderRadius: 10, border: "1px solid var(--teal-mid)" }}>
           <div style={{ fontSize: 13, color: "var(--teal)", fontWeight: 500 }}>
-            Track Q2 KPI progress week by week →{" "}
+            Track Q2 KPI progress week by week &rarr;{" "}
             <Link href="/se-kpi" style={{ color: "var(--teal)", textDecoration: "underline", textUnderlineOffset: 3 }}>SE KPI Dashboard</Link>
           </div>
         </div>

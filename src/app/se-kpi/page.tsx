@@ -68,7 +68,7 @@ const weeks: WeekData[] = [
     contributions: {
       revenue: ["Okta $38K implementation proposal presented to committee (Apr 24)", "Indeed migration scoped at $22,100 via automated pricing tool", "IFRS migration ready to scale — client review scheduled"],
       preSales: ["6-phase Okta implementation plan (SOW template for all ZCM engagements)", "Automated migration pricing tool (AI-powered quoting from discovery questionnaire)", "Camden ZCM onboarding — full migration motion explained to new BDR", "OE Video Editor prototype (Claude transcript-to-cut pipeline)", "Power BI → Claude daily briefing agent architecture scoped"],
-      clientOutcomes: ["IFRS: thumbnail, MOV-to-MP4, tag limit (20→30), captions — all blockers resolved", "VOD channel assignment step documented (ZCM-121) before any client-facing run", "Zero re-scoping on IFRS throughout full validation cycle"],
+      clientOutcomes: ["IFRS: thumbnail, MOV-to-MP4, tag limit, captions — all blockers resolved", "VOD channel assignment step documented (ZCM-121) before any client-facing run", "Zero re-scoping on IFRS throughout full validation cycle"],
       product: ["ZCM-118 (thumbnail fix), ZCM-119 (report enhancement), ZCM-121 (VOD channel step) filed", "Circle HD API spike closed — ZCM-96 complete", "D2L ZVM external file upload blocker formally escalated to Zoom", "S3-to-S3 flow architecture scoped with Max for Okta post-IFRS"],
       delivery: ["Okta 6-phase SOW — first formal ZCM migration PM handoff template", "Migration report spec’d with attachment-level fidelity tracking", "IFRS CSV delivered for client embed replacement work"],
     },
@@ -122,13 +122,7 @@ const weeks: WeekData[] = [
     label: "IFRS Live, CMS Pipeline Building",
     stats: { pipelineUSD: 33300, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
     contributions: {
-      revenue: [
-        "Lab Roots CMS migration scoped at ~$15K — 1,500 videos from WebinarNet, 500–600 events/year",
-        "IFRS account remigration priced contingently at original engagement rate if UK/US consolidation proceeds",
-        "Citi Veracast transcription engagement confirmed at $8,300 — ~1,500 legacy recordings pipeline executed",
-        "Workato referral partnership executed — Silver tier (10% commission) on integration middleware deals",
-        "Zoom Support Line approved for 90-day launch — direct support for Zoom Webinar and Events license holders",
-      ],
+      revenue: ["Lab Roots CMS migration scoped at ~$15K — 1,500 videos from WebinarNet, 500–600 events/year", "IFRS account remigration priced contingently at original engagement rate if UK/US consolidation proceeds", "Citi Veracast transcription engagement confirmed at $8,300", "Workato referral partnership executed — Silver tier (10% commission) on integration middleware deals", "Zoom Support Line approved for 90-day launch — direct support for Zoom Webinar and Events license holders"],
       preSales: ["IFRS migration run-book and Citi implementation documentation delivered", "ABA discovery call fielded — dedicated team model, production studio workflow, and pricing path presented", "Zoom Support Line business plan finalized with Alan’s feedback: 90-day timeline, AE one-pager assigned", "Workato partner agreement negotiated and executed as OE’s first formal integration middleware partnership"],
       clientOutcomes: ["IFRS: 2,800 files extracted from Kaltura to S3 in under three days, a week ahead of the June 1 deadline", "Citi F4V-to-MP3 conversion pipeline executed — ~450 files ready pending SFTP credentials from client", "Zero re-scopings across all active CMS engagements despite tag ceiling, thumbnail, and SSO discoveries"],
       product: ["4,612-tag hub limit edge case discovered and escalated to Zoom engineering during live migration", "ZVM API architecture differences documented: clip-first upload model vs Hub for next migration client", "IFRS account consolidation SSO conflict flagged — UK data residency vs US account consolidation request"],
@@ -138,19 +132,29 @@ const weeks: WeekData[] = [
   {
     week: 15,
     dates: "May 25–29",
-    status: "current",
+    status: "complete",
     label: "Bot POC, CrowdStrike, Contact Center",
     stats: { pipelineUSD: 15000, assetsCreated: 2, rescopings: 1, insightsFiled: 4, formalHandoffs: 0 },
     contributions: {
-      revenue: [
-        "CrowdStrike Zoom CMS displacement opportunity identified — internal comms team on Kaltura, handed off to Rajul and Tyler for AE follow-up",
-        "Okta Circle HD migration repriced to sub-$15K to advance stalled six-week negotiation toward June contract signing",
-        "Solstice Marketo integration inbound via Zoom AE referral — positioned as paid engagement, marketplace app shared as starting point",
-      ],
-      preSales: ["Okta revised implementation proposal scoped to core migration under $15K budget threshold", "ZVM migration bot scoped as Zoom marketplace product — spike and POC tickets written with defined win conditions", "Zoom Contact Center V2 Passport landing page demo shown to Alan — chat-to-video widget with marketing video queue confirmed production-ready"],
+      revenue: ["CrowdStrike Zoom CMS displacement opportunity identified — internal comms team on Kaltura, handed off to Rajul and Tyler for AE follow-up", "Okta Circle HD migration repriced to sub-$15K to advance stalled six-week negotiation toward June contract signing", "Solstice Marketo integration inbound via Zoom AE referral — positioned as paid engagement"],
+      preSales: ["Okta revised implementation proposal scoped to core migration under $15K budget threshold", "ZVM migration bot scoped as Zoom marketplace product — spike and POC tickets written with defined win conditions", "Zoom Contact Center V2 Passport landing page demo shown to Alan — chat-to-video widget confirmed production-ready"],
       clientOutcomes: ["IFRS migration Phase 2 substantially complete — all 2,800 videos in Zoom pending tag repatch and seven entity fixes", "Citi Veracast files staged in S3 awaiting SFTP credentials from client — delivery on hold for client action", "Seven IFRS failed entities identified and under investigation before client account review"],
       product: ["ZVM bot MCP architecture defined — markdown spec per source-destination pair drives branching conversation without hardcoded flows", "Pre-migration metadata checklist formalized: tag count, thumbnail logic, dual-account SSO verification now standard scoping steps", "Zoom Contact Center Elite license unlocked AI Smart Notes — end-of-engagement summarization now testable for support line", "CrowdStrike surfaces repeating Kaltura-plus-Zoom enterprise pattern — first OE-originated ZVM displacement opportunity"],
       delivery: ["IFRS metadata repatch planned for Monday pending Zoom’s weekend tag limit increase to 5,000", "Okta Circle HD proposal revision aligned to Q4 delivery timeline with 30-day post-migration support", "Citi delivery approach (S3-to-S3 vs AWS Transfer Family SFTP) to be aligned with Joe, Akash, and Gib on Monday"],
+    },
+  },
+  {
+    week: 16,
+    dates: "Jun 1–5",
+    status: "current",
+    label: "IFRS Final Mile, Indeed Unblocked",
+    stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 },
+    contributions: {
+      revenue: ["Okta Circle HD migration advancing toward June contract signing at sub-$15K — OAuth app setup underway for ZVM testing", "Indeed migration unblocked: Zoom product committed a bulk clip-starring API to protect migrated content from 30-day retention deletion", "Vault Jump migration bot in-app monetization confirmed viable via Zoom’s native app framework — free trial and direct payment available"],
+      preSales: ["Dual-link embed-code report design confirmed with Vijay: OE can programmatically construct old Kaltura URLs and new Zoom play links for Indeed’s re-embedding", "Vault Jump customer questionnaire flow finalized: four required fields (source, destination, credentials, data residency region), remaining fields optional", "Zoom Contact Center workflow builder and skills-based routing explored with Max; Mithun set up as agent in OE’s Contact Center"],
+      clientOutcomes: ["IFRS: SRT-to-VTT caption bug diagnosed and fixed within 24 hours of discovery; caption-linking failure also resolved same day", "IFRS: eight Kaltura quiz videos manually recreated in Zoom as polls; four tag character-limit entries flagged to client (Ryan calm about it)", "Energized Marketing HubSpot-to-Zoom Webinar Plus integration established end to end on first session"],
+      product: ["Indeed escalation confirmed Zoom Clips has no retention exemption — escalated to ZVM PM Vijay who committed to a ‘save starred clips’ setting and bulk API (mid-July, accelerating)", "ABA loss formally documented: slide-upload feature gap is a recurring ON24 displacement blocker requiring Zoom product roadmap feedback", "Kaltura API metadata mismatch root-caused: API reports SRT while actual file is VTT; approximately 1,200 files require audit before next engagement", "Zoom Clips and cloud recording management architecture clarified: both feed ZVM channels; cloud recordings also feed events hub (relevant to IFRS and future clients)", "40-hour Citi migration effort established as baseline data point for migration complexity pricing and scoping"],
+      delivery: ["IFRS final report to be polished Monday; full client presentation Tuesday", "Indeed Monday call prepped: Zoom’s starred-clips roadmap item, dual-link embed report approach, and Google Drive backup scope", "Vault Jump moved to corporate Zoom account testing to target real ZVM licenses for Okta and Indeed migrations"],
     },
   },
 ];

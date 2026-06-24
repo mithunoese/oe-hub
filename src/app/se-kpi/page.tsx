@@ -13,226 +13,33 @@ const BORDER = "#e5e7eb";
 
 type ContribKey = "revenue" | "preSales" | "clientOutcomes" | "product" | "delivery";
 
-interface WeekStats {
-  pipelineUSD: number;
-  assetsCreated: number;
-  rescopings: number;
-  insightsFiled: number;
-  formalHandoffs: number;
-}
-
-interface WeekData {
-  week: number;
-  dates: string;
-  status: "complete" | "current";
-  label: string;
-  stats: WeekStats;
-  contributions: Record<ContribKey, string[]>;
-}
+interface WeekStats { pipelineUSD: number; assetsCreated: number; rescopings: number; insightsFiled: number; formalHandoffs: number; }
+interface WeekData { week: number; dates: string; status: "complete" | "current"; label: string; stats: WeekStats; contributions: Record<ContribKey, string[]>; }
 
 const weeks: WeekData[] = [
-  {
-    week: 8,
-    dates: "Apr 7–11",
-    status: "complete",
-    label: "IFRS & Okta Discovery",
-    stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 2, formalHandoffs: 0 },
-    contributions: {
-      revenue: ["Cargill API integration priced via discovery call", "Okta/Circle HD migration initiated with Zoom AE Farah", "Veltris dry run technical support delivered"],
-      preSales: ["AI video production POC scoped with Casey", "Zoom managed agent concept pitched to Devin", "ZCM migration pitch deck iterated"],
-      clientOutcomes: ["IFRS Veltris dry run executed without re-scoping", "Okta requirements captured cleanly on first discovery call"],
-      product: ["ZCM release notes tracked for IFRS gate criteria", "Cargill API integration gap documented"],
-      delivery: ["IFRS dry run framework and batch checklist prepared", "ZCM Jira board active with per-blocker ticket discipline"],
-    },
-  },
-  {
-    week: 9,
-    dates: "Apr 13–18",
-    status: "complete",
-    label: "Okta Scoped, IFRS Validation",
-    stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 3, formalHandoffs: 0 },
-    contributions: {
-      revenue: ["Okta discovery completed — Circle HD confirmed, migration fully scoped", "IFRS validation gates on Apr 18 Zoom platform release", "Anderson migration signed (first completed ZCM engagement)"],
-      preSales: ["ZCM migration pricing framework built", "CTA optimization analysis for openexc.com", "OE internal AI support agent live (Copilot Studio + GitBook MCP)"],
-      clientOutcomes: ["IFRS validation on schedule — 23 meetings, zero re-scoping", "Okta scoped on first pass with no gaps or changes"],
-      product: ["Apr 18 Zoom release applied to IFRS gate criteria", "ZCM blockers identified and escalated to engineering", "Circle HD API research initiated (ZCM-96)"],
-      delivery: ["IFRS migration checklist maintained across dry run sequence", "ZCM board tickets tracked per blocker with comments"],
-    },
-  },
-  {
-    week: 10,
-    dates: "Apr 20–25",
-    status: "complete",
-    label: "Okta Proposal + Indeed Priced",
-    stats: { pipelineUSD: 60100, assetsCreated: 5, rescopings: 0, insightsFiled: 4, formalHandoffs: 1 },
-    contributions: {
-      revenue: ["Okta $38K implementation proposal presented to committee (Apr 24)", "Indeed migration scoped at $22,100 via automated pricing tool", "IFRS migration ready to scale — client review scheduled"],
-      preSales: ["6-phase Okta implementation plan (SOW template for all ZCM engagements)", "Automated migration pricing tool (AI-powered quoting from discovery questionnaire)", "Camden ZCM onboarding — full migration motion explained to new BDR", "OE Video Editor prototype (Claude transcript-to-cut pipeline)", "Power BI → Claude daily briefing agent architecture scoped"],
-      clientOutcomes: ["IFRS: thumbnail, MOV-to-MP4, tag limit, captions — all blockers resolved", "VOD channel assignment step documented (ZCM-121) before any client-facing run", "Zero re-scoping on IFRS throughout full validation cycle"],
-      product: ["ZCM-118 (thumbnail fix), ZCM-119 (report enhancement), ZCM-121 (VOD channel step) filed", "Circle HD API spike closed — ZCM-96 complete", "D2L ZVM external file upload blocker formally escalated to Zoom", "S3-to-S3 flow architecture scoped with Max for Okta post-IFRS"],
-      delivery: ["Okta 6-phase SOW — first formal ZCM migration PM handoff template", "Migration report spec’d with attachment-level fidelity tracking", "IFRS CSV delivered for client embed replacement work"],
-    },
-  },
-  {
-    week: 11,
-    dates: "Apr 27–May 1",
-    status: "complete",
-    label: "Board Visibility + S3 Architecture",
-    stats: { pipelineUSD: 15000, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 0 },
-    contributions: {
-      revenue: ["Indeed $15K implementation proposal sent to Zoom AE Jason (6,949 videos, 79TB)", "Okta procurement activated vendor onboarding — Monday Zoom AE meeting confirmed", "Named at Q1 all-hands as driver of Zoom revenue trajectory toward $1M/month"],
-      preSales: ["Professional services migration presentation finalized for Zoom AE team meeting (30+ reps)", "Migration questionnaire refined with data residency questions and simplified formatting", "Salesforce CMS discovery agent scoped with Eric and Ali"],
-      clientOutcomes: ["IFRS cleared last technical blocker (ZCM-104 resolved) — greenlit for live migration execution", "Caption prioritization logic locked: VTT selected over SRT to avoid conversion errors", "Zero re-scopings across IFRS throughout full validation cycle"],
-      product: ["S3-to-S3 import architecture confirmed with Zoom ZVM engineering — APIs releasing mid-May", "ZCM-104 two-phase batch approach confirmed and resolved", "Migration bot tiered gating model defined", "Citi transcription pipeline scoped: ~1,500 legacy Veracast recordings via AWS Transcribe"],
-      delivery: ["50-video S3 smoke test planned before any live client migration data is used", "Citi transcription project scoped as new data services offering"],
-    },
-  },
-  {
-    week: 12,
-    dates: "May 4–8",
-    status: "complete",
-    label: "IFRS Unblocked, Zest Activated",
-    stats: { pipelineUSD: 10000, assetsCreated: 2, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 },
-    contributions: {
-      revenue: ["Amgen Zoom webinar integration engagement opened — $10K+ proposal in progress", "Farah’s on-camera integration enthusiasm opens direct referral channel from 30+ Zoom reps", "IFRS migration validated and unblocked; delivery revenue tied to live go-live in Week 13"],
-      preSales: ["CMS migration six-step go-to-market presented to 30–35 Zoom ZVM specialists on Zest global call", "Okta implementation document shared live during Zest call as scoping proof point", "Migration questionnaire and one-pager distributed via updated referral form link"],
-      clientOutcomes: ["IFRS dry run metadata confirmed: Video IDs and categories/subcategories migrating correctly", "Thumbnail retention mitigated 7 days → 30 days; permanent fix in Zoom May release", "AEM iframe validation teed up with Tudor for mid-Week 13"],
-      product: ["JSON file storage gap reported to Fan Wang; file-dump workaround agreed", "Slide attachment API gap escalated: no programmatic path exists, manual only", "Admin-side new player configuration bug confirmed and reported to Fan", "Caption download removal for VOD (May 18) flagged as client-facing change", "MFA and service account requirements formally defined for migration bot"],
-      delivery: ["IFRS migration environment validated end-to-end; ready for live run pending AEM iframe test", "Citi Veracast extraction scoped and handed to Andrew Classen"],
-    },
-  },
-  {
-    week: 13,
-    dates: "May 11–15",
-    status: "complete",
-    label: "IFRS Launch Locked, Indeed Aligned",
-    stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
-    contributions: {
-      revenue: ["Arziant/Baker Media RFQ submitted — targeting $100K–$200K OE contribution, shortlist pending", "Indeed discovery call completed; Skyler confirmed “perfect” and circulated to leadership", "First Computershare investor day referral win confirmed for mid-June delivery"],
-      preSales: ["Indeed migration report and implementation plan delivered post-discovery call", "Arziant RFQ integration pricing structure formalized ($3K/integration + $500/yr maintenance)", "CSM tiered pricing model built: bundled above $100K, $3.5K–$5K/month below"],
-      clientOutcomes: ["Indeed fully aligned on 10TB migration scope with leadership-ready materials confirmed", "IFRS May 18 migration start confirmed with all technical blockers resolved", "Zero re-scopings across all active engagements this week"],
-      product: ["ZCM category assignment bug diagnosed and ticketed — per-entry filter fix before May 18", "Zoom SDK embedding confirmed out-of-scope for OE at current stage (Menarini)", "Zoom category feature went live — first visibility into category migration behavior"],
-      delivery: ["Indeed implementation plan and migration report delivered as leadership-ready artifacts", "IFRS migration environment fully validated; Monday May 18 start confirmed"],
-    },
-  },
-  {
-    week: 14,
-    dates: "May 18–22",
-    status: "complete",
-    label: "IFRS Live, CMS Pipeline Building",
-    stats: { pipelineUSD: 33300, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 },
-    contributions: {
-      revenue: ["Lab Roots CMS migration scoped at ~$15K — 1,500 videos from WebinarNet, 500–600 events/year", "IFRS account remigration priced contingently at original engagement rate if UK/US consolidation proceeds", "Citi Veracast transcription engagement confirmed at $8,300", "Workato referral partnership executed — Silver tier (10% commission) on integration middleware deals", "Zoom Support Line approved for 90-day launch — direct support for Zoom Webinar and Events license holders"],
-      preSales: ["IFRS migration run-book and Citi implementation documentation delivered", "ABA discovery call fielded — dedicated team model, production studio workflow, and pricing path presented", "Zoom Support Line business plan finalized with Alan’s feedback: 90-day timeline, AE one-pager assigned", "Workato partner agreement negotiated and executed as OE’s first formal integration middleware partnership"],
-      clientOutcomes: ["IFRS: 2,800 files extracted from Kaltura to S3 in under three days, a week ahead of the June 1 deadline", "Citi F4V-to-MP3 conversion pipeline executed — ~450 files ready pending SFTP credentials from client", "Zero re-scopings across all active CMS engagements despite tag ceiling, thumbnail, and SSO discoveries"],
-      product: ["4,612-tag hub limit edge case discovered and escalated to Zoom engineering during live migration", "ZVM API architecture differences documented: clip-first upload model vs Hub for next migration client", "IFRS account consolidation SSO conflict flagged — UK data residency vs US account consolidation request"],
-      delivery: ["IFRS Phase 1 (Kaltura→S3) complete ahead of agreed May 22 deadline; Phase 2 substantially complete", "Citi F4V→MP3 pipeline parallel delivery executed alongside IFRS migration", "Pre-migration metadata audit pattern identified to prevent tag/category limit surprises in future migrations"],
-    },
-  },
-  {
-    week: 15,
-    dates: "May 25–29",
-    status: "complete",
-    label: "Bot POC, CrowdStrike, Contact Center",
-    stats: { pipelineUSD: 15000, assetsCreated: 2, rescopings: 1, insightsFiled: 4, formalHandoffs: 0 },
-    contributions: {
-      revenue: ["CrowdStrike Zoom CMS displacement opportunity identified — internal comms team on Kaltura, handed off to Rajul and Tyler for AE follow-up", "Okta Circle HD migration repriced to sub-$15K to advance stalled six-week negotiation toward June contract signing", "Solstice Marketo integration inbound via Zoom AE referral — positioned as paid engagement"],
-      preSales: ["Okta revised implementation proposal scoped to core migration under $15K budget threshold", "ZVM migration bot scoped as Zoom marketplace product — spike and POC tickets written with defined win conditions", "Zoom Contact Center V2 Passport landing page demo shown to Alan — chat-to-video widget confirmed production-ready"],
-      clientOutcomes: ["IFRS migration Phase 2 substantially complete — all 2,800 videos in Zoom pending tag repatch and seven entity fixes", "Citi Veracast files staged in S3 awaiting SFTP credentials from client — delivery on hold for client action", "Seven IFRS failed entities identified and under investigation before client account review"],
-      product: ["ZVM bot MCP architecture defined — markdown spec per source-destination pair drives branching conversation without hardcoded flows", "Pre-migration metadata checklist formalized: tag count, thumbnail logic, dual-account SSO verification now standard scoping steps", "Zoom Contact Center Elite license unlocked AI Smart Notes — end-of-engagement summarization now testable for support line", "CrowdStrike surfaces repeating Kaltura-plus-Zoom enterprise pattern — first OE-originated ZVM displacement opportunity"],
-      delivery: ["IFRS metadata repatch planned for Monday pending Zoom’s weekend tag limit increase to 5,000", "Okta Circle HD proposal revision aligned to Q4 delivery timeline with 30-day post-migration support", "Citi delivery approach (S3-to-S3 vs AWS Transfer Family SFTP) to be aligned with Joe, Akash, and Gib on Monday"],
-    },
-  },
-  {
-    week: 16,
-    dates: "Jun 1–5",
-    status: "current",
-    label: "IFRS Final Mile, Indeed Unblocked",
-    stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 },
-    contributions: {
-      revenue: ["Okta Circle HD migration advancing toward June contract signing at sub-$15K — OAuth app setup underway for ZVM testing", "Indeed migration unblocked: Zoom product committed a bulk clip-starring API to protect migrated content from 30-day retention deletion", "Vault Jump migration bot in-app monetization confirmed viable via Zoom’s native app framework — free trial and direct payment available"],
-      preSales: ["Dual-link embed-code report design confirmed with Vijay: OE can programmatically construct old Kaltura URLs and new Zoom play links for Indeed’s re-embedding", "Vault Jump customer questionnaire flow finalized: four required fields (source, destination, credentials, data residency region), remaining fields optional", "Zoom Contact Center workflow builder and skills-based routing explored with Max; Mithun set up as agent in OE’s Contact Center"],
-      clientOutcomes: ["IFRS: SRT-to-VTT caption bug diagnosed and fixed within 24 hours of discovery; caption-linking failure also resolved same day", "IFRS: eight Kaltura quiz videos manually recreated in Zoom as polls; four tag character-limit entries flagged to client (Ryan calm about it)", "Energized Marketing HubSpot-to-Zoom Webinar Plus integration established end to end on first session"],
-      product: ["Indeed escalation confirmed Zoom Clips has no retention exemption — escalated to ZVM PM Vijay who committed to a ‘save starred clips’ setting and bulk API (mid-July, accelerating)", "ABA loss formally documented: slide-upload feature gap is a recurring ON24 displacement blocker requiring Zoom product roadmap feedback", "Kaltura API metadata mismatch root-caused: API reports SRT while actual file is VTT; approximately 1,200 files require audit before next engagement", "Zoom Clips and cloud recording management architecture clarified: both feed ZVM channels; cloud recordings also feed events hub (relevant to IFRS and future clients)", "40-hour Citi migration effort established as baseline data point for migration complexity pricing and scoping"],
-      delivery: ["IFRS final report to be polished Monday; full client presentation Tuesday", "Indeed Monday call prepped: Zoom’s starred-clips roadmap item, dual-link embed report approach, and Google Drive backup scope", "Vault Jump moved to corporate Zoom account testing to target real ZVM licenses for Okta and Indeed migrations"],
-    },
-  },
+  { week: 8, dates: "Apr 7–11", status: "complete", label: "IFRS & Okta Discovery", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 2, formalHandoffs: 0 }, contributions: { revenue: ["Cargill API integration priced via discovery call", "Okta/Circle HD migration initiated with Zoom AE Farah", "Veltris dry run technical support delivered"], preSales: ["AI video production POC scoped with Casey", "Zoom managed agent concept pitched to Devin", "ZCM migration pitch deck iterated"], clientOutcomes: ["IFRS Veltris dry run executed without re-scoping", "Okta requirements captured cleanly on first discovery call"], product: ["ZCM release notes tracked for IFRS gate criteria", "Cargill API integration gap documented"], delivery: ["IFRS dry run framework and batch checklist prepared", "ZCM Jira board active with per-blocker ticket discipline"] } },
+  { week: 9, dates: "Apr 13–18", status: "complete", label: "Okta Scoped, IFRS Validation", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 3, formalHandoffs: 0 }, contributions: { revenue: ["Okta discovery completed — Circle HD confirmed, migration fully scoped", "IFRS validation gates on Apr 18 Zoom platform release", "Anderson migration signed (first completed ZCM engagement)"], preSales: ["ZCM migration pricing framework built", "CTA optimization analysis for openexc.com", "OE internal AI support agent live (Copilot Studio + GitBook MCP)"], clientOutcomes: ["IFRS validation on schedule — 23 meetings, zero re-scoping", "Okta scoped on first pass with no gaps or changes"], product: ["Apr 18 Zoom release applied to IFRS gate criteria", "ZCM blockers identified and escalated to engineering", "Circle HD API research initiated (ZCM-96)"], delivery: ["IFRS migration checklist maintained across dry run sequence", "ZCM board tickets tracked per blocker with comments"] } },
+  { week: 10, dates: "Apr 20–25", status: "complete", label: "Okta Proposal + Indeed Priced", stats: { pipelineUSD: 60100, assetsCreated: 5, rescopings: 0, insightsFiled: 4, formalHandoffs: 1 }, contributions: { revenue: ["Okta $38K implementation proposal presented to committee (Apr 24)", "Indeed migration scoped at $22,100 via automated pricing tool", "IFRS migration ready to scale — client review scheduled"], preSales: ["6-phase Okta implementation plan (SOW template for all ZCM engagements)", "Automated migration pricing tool (AI-powered quoting from discovery questionnaire)", "Camden ZCM onboarding — full migration motion explained to new BDR", "OE Video Editor prototype (Claude transcript-to-cut pipeline)", "Power BI → Claude daily briefing agent architecture scoped"], clientOutcomes: ["IFRS: thumbnail, MOV-to-MP4, tag limit, captions — all blockers resolved", "VOD channel assignment step documented (ZCM-121) before any client-facing run", "Zero re-scoping on IFRS throughout full validation cycle"], product: ["ZCM-118 (thumbnail fix), ZCM-119 (report enhancement), ZCM-121 (VOD channel step) filed", "Circle HD API spike closed — ZCM-96 complete", "D2L ZVM external file upload blocker formally escalated to Zoom", "S3-to-S3 flow architecture scoped with Max for Okta post-IFRS"], delivery: ["Okta 6-phase SOW — first formal ZCM migration PM handoff template", "Migration report spec'd with attachment-level fidelity tracking", "IFRS CSV delivered for client embed replacement work"] } },
+  { week: 11, dates: "Apr 27–May 1", status: "complete", label: "Board Visibility + S3 Architecture", stats: { pipelineUSD: 15000, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 0 }, contributions: { revenue: ["Indeed $15K implementation proposal sent to Zoom AE Jason (6,949 videos, 79TB)", "Okta procurement activated vendor onboarding — Monday Zoom AE meeting confirmed", "Named at Q1 all-hands as driver of Zoom revenue trajectory toward $1M/month"], preSales: ["Professional services migration presentation finalized for Zoom AE team meeting (30+ reps)", "Migration questionnaire refined with data residency questions and simplified formatting", "Salesforce CMS discovery agent scoped with Eric and Ali"], clientOutcomes: ["IFRS cleared last technical blocker (ZCM-104 resolved) — greenlit for live migration execution", "Caption prioritization logic locked: VTT selected over SRT to avoid conversion errors", "Zero re-scopings across IFRS throughout full validation cycle"], product: ["S3-to-S3 import architecture confirmed with Zoom ZVM engineering — APIs releasing mid-May", "ZCM-104 two-phase batch approach confirmed and resolved", "Migration bot tiered gating model defined", "Citi transcription pipeline scoped: ~1,500 legacy Veracast recordings via AWS Transcribe"], delivery: ["50-video S3 smoke test planned before any live client migration data is used", "Citi transcription project scoped as new data services offering"] } },
+  { week: 12, dates: "May 4–8", status: "complete", label: "IFRS Unblocked, Zest Activated", stats: { pipelineUSD: 10000, assetsCreated: 2, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 }, contributions: { revenue: ["Amgen Zoom webinar integration engagement opened — $10K+ proposal in progress", "Farah's on-camera integration enthusiasm opens direct referral channel from 30+ Zoom reps", "IFRS migration validated and unblocked; delivery revenue tied to live go-live in Week 13"], preSales: ["CMS migration six-step go-to-market presented to 30–35 Zoom ZVM specialists on Zest global call", "Okta implementation document shared live during Zest call as scoping proof point", "Migration questionnaire and one-pager distributed via updated referral form link"], clientOutcomes: ["IFRS dry run metadata confirmed: Video IDs and categories/subcategories migrating correctly", "Thumbnail retention mitigated 7 days → 30 days; permanent fix in Zoom May release", "AEM iframe validation teed up with Tudor for mid-Week 13"], product: ["JSON file storage gap reported to Fan Wang; file-dump workaround agreed", "Slide attachment API gap escalated: no programmatic path exists, manual only", "Admin-side new player configuration bug confirmed and reported to Fan", "Caption download removal for VOD (May 18) flagged as client-facing change", "MFA and service account requirements formally defined for migration bot"], delivery: ["IFRS migration environment validated end-to-end; ready for live run pending AEM iframe test", "Citi Veracast extraction scoped and handed to Andrew Classen"] } },
+  { week: 13, dates: "May 11–15", status: "complete", label: "IFRS Launch Locked, Indeed Aligned", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 }, contributions: { revenue: ["Arziant/Baker Media RFQ submitted — targeting $100K–$200K OE contribution, shortlist pending", "Indeed discovery call completed; Skyler confirmed “perfect” and circulated to leadership", "First Computershare investor day referral win confirmed for mid-June delivery"], preSales: ["Indeed migration report and implementation plan delivered post-discovery call", "Arziant RFQ integration pricing structure formalized ($3K/integration + $500/yr maintenance)", "CSM tiered pricing model built: bundled above $100K, $3.5K–$5K/month below"], clientOutcomes: ["Indeed fully aligned on 10TB migration scope with leadership-ready materials confirmed", "IFRS May 18 migration start confirmed with all technical blockers resolved", "Zero re-scopings across all active engagements this week"], product: ["ZCM category assignment bug diagnosed and ticketed — per-entry filter fix before May 18", "Zoom SDK embedding confirmed out-of-scope for OE at current stage (Menarini)", "Zoom category feature went live — first visibility into category migration behavior"], delivery: ["Indeed implementation plan and migration report delivered as leadership-ready artifacts", "IFRS migration environment fully validated; Monday May 18 start confirmed"] } },
+  { week: 14, dates: "May 18–22", status: "complete", label: "IFRS Live, CMS Pipeline Building", stats: { pipelineUSD: 33300, assetsCreated: 4, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 }, contributions: { revenue: ["Lab Roots CMS migration scoped at ~$15K — 1,500 videos from WebinarNet, 500–600 events/year", "IFRS account remigration priced contingently at original engagement rate if UK/US consolidation proceeds", "Citi Veracast transcription engagement confirmed at $8,300", "Zoom Support Line approved for 90-day launch — direct support for Zoom Webinar and Events license holders"], preSales: ["IFRS migration run-book and Citi implementation documentation delivered", "ABA discovery call fielded — dedicated team model, production studio workflow, and pricing path presented", "Zoom Support Line business plan finalized with Alan's feedback: 90-day timeline, AE one-pager assigned", "Workato partner agreement negotiated and executed as OE's first formal integration middleware partnership"], clientOutcomes: ["IFRS: 2,800 files extracted from Kaltura to S3 in under three days, a week ahead of the June 1 deadline", "Citi F4V-to-MP3 conversion pipeline executed — ~450 files ready pending SFTP credentials from client", "Zero re-scopings across all active CMS engagements despite tag ceiling, thumbnail, and SSO discoveries"], product: ["4,612-tag hub limit edge case discovered and escalated to Zoom engineering during live migration", "ZVM API architecture differences documented: clip-first upload model vs Hub for next migration client", "IFRS account consolidation SSO conflict flagged — UK data residency vs US account consolidation request"], delivery: ["IFRS Phase 1 (Kaltura→S3) complete ahead of agreed May 22 deadline; Phase 2 substantially complete", "Citi F4V→MP3 pipeline parallel delivery executed alongside IFRS migration", "Pre-migration metadata audit pattern identified to prevent tag/category limit surprises in future migrations"] } },
+  { week: 15, dates: "May 25–29", status: "complete", label: "Bot POC, CrowdStrike, Contact Center", stats: { pipelineUSD: 15000, assetsCreated: 2, rescopings: 1, insightsFiled: 4, formalHandoffs: 0 }, contributions: { revenue: ["CrowdStrike Zoom CMS displacement opportunity identified — internal comms team on Kaltura, handed off to Rajul and Tyler for AE follow-up", "Okta Circle HD migration repriced to sub-$15K to advance stalled six-week negotiation toward June contract signing", "Solstice Marketo integration inbound via Zoom AE referral — positioned as paid engagement"], preSales: ["Okta revised implementation proposal scoped to core migration under $15K budget threshold", "ZVM migration bot scoped as Zoom marketplace product — spike and POC tickets written with defined win conditions", "Zoom Contact Center V2 Passport landing page demo shown to Alan — chat-to-video widget confirmed production-ready"], clientOutcomes: ["IFRS migration Phase 2 substantially complete — all 2,800 videos in Zoom pending tag repatch and seven entity fixes", "Citi Veracast files staged in S3 awaiting SFTP credentials from client — delivery on hold for client action", "Seven IFRS failed entities identified and under investigation before client account review"], product: ["ZVM bot MCP architecture defined — markdown spec per source-destination pair drives branching conversation without hardcoded flows", "Pre-migration metadata checklist formalized: tag count, thumbnail logic, dual-account SSO verification now standard scoping steps", "Zoom Contact Center Elite license unlocked AI Smart Notes — end-of-engagement summarization now testable for support line", "CrowdStrike surfaces repeating Kaltura-plus-Zoom enterprise pattern — first OE-originated ZVM displacement opportunity"], delivery: ["IFRS metadata repatch planned for Monday pending Zoom's weekend tag limit increase to 5,000", "Okta Circle HD proposal revision aligned to Q4 delivery timeline with 30-day post-migration support", "Citi delivery approach (S3-to-S3 vs AWS Transfer Family SFTP) to be aligned with Joe, Akash, and Gib on Monday"] } },
+  { week: 16, dates: "Jun 1–5", status: "complete", label: "IFRS Final Mile, Indeed Unblocked", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 }, contributions: { revenue: ["Okta Circle HD migration advancing toward June contract signing at sub-$15K — OAuth app setup underway for ZVM testing", "Indeed migration unblocked: Zoom product committed a bulk clip-starring API to protect migrated content from 30-day retention deletion", "Vault Jump migration bot in-app monetization confirmed viable via Zoom's native app framework — free trial and direct payment available"], preSales: ["Dual-link embed-code report design confirmed with Vijay: OE can programmatically construct old Kaltura URLs and new Zoom play links for Indeed's re-embedding", "Vault Jump customer questionnaire flow finalized: four required fields (source, destination, credentials, data residency region), remaining fields optional", "Zoom Contact Center workflow builder and skills-based routing explored with Max; Mithun set up as agent in OE's Contact Center"], clientOutcomes: ["IFRS: SRT-to-VTT caption bug diagnosed and fixed within 24 hours of discovery; caption-linking failure also resolved same day", "IFRS: eight Kaltura quiz videos manually recreated in Zoom as polls; four tag character-limit entries flagged to client (Ryan calm about it)", "Energized Marketing HubSpot-to-Zoom Webinar Plus integration established end to end on first session"], product: ["Indeed escalation confirmed Zoom Clips has no retention exemption — escalated to ZVM PM Vijay who committed to a 'save starred clips' setting and bulk API (mid-July, accelerating)", "ABA loss formally documented: slide-upload feature gap is a recurring ON24 displacement blocker requiring Zoom product roadmap feedback", "Kaltura API metadata mismatch root-caused: API reports SRT while actual file is VTT; approximately 1,200 files require audit before next engagement", "Zoom Clips and cloud recording management architecture clarified: both feed ZVM channels; cloud recordings also feed events hub", "40-hour Citi migration effort established as baseline data point for migration complexity pricing and scoping"], delivery: ["IFRS final report polished Monday; full client presentation Tuesday", "Indeed Monday call prepped: Zoom's starred-clips roadmap item, dual-link embed report approach, and Google Drive backup scope", "Vault Jump moved to corporate Zoom account testing to target real ZVM licenses for Okta and Indeed migrations"] } },
+  { week: 17, dates: "Jun 8–12", status: "current", label: "IFRS Delivered, Indeed Contracted", stats: { pipelineUSD: 19000, assetsCreated: 3, rescopings: 0, insightsFiled: 5, formalHandoffs: 1 }, contributions: { revenue: ["Indeed migration contract initiated at $18–19K following starred-clips retention solution confirmation on Monday's call with Paul, Jacob, and Skylar", "Okta ZVM testing infrastructure established; end-of-August delivery target set with internal OAuth credentials and API scope documentation complete", "Lab Roots Webinar.net re-engagement initiated with new proof point — Production Studio lower thirds gap closing in Zoom's June platform release"], preSales: ["IFRS polished migration report delivered Friday — first formal ZCM client handoff document with cover page, column definitions, and summary analytics", "Revised Indeed implementation scope finalized: Google Drive backup, expanded project management hours, Kaltura viewership analytics report", "ZVM OAuth credential setup and channel architecture documented; ZVM channel creation and ownership assignment APIs captured in Jira tickets"], clientOutcomes: ["IFRS migration delivery complete — S3 overwrite behavior, thumbnail misclassification, caption logging gaps, and video ID typo all resolved before Friday report", "Indeed weekly cadence established; six-channel architecture confirmed with starred-clips retention protection and 150–175 collaborators per group", "Citi SFTP server setup advancing; Max to clarify access credential approach and confirm next steps this week"], product: ["S3 same-name file overwrite behavior documented as extraction edge case requiring proactive logging improvements for future migrations", "Zoom content library JSON file support gap escalated to Fan — follow-up on timeline scheduled for Week 18", "ZVM start-time parameter API confirmed targeting July 19 release; IFRS notified with interim messaging plan for affected pages", "Zoom tag 50-character limit confirmed requiring July code change; abbreviated tag workaround applied to four IFRS entries before delivery", "Zoom Contact Center WFM module evaluated as potential OE internal staffing solution to replace Lasso — Annalisa discovery call recommended"], delivery: ["IFRS migration report finalized and delivered Friday with 30-day data retention offer — first end-to-end ZCM delivery close-out protocol established", "ZVM OAuth setup complete and ZVM channel and ownership assignment APIs documented; Indeed and Okta migrations ready for contract execution", "Vault Jump bot file-transfer layer in development; Akash targeting Monday end-to-end ZVM demo via the bot"] } },
 ];
 
-const categories: {
-  id: string;
-  name: string;
-  oeWeight: number;
-  oeTarget: string;
-  key: ContribKey;
-  statLabel: (v: number) => string;
-  statValue: (ws: WeekData[]) => number;
-  getStatus: (v: number) => "exceeds" | "on-track" | "building";
-}[] = [
-  {
-    id: "revenue",
-    name: "Revenue Influence",
-    oeWeight: 35,
-    oeTarget: "ACV set quarterly · Win Rate >x%",
-    key: "revenue",
-    statLabel: (v) => `$${(v / 1000).toFixed(0)}K pipeline`,
-    statValue: (ws) => ws.reduce((s, w) => s + w.stats.pipelineUSD, 0),
-    getStatus: (v) => (v >= 50000 ? "on-track" : "building"),
-  },
-  {
-    id: "preSales",
-    name: "Pre-Sales Enablement",
-    oeWeight: 15,
-    oeTarget: "2–3 assets per quarter · Demo score ≥4.5",
-    key: "preSales",
-    statLabel: (v) => `${v} assets`,
-    statValue: (ws) => ws.reduce((s, w) => s + w.stats.assetsCreated, 0),
-    getStatus: (v) => (v > 3 ? "exceeds" : v >= 2 ? "on-track" : "building"),
-  },
-  {
-    id: "clientOutcomes",
-    name: "Client Outcomes",
-    oeWeight: 25,
-    oeTarget: "≥95% launch without re-scoping · PM satisfaction ≥4.5",
-    key: "clientOutcomes",
-    statLabel: (v) => `${v} re-scopings`,
-    statValue: (ws) => ws.reduce((s, w) => s + w.stats.rescopings, 0),
-    getStatus: (v) => (v === 0 ? "exceeds" : v <= 1 ? "on-track" : "building"),
-  },
-  {
-    id: "product",
-    name: "Product & Partner Impact",
-    oeWeight: 15,
-    oeTarget: "3–4 insights · ≥40% adoption rate",
-    key: "product",
-    statLabel: (v) => `${v} insights filed`,
-    statValue: (ws) => ws.reduce((s, w) => s + w.stats.insightsFiled, 0),
-    getStatus: (v) => (v > 4 ? "exceeds" : v >= 3 ? "on-track" : "building"),
-  },
-  {
-    id: "delivery",
-    name: "Delivery Readiness",
-    oeWeight: 10,
-    oeTarget: "PM Readiness Score ≥4.5",
-    key: "delivery",
-    statLabel: (v) => `${v} handoff${v !== 1 ? "s" : ""}`,
-    statValue: (ws) => ws.reduce((s, w) => s + w.stats.formalHandoffs, 0),
-    getStatus: (v) => (v >= 2 ? "exceeds" : v === 1 ? "on-track" : "building"),
-  },
+const categories: { id: string; name: string; oeWeight: number; oeTarget: string; key: ContribKey; statLabel: (v: number) => string; statValue: (ws: WeekData[]) => number; getStatus: (v: number) => "exceeds" | "on-track" | "building"; }[] = [
+  { id: "revenue", name: "Revenue Influence", oeWeight: 35, oeTarget: "ACV set quarterly · Win Rate >x%", key: "revenue", statLabel: (v) => `$${(v / 1000).toFixed(0)}K pipeline`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.pipelineUSD, 0), getStatus: (v) => (v >= 50000 ? "on-track" : "building") },
+  { id: "preSales", name: "Pre-Sales Enablement", oeWeight: 15, oeTarget: "2–3 assets per quarter · Demo score ≥4.5", key: "preSales", statLabel: (v) => `${v} assets`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.assetsCreated, 0), getStatus: (v) => (v > 3 ? "exceeds" : v >= 2 ? "on-track" : "building") },
+  { id: "clientOutcomes", name: "Client Outcomes", oeWeight: 25, oeTarget: "≥95% launch without re-scoping · PM satisfaction ≥4.5", key: "clientOutcomes", statLabel: (v) => `${v} re-scopings`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.rescopings, 0), getStatus: (v) => (v === 0 ? "exceeds" : v <= 1 ? "on-track" : "building") },
+  { id: "product", name: "Product & Partner Impact", oeWeight: 15, oeTarget: "3–4 insights · ≥40% adoption rate", key: "product", statLabel: (v) => `${v} insights filed`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.insightsFiled, 0), getStatus: (v) => (v > 4 ? "exceeds" : v >= 3 ? "on-track" : "building") },
+  { id: "delivery", name: "Delivery Readiness", oeWeight: 10, oeTarget: "PM Readiness Score ≥4.5", key: "delivery", statLabel: (v) => `${v} handoff${v !== 1 ? "s" : ""}`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.formalHandoffs, 0), getStatus: (v) => (v >= 2 ? "exceeds" : v === 1 ? "on-track" : "building") },
 ];
 
 function StatusChip({ status }: { status: "exceeds" | "on-track" | "building" }) {
-  const cfg = {
-    exceeds: { label: "Exceeds", bg: "#dcfce7", color: "#16a34a", dot: "#16a34a" },
-    "on-track": { label: "On Track", bg: TEAL_LIGHT, color: TEAL, dot: TEAL },
-    building: { label: "Building", bg: "#f9fafb", color: MUTED, dot: LIGHT },
-  }[status];
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 600, background: cfg.bg, color: cfg.color, borderRadius: 20, padding: "3px 10px" }}>
-      <span style={{ width: 6, height: 6, borderRadius: "50%", background: cfg.dot, display: "inline-block" }} />
-      {cfg.label}
-    </span>
-  );
+  const cfg = { exceeds: { label: "Exceeds", bg: "#dcfce7", color: "#16a34a", dot: "#16a34a" }, "on-track": { label: "On Track", bg: TEAL_LIGHT, color: TEAL, dot: TEAL }, building: { label: "Building", bg: "#f9fafb", color: MUTED, dot: LIGHT } }[status];
+  return (<span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 600, background: cfg.bg, color: cfg.color, borderRadius: 20, padding: "3px 10px" }}><span style={{ width: 6, height: 6, borderRadius: "50%", background: cfg.dot, display: "inline-block" }} />{cfg.label}</span>);
 }
 
 export default function SEKPIDashboard() {
@@ -243,9 +50,7 @@ export default function SEKPIDashboard() {
   return (
     <main style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 24px 72px" }}>
       <div style={{ marginBottom: 24 }}>
-        <Link href="/reports" style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-          &larr; Back to Reports
-        </Link>
+        <Link href="/reports" style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>&larr; Back to Reports</Link>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: LIGHT, marginBottom: 6 }}>SE Performance</div>
@@ -258,22 +63,13 @@ export default function SEKPIDashboard() {
           </div>
         </div>
       </div>
-
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 28 }}>
         {categories.map((cat) => {
           const val = cat.statValue(weeks);
           const status = cat.getStatus(val);
-          return (
-            <div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 16px" }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, marginBottom: 6, letterSpacing: "0.03em" }}>{cat.name}</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 6 }}>{cat.statLabel(val)}</div>
-              <StatusChip status={status} />
-              <div style={{ marginTop: 8, fontSize: 10, color: LIGHT }}>Target {cat.oeWeight}%</div>
-            </div>
-          );
+          return (<div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 16px" }}><div style={{ fontSize: 10, fontWeight: 600, color: MUTED, marginBottom: 6, letterSpacing: "0.03em" }}>{cat.name}</div><div style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 6 }}>{cat.statLabel(val)}</div><StatusChip status={status} /><div style={{ marginTop: 8, fontSize: 10, color: LIGHT }}>Target {cat.oeWeight}%</div></div>);
         })}
       </div>
-
       <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
         <div style={{ width: 200, flexShrink: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 10 }}>Q2 Weeks</div>
@@ -289,33 +85,19 @@ export default function SEKPIDashboard() {
                   <div style={{ fontSize: 10, color: MUTED, marginTop: 1, lineHeight: 1.3 }}>{w.label}</div>
                 </div>
                 <div style={{ flexShrink: 0, marginLeft: 8 }}>
-                  {w.status === "complete" && (
-                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ color: "#fff", fontSize: 9 }}>✓</span>
-                    </div>
-                  )}
-                  {w.status === "current" && (
-                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL_LIGHT, border: `2px solid ${TEAL}` }} />
-                  )}
+                  {w.status === "complete" && (<div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ color: "#fff", fontSize: 9 }}>✓</span></div>)}
+                  {w.status === "current" && (<div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL_LIGHT, border: `2px solid ${TEAL}` }} />)}
                 </div>
               </button>
             ))}
           </div>
           <div style={{ marginTop: 10, fontSize: 10, color: LIGHT, lineHeight: 1.6 }}>Click a week to filter. Click again for Q2 totals.</div>
         </div>
-
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ marginBottom: 14, padding: "10px 16px", background: selected ? TEAL_LIGHT : "#f9fafb", borderRadius: 8, border: `1px solid ${selected ? TEAL_MID : BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            {selected ? (
-              <><span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>Week {selected.week}</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>{selected.dates} — {selected.label}</span></>
-            ) : (
-              <><span style={{ fontSize: 12, fontWeight: 600, color: DARK }}>Q2 Cumulative</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>All {weeks.length} weeks combined</span></>
-            )}
-            {selected && (
-              <button onClick={() => setSelectedWeek(null)} style={{ fontSize: 11, color: MUTED, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}>× Q2 totals</button>
-            )}
+            {selected ? (<><span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>Week {selected.week}</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>{selected.dates} — {selected.label}</span></>) : (<><span style={{ fontSize: 12, fontWeight: 600, color: DARK }}>Q2 Cumulative</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>All {weeks.length} weeks combined</span></>)}
+            {selected && (<button onClick={() => setSelectedWeek(null)} style={{ fontSize: 11, color: MUTED, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}>× Q2 totals</button>)}
           </div>
-
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {categories.map((cat) => {
               const val = cat.statValue(activeWeeks);
@@ -333,12 +115,7 @@ export default function SEKPIDashboard() {
                   </div>
                   <div style={{ fontSize: 11, color: LIGHT, fontStyle: "italic", marginBottom: 12 }}>Target: {cat.oeTarget}</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                    {items.map((item, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: TEAL, marginTop: 7, flexShrink: 0 }} />
-                        <div style={{ fontSize: 12, color: DARK, lineHeight: 1.5 }}>{item}</div>
-                      </div>
-                    ))}
+                    {items.map((item, i) => (<div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: TEAL, marginTop: 7, flexShrink: 0 }} /><div style={{ fontSize: 12, color: DARK, lineHeight: 1.5 }}>{item}</div></div>))}
                   </div>
                 </div>
               );

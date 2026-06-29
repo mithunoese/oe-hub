@@ -4,12 +4,22 @@ import Link from "next/link";
 
 const weeks = [
   {
+    href: "/reports/week-19",
+    week: "Week 19",
+    date: "Jun 22–26, 2026",
+    summary: "Zoom CMS migration pricing came to a head as Mithun built a working pricing calculator in under 25 minutes that Zoom called exactly what they needed; the support-line Contact Center cleared its final Salesforce authentication blocker and was demoed to Zoom and OE delivery ahead of a July 1 soft launch, and Indeed’s CMS migration moved into signature as OE’s first repeatable migration deal.",
+    count: "27 meetings",
+    badge: "New",
+    pdf: "/api/report-pdf/week-19",
+    month: "June 2026",
+  },
+  {
     href: "/reports/week-18",
     week: "Week 18",
     date: "Jun 15–19, 2026",
     summary: "IFRS migration closed out after a mid-week discovery of 765 unmigrated livestream recordings that were identified, migrated, and delivered to the client within 48 hours. The Indeed ZVM contract moved to the edge of signature after a security clearance was approved, the OE Support Line staffing kickoff confirmed a July 6 go-live, and two new inbound ZVM migration opportunities arrived from Zoom’s London team.",
     count: "26 meetings",
-    badge: "New",
+    badge: null,
     pdf: "/api/report-pdf/week-18",
     month: "June 2026",
   },

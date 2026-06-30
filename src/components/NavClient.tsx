@@ -45,7 +45,6 @@ export default function NavClient() {
 
   return (
     <nav style={navStyle}>
-      {/* OE Logo */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -79,7 +78,6 @@ export default function NavClient() {
         }}>EXCHANGE</span>
       </div>
 
-      {/* Nav links */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Link href="/reports" style={isActive('/reports') ? linkActive : linkBase}>
           Reports

@@ -50,7 +50,56 @@ const categories: Category[] = [
         title: "Sales Org Teach-In",
         description:
           "Interactive org chart for the revenue team — names, roles, bios, and context for every person across all 8 teams. Editable inline.",
-        badge: "For Amelia & Andrew",
+        badge: "For Emilia & Andrew",
+        status: "live",
+      },
+    ],
+  },
+  {
+    label: "SE & Strategy",
+    projects: [
+      {
+        slug: "se-ideas",
+        title: "Retail IR Product Concept",
+        description:
+          "Two-tier product proposal for retail investor engagement — content & distribution engine plus retail intelligence layer. Includes competitive matrix, revenue model ($6–11M ARR TAM), and phased roadmap.",
+        badge: "For Emilia & Mark",
+        status: "live",
+      },
+    ],
+  },
+  {
+    label: "Live Demos",
+    projects: [
+      {
+        href: "https://oe-zcc-support-demo.vercel.app/hero-splash.html",
+        external: true,
+        title: "ZCC Support Demo",
+        description:
+          "Live Zoom Contact Center support demo — real-time expert access for events, webinars, and technical support.",
+        badge: "Live",
+        status: "live",
+      },
+      {
+        href: "https://oe-migration-site.vercel.app/",
+        external: true,
+        title: "Migration Landing Site",
+        description:
+          "Customer-facing site for OE's enterprise video migration service — Kaltura, Panopto, and Brightcove to Zoom.",
+        badge: "Live",
+        status: "live",
+      },
+    ],
+  },
+  {
+    label: "Fun",
+    projects: [
+      {
+        href: "/tetris",
+        title: "Tetris",
+        description:
+          "Classic Tetris in black and white. Arrow keys to move, space to drop, P to pause.",
+        badge: "Game",
         status: "live",
       },
     ],
@@ -67,63 +116,21 @@ const categories: Category[] = [
         status: "live",
       },
       {
+        href: "https://oe-video-editor.vercel.app",
+        external: true,
+        title: "OE Video Editor",
+        description:
+          "AI-powered earnings call video editor — upload Zoom recordings and transcripts, agent auto-edits the first pass, QC panel shows transcript diff with confidence score. Outputs MP4 and Premiere XML.",
+        badge: "For Casey",
+        status: "live",
+      },
+      {
         slug: "operator-dashboard",
         title: "Operator Command Center",
         description:
           "Real-time operator scheduling, device health, and staffing across all regions — replacing the Outlook calendar Tetris.",
         badge: "For Carlos",
         status: "live",
-      },
-    ],
-  },
-  {
-    label: "Zoom Partnership",
-    projects: [
-      {
-        slug: "zvm-migration",
-        title: "Video Migration Practice",
-        description:
-          "End-to-end video content migration from Kaltura, Panopto, and ON24 to Zoom — IFRS, Laurentian University, and Anderson & Strudwick engagements with automated pipeline tooling.",
-        badge: "Active",
-        status: "active",
-      },
-      {
-        slug: "zoom-integrations",
-        title: "Integration Effort",
-        description:
-          "Connecting Zoom Events to enterprise MAP and CRM stacks — HubSpot, Marketo, Eloqua, Pardot, Salesforce connectors with Workato and Zapier middleware.",
-        badge: "Active",
-        status: "active",
-      },
-    ],
-  },
-  {
-    label: "SE & Ideas",
-    projects: [
-      {
-        href: "/ir-intelligence-agent.html",
-        external: true,
-        title: "IR Intelligence Agent",
-        description:
-          "Concept deck for an AI-powered IR intelligence agent — automated earnings analysis, peer benchmarking, and investor sentiment tracking.",
-        badge: "Concept",
-        status: "live",
-      },
-      {
-        slug: "se",
-        title: "Golden Demo Scripts",
-        description:
-          "Curated demo scripts for SE discovery and proof-of-concept calls — covering each product vertical with objection handling and talk tracks.",
-        badge: "Coming soon",
-        status: "coming-soon",
-      },
-      {
-        slug: "se-ideas",
-        title: "Devin's Ideas",
-        description:
-          "Retail investor engagement concepts from Devin — OE Meet for Retail and Earnings Highlight Reels. Early-stage product thinking with Mark and Emilia's buy-in.",
-        badge: "Ideas",
-        status: "coming-soon",
       },
     ],
   },
@@ -138,7 +145,7 @@ const statusDot: Record<string, string> = {
 function ProjectCard({ project }: { project: Project }) {
   const href = project.external
     ? project.href!
-    : `/projects/${project.slug}`;
+    : project.href ?? `/projects/${project.slug}`;
 
   const cardContent = (
     <div

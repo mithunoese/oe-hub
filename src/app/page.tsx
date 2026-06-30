@@ -66,11 +66,11 @@ export default function Home() {
           OE Hub
         </h1>
         <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, maxWidth: 480 }}>
-          Projects, reports, agents, and resources for the team.
+          Projects, reports, and resources for the team.
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         <HomeCard
           href="/projects"
           title="Projects"
@@ -82,13 +82,6 @@ export default function Home() {
           description="Weekly updates, progress tracking, and notes."
         />
       </div>
-      <HomeCard
-        href="/agents"
-        title="Agents"
-        description="AI-powered tools for prospecting, migration, reporting, and more."
-        featured
-        badge="2 Active"
-      />
     </main>
   );
 }

@@ -56,7 +56,7 @@ const themes: Theme[] = [
   },
   {
     title: "NYC Networking and Relationship Building",
-    text: "The IR Impact Awards cocktail event exceeded expectations with ~150 attendees (venue capacity ~90). Mithun met Mark, Alan, Devin, Amelia, Brian Kramer, Renee, and several Zoom sales team members in person for the first time. Mark expressed strong excitement about the migration practice and AI transcription value-add vision. Wednesday was an internal development day with an in-person WeWork session with Devin.",
+    text: "The IR Impact Awards cocktail event exceeded expectations with ~150 attendees (venue capacity ~90). Mithun met Mark, Alan, Devin, Emilia, Brian Kramer, Renee, and several Zoom sales team members in person for the first time. Mark expressed strong excitement about the migration practice and AI transcription value-add vision. Wednesday was an internal development day with an in-person WeWork session with Devin.",
   },
 ];
 
@@ -77,7 +77,7 @@ const lookAheadItems: LookAhead[] = [
   },
   {
     title: "IFRS Commercial Close",
-    text: "Amelia to reach out to Rajul for commercial terms. Peter needs this to close before Q1 ends. Migration pricing ~$10K is in Peter's pipeline.",
+    text: "Emilia to reach out to Rajul for commercial terms. Peter needs this to close before Q1 ends. Migration pricing ~$10K is in Peter's pipeline.",
   },
   {
     title: "Camden BDR Start",
@@ -135,7 +135,7 @@ const meetingData: DayData[] = [
       {
         title: "IR Impact Awards Cocktail Event",
         summary:
-          "OE-hosted reception at IR Impact Awards. ~150 people attended, venue only held ~90 \u2014 significantly exceeded expectations. Mithun met Mark, Alan, Devin, Amelia, Brian Kramer (Zoom), Renee, and several Zoom sales team members in person for the first time. Mark expressed strong excitement about the migration practice and AI transcription value-add vision.",
+          "OE-hosted reception at IR Impact Awards. ~150 people attended, venue only held ~90 \u2014 significantly exceeded expectations. Mithun met Mark, Alan, Devin, Emilia, Brian Kramer (Zoom), Renee, and several Zoom sales team members in person for the first time. Mark expressed strong excitement about the migration practice and AI transcription value-add vision.",
         angle:
           "First major in-person networking moment. Mark's excitement about migration + AI transcription validates the strategic direction.",
       },

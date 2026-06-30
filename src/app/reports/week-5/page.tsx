@@ -65,7 +65,7 @@ const themes: Theme[] = [
 const lookAheadItems: LookAhead[] = [
   {
     title: "March 24 NYC Cocktail Event — Zoom Sales Team",
-    text: "Five Zoom salespeople confirmed attending. Alan to introduce Mithun to all of them. Daytime working sessions Tuesday (Mithun + Devin, ~11 AM) and Wednesday (WeWork with Devin, Bettina, Amelia, and other colleagues in town). First major in-person networking moment of the engagement with Zoom's sales team.",
+    text: "Five Zoom salespeople confirmed attending. Alan to introduce Mithun to all of them. Daytime working sessions Tuesday (Mithun + Devin, ~11 AM) and Wednesday (WeWork with Devin, Bettina, Emilia, and other colleagues in town). First major in-person networking moment of the engagement with Zoom's sales team.",
   },
   {
     title: "IFRS Dry Run — April 1 Target",
@@ -129,11 +129,11 @@ const meetingData: DayData[] = [
           "Direct OE-Zoom co-sell — Hillary brought OE in as the production/onboarding layer. Salesforce integration requirement maps exactly to the Workato use case OE is developing.",
       },
       {
-        title: "Amelia + Andrew Weekly Check-In",
+        title: "Emilia + Andrew Weekly Check-In",
         summary:
-          "Andrew demoed the corp comms prospecting tool live — impressed. Needs Anthropic API credits from Alex (still pending). Amelia set explicit priority ordering: (1) corp comms prospecting for Andrew, (2) Zoom BD/migration support, (3) Salesforce/Workato integrations. Workato: Mithun walked through Amgen ask, flagged MCP angle — ~15 minutes per client with near-zero lift. Amelia asked for a proper walkthrough call. Zoom platform gaps: Mithun wants product enablement docs. Amelia: start with Josh (internal OE expert) first, then Tyler Brubach once Mithun is more prepared.",
+          "Andrew demoed the corp comms prospecting tool live — impressed. Needs Anthropic API credits from Alex (still pending). Emilia set explicit priority ordering: (1) corp comms prospecting for Andrew, (2) Zoom BD/migration support, (3) Salesforce/Workato integrations. Workato: Mithun walked through Amgen ask, flagged MCP angle — ~15 minutes per client with near-zero lift. Emilia asked for a proper walkthrough call. Zoom platform gaps: Mithun wants product enablement docs. Emilia: start with Josh (internal OE expert) first, then Tyler Brubach once Mithun is more prepared.",
         angle:
-          "Most direct alignment session with leadership so far. Amelia gave explicit priority ordering and set clear expectations on the Tyler Brubach relationship — go prepared, not for Tyler to be educating OE.",
+          "Most direct alignment session with leadership so far. Emilia gave explicit priority ordering and set clear expectations on the Tyler Brubach relationship — go prepared, not for Tyler to be educating OE.",
       },
     ],
   },
@@ -166,7 +166,7 @@ const meetingData: DayData[] = [
       {
         title: "Workato/Integrations Strategy Call",
         summary:
-          "Decision: referral-not-MSP. OE recommends Workato, refers clients, earns commission, does implementation inside client's account — no OE-owned sub-workspaces. Alan asked Mithun to build a middleware matrix (Workato, Zapier, Mulesoft, Boomi). Amgen confirmed as first reference implementation. Tyler responded live — suggested looping in Michael Stark and Ren (Zoom). Alan to intro Mithun, Max, Alex to them. Post-migration KPIs: Amelia flagged contact harvesting. Alan proposed $200 bonus to Mithun and Max per meeting generated from migration client contacts.",
+          "Decision: referral-not-MSP. OE recommends Workato, refers clients, earns commission, does implementation inside client's account — no OE-owned sub-workspaces. Alan asked Mithun to build a middleware matrix (Workato, Zapier, Mulesoft, Boomi). Amgen confirmed as first reference implementation. Tyler responded live — suggested looping in Michael Stark and Ren (Zoom). Alan to intro Mithun, Max, Alex to them. Post-migration KPIs: Emilia flagged contact harvesting. Alan proposed $200 bonus to Mithun and Max per meeting generated from migration client contacts.",
         angle:
           "Referral-not-MSP is clean and correct for this stage. Middleware matrix is the next concrete deliverable. Post-migration contact harvesting monetizes the relationship capital OE builds during migrations.",
       },

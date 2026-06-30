@@ -40,7 +40,6 @@ export default function NavClient() {
   const isActive = (href: string) => {
     if (href === '/reports') return pathname.startsWith('/reports');
     if (href === '/projects') return pathname.startsWith('/projects');
-    if (href === '/agents') return pathname.startsWith('/agents');
     return false;
   };
 
@@ -87,9 +86,6 @@ export default function NavClient() {
         </Link>
         <Link href="/projects" style={isActive('/projects') ? linkActive : linkBase}>
           Projects
-        </Link>
-        <Link href="/agents" style={isActive('/agents') ? linkActive : linkBase}>
-          Agents
         </Link>
       </div>
     </nav>

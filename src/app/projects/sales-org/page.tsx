@@ -20,7 +20,7 @@ interface Team {
   id: string;
   label: string;
   subtitle: string;
-  leader: "amelia" | "andrew" | "shared";
+  leader: "emilia" | "andrew" | "shared";
   color: string;
   people: Person[];
 }
@@ -29,7 +29,7 @@ interface Team {
 // Leader data
 // ---------------------------------------------------------------------------
 
-const ameliaTapsall: Person = {
+const emiliaTapsall: Person = {
   name: "Emilia Tapsall",
   title: "Co-Head of Sales + Delivery",
   location: "Arizona",
@@ -55,7 +55,7 @@ const initialTeams: Team[] = [
     label: "Zoom Partnership",
     subtitle:
       "The smallest team relative to the revenue it's expected to generate. Three people covering $6M in planned revenue with $20M potential.",
-    leader: "amelia",
+    leader: "emilia",
     color: "#1e40af",
     people: [
       {
@@ -86,7 +86,7 @@ const initialTeams: Team[] = [
     label: "Institutional",
     subtitle:
       "Where OE's roots and majority of revenue come from. Almost everyone on this team came from the client side — corporate access at banks.",
-    leader: "amelia",
+    leader: "emilia",
     color: "#92400e",
     people: [
       {
@@ -745,7 +745,7 @@ export default function SalesOrgPage() {
   const [editMode, setEditMode] = useState(false);
   const [teams, setTeams] = useState<Team[]>(initialTeams);
 
-  const ameliaTeams = teams.filter((t) => t.leader === "amelia");
+  const emiliaTeams = teams.filter((t) => t.leader === "emilia");
   const andrewTeams = teams.filter((t) => t.leader === "andrew");
   const sharedTeams = teams.filter((t) => t.leader === "shared");
 
@@ -889,12 +889,12 @@ export default function SalesOrgPage() {
           }}
         >
           <PersonCard
-            person={ameliaTapsall}
+            person={emiliaTapsall}
             accent="#7c3aed"
-            isSelected={selectedLeader === "amelia"}
+            isSelected={selectedLeader === "emilia"}
             onClick={() => {
               setSelectedLeader(
-                selectedLeader === "amelia" ? null : "amelia"
+                selectedLeader === "emilia" ? null : "emilia"
               );
               setActiveTeam(null);
             }}
@@ -963,7 +963,7 @@ export default function SalesOrgPage() {
               borderRadius: 0,
             }}
           >
-            {ameliaTeams.map((team) => (
+            {emiliaTeams.map((team) => (
               <TeamCircle
                 key={team.id}
                 team={team}

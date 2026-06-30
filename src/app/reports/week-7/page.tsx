@@ -69,7 +69,7 @@ const lookAhead: LookAhead[] = [
   },
   {
     title: "Q2 SE KPI Session",
-    text: "Amelia wants to sit down with Mithun and Andrew to workshop what to track for Q2. First formal performance measurement conversation for the SE role.",
+    text: "Emilia wants to sit down with Mithun and Andrew to workshop what to track for Q2. First formal performance measurement conversation for the SE role.",
   },
   {
     title: "Workato Reseller Agreement",
@@ -175,8 +175,8 @@ const days: DayData[] = [
         angle: "The integration works. This is exactly the kind of one-time setup/debug work that can be documented and replicated at scale.",
       },
       {
-        title: "Amelia + Andrew Weekly Check-In",
-        summary: "OE website auto-research demo \u2014 AI tool surfaced generic CTAs. Andrew: \u2018just do it, work with Michael Morales.\u2019 Q2 SE KPIs to be workshopped. Rajul/Tyler update email going out from Alan and Amelia \u2014 Mithun to be pulled into those conversations.",
+        title: "Emilia + Andrew Weekly Check-In",
+        summary: "OE website auto-research demo \u2014 AI tool surfaced generic CTAs. Andrew: \u2018just do it, work with Michael Morales.\u2019 Q2 SE KPIs to be workshopped. Rajul/Tyler update email going out from Alan and Emilia \u2014 Mithun to be pulled into those conversations.",
         angle: "The KPI conversation is overdue \u2014 Q2 is when SE performance starts being tracked formally.",
       },
       {

@@ -81,7 +81,7 @@ const nextSteps = [
   "Pilot Tier 1 with 3–5 existing OE clients — Q2 2026",
   "Build polling & survey engine for Tier 2 MVP",
   "Design peer benchmarking data model",
-  "Present revenue model + roadmap to Amelia + Mark",
+  "Present revenue model + roadmap to Emilia + Mark",
 ];
 
 export default function SEIdeas() {

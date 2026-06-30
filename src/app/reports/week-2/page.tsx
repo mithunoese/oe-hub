@@ -227,7 +227,7 @@ const meetingData: DayData[] = [
       {
         title: "Andrew \u2014 Week 2 Check-In",
         summary:
-          "End-of-week debrief. Andrew\u2019s coaching: build relationships first, invest in knowing people as people. Everyone here has been around 5\u20138 years and is protective of what they\u2019ve built \u2014 ease in. Positive reaction to the migration prototype.",
+          "End-of-week debrief. Andrew\u2019s coaching: build relationships first, invest in knowing people as people. Everyone here has been around 5\u20138 years with deep institutional knowledge \u2014 invest in those relationships early. Positive reaction to the migration prototype.",
       },
     ],
   },

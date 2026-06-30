@@ -110,7 +110,7 @@ const meetingData: DayData[] = [
       {
         title: "Daily Check-In \u2014 Mithun \u2194 Andrew & Emilia",
         summary:
-          "Debrief on the Joe 1:1. Andrew: \u201cJoe\u2019s a hard nut to crack\u201d \u2014 pleasantly surprised. Prototype demo well received. Current Zoom API blocker: ~30 videos at a time; Andrew confirmed Zoom will build it when a big enough client pushes. Direction: go deeper on Zoom this week, shadow Kara on sales calls, show Alan the prototype. Emilia raised CRM integration vision \u2014 visualize how Zoom Events engagement data flows into Salesforce/HubSpot as a second prototype.",
+          "Debrief on the Joe 1:1. Andrew noted a positive reception \u2014 the demo landed well. Prototype demo well received. Current Zoom API blocker: ~30 videos at a time; Andrew confirmed Zoom will build it when a big enough client pushes. Direction: go deeper on Zoom this week, shadow Kara on sales calls, show Alan the prototype. Emilia raised CRM integration vision \u2014 visualize how Zoom Events engagement data flows into Salesforce/HubSpot as a second prototype.",
       },
       {
         title: "Joe Product Specifications",

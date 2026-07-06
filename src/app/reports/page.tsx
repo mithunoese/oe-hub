@@ -22,7 +22,8 @@ const quarters: QuarterSection[] = [
       {
         month: "June 2026",
         weeks: [
-          { href: "/reports/week-19", week: "Week 19", date: "Jun 22–26, 2026", summary: "Zoom CMS migration pricing came to a head as Mithun built a working pricing calculator in under 25 minutes; Support-line Contact Center cleared Salesforce blocker; Indeed CMS migration moved to signature.", count: "27 meetings", badge: "New", pdf: "/weekly_report_week19.pdf" },
+          { href: "/reports/week-20", week: "Week 20", date: "Jun 29–Jul 3, 2026", summary: "Zoom Support Line launched to Zoom's full AE and CSM team with immediate adoption; Indeed CMS migration moved into a full Kaltura content audit; Contact Center licensing friction with Zoom persisted.", count: "21 meetings", badge: "New", pdf: "/weekly_report_week20.pdf" },
+          { href: "/reports/week-19", week: "Week 19", date: "Jun 22–26, 2026", summary: "Zoom CMS migration pricing came to a head as Mithun built a working pricing calculator in under 25 minutes; Support-line Contact Center cleared Salesforce blocker; Indeed CMS migration moved to signature.", count: "27 meetings", pdf: "/weekly_report_week19.pdf" },
           { href: "/reports/week-18", week: "Week 18", date: "Jun 15–19, 2026", summary: "IFRS migration closed after discovering and migrating 765 unmigrated livestream recordings within 48 hours; Indeed ZVM contract near signature; OE Support Line go-live confirmed for July 6.", count: "26 meetings", pdf: "/weekly_report_week18.pdf" },
           { href: "/reports/week-17", week: "Week 17", date: "Jun 8–12, 2026", summary: "IFRS delivered full migration report closing first end-to-end Kaltura-to-Zoom engagement; Indeed contract kicked off with SOW sent; Vault Jump bot architecture formalized.", count: "18 meetings" },
           { href: "/reports/week-16", week: "Week 16", date: "Jun 1–5, 2026", summary: "IFRS migration in final stage with caption bugs resolved; Indeed retention crisis resolved via Zoom product commitment; Vault Jump migration bot moving toward productization.", count: "19 meetings", pdf: "/weekly_report_week16.pdf" },
@@ -97,7 +98,7 @@ export default function Reports() {
         <div style={{ padding: "18px 24px", background: "var(--surface)", border: "1.5px solid var(--teal)", borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 3 }}>Q2 KPI Dashboard</div>
-            <div style={{ fontSize: 12, color: "var(--muted)" }}>Revenue · Pre-Sales · Client Outcomes · Product · Delivery — weeks 8–19</div>
+            <div style={{ fontSize: 12, color: "var(--muted)" }}>Revenue · Pre-Sales · Client Outcomes · Product · Delivery — weeks 8–20</div>
           </div>
           <span style={{ fontSize: 12, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", padding: "4px 12px", borderRadius: 20, whiteSpace: "nowrap" }}>SE KPIs →</span>
         </div>

@@ -25,7 +25,6 @@ function Nav() {
       <div style={{ display: "flex", gap: 20 }}>
         <Link href="/projects" style={linkStyle('/projects')}>Projects</Link>
         <Link href="/reports" style={linkStyle('/reports')}>Reports</Link>
-        <Link href="/agents" style={linkStyle('/agents')}>Agents</Link>
       </div>
     </nav>
   );

@@ -1,21 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-
-const TEAL = "#008285";
-const TEAL_LIGHT = "#f0fafa";
-const TEAL_MID = "#e0f0f0";
-const DARK = "#374151";
-const MUTED = "#6b7280";
-const LIGHT = "#9ca3af";
-const BORDER = "#e5e7eb";
-
-type ContribKey = "revenue" | "preSales" | "clientOutcomes" | "product" | "delivery";
-
-interface Deal { name: string; amount: number; status: "confirmed" | "in-signature" | "near-close"; }
-interface WeekStats { pipelineUSD: number; assetsCreated: number; rescopings: number; insightsFiled: number; formalHandoffs: number; }
-interface WeekData { week: number; dates: string; status: "complete" | "current"; label: string; stats: WeekStats; contributions: Record<ContribKey, string[]>; deals?: Deal[]; }
+import KPIDashboard, { WeekData } from "@/components/KPIDashboard";
 
 const weeksAsc: WeekData[] = [
   { week: 8, dates: "Apr 7–11", status: "complete", label: "IFRS & Okta Discovery", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 2, formalHandoffs: 0 }, contributions: { revenue: ["Cargill API integration priced via discovery call", "Okta/Circle HD migration initiated with Zoom AE Farah", "Veltris dry run technical support delivered"], preSales: ["AI video production POC scoped with Casey", "Zoom managed agent concept pitched to Devin", "ZCM migration pitch deck iterated"], clientOutcomes: ["IFRS Veltris dry run executed without re-scoping", "Okta requirements captured cleanly on first discovery call"], product: ["ZCM release notes tracked for IFRS gate criteria", "Cargill API integration gap documented"], delivery: ["IFRS dry run framework and batch checklist prepared", "ZCM Jira board active with per-blocker ticket discipline"] } },
@@ -29,138 +14,10 @@ const weeksAsc: WeekData[] = [
   { week: 16, dates: "Jun 1–5", status: "complete", label: "IFRS Final Mile, Indeed Unblocked", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 5, formalHandoffs: 0 }, contributions: { revenue: ["Okta Circle HD migration advancing toward June contract signing at sub-$15K — OAuth app setup underway for ZVM testing", "Indeed migration unblocked: Zoom product committed a bulk clip-starring API to protect migrated content from 30-day retention deletion", "Vault Jump migration bot in-app monetization confirmed viable via Zoom’s native app framework — free trial and direct payment available"], preSales: ["Dual-link embed-code report design confirmed with Vijay: OE can programmatically construct old Kaltura URLs and new Zoom play links for Indeed’s re-embedding", "Vault Jump customer questionnaire flow finalized: four required fields (source, destination, credentials, data residency region), remaining fields optional", "Zoom Contact Center workflow builder and skills-based routing explored with Max; Mithun set up as agent in OE’s Contact Center"], clientOutcomes: ["IFRS: SRT-to-VTT caption bug diagnosed and fixed within 24 hours of discovery; caption-linking failure also resolved same day", "IFRS: eight Kaltura quiz videos manually recreated in Zoom as polls; four tag character-limit entries flagged to client (Ryan calm about it)", "Energized Marketing HubSpot-to-Zoom Webinar Plus integration established end to end on first session"], product: ["Indeed escalation confirmed Zoom Clips has no retention exemption — escalated to ZVM PM Vijay who committed to a ‘save starred clips’ setting and bulk API (mid-July, accelerating)", "ABA loss formally documented: slide-upload feature gap is a recurring ON24 displacement blocker requiring Zoom product roadmap feedback", "Kaltura API metadata mismatch root-caused: API reports SRT while actual file is VTT; approximately 1,200 files require audit before next engagement", "Zoom Clips and cloud recording management architecture clarified: both feed ZVM channels; cloud recordings also feed events hub", "40-hour Citi migration effort established as baseline data point for migration complexity pricing and scoping"], delivery: ["IFRS final report polished Monday; full client presentation Tuesday", "Indeed Monday call prepped: Zoom’s starred-clips roadmap item, dual-link embed report approach, and Google Drive backup scope", "Vault Jump moved to corporate Zoom account testing to target real ZVM licenses for Okta and Indeed migrations"] } },
   { week: 17, dates: "Jun 8–12", status: "complete", label: "IFRS Delivered, Indeed Contracted", stats: { pipelineUSD: 19000, assetsCreated: 3, rescopings: 0, insightsFiled: 5, formalHandoffs: 1 }, deals: [{ name: "Indeed Kaltura→Zoom migration", amount: 19000, status: "in-signature" }], contributions: { revenue: ["Indeed migration contract initiated at $18–19K following starred-clips retention solution confirmation on Monday’s call with Paul, Jacob, and Skylar", "Okta ZVM testing infrastructure established; end-of-August delivery target set with internal OAuth credentials and API scope documentation complete", "Lab Roots Webinar.net re-engagement initiated with new proof point — Production Studio lower thirds gap closing in Zoom’s June platform release"], preSales: ["IFRS polished migration report delivered Friday — first formal ZCM client handoff document with cover page, column definitions, and summary analytics", "Revised Indeed implementation scope finalized: Google Drive backup, expanded project management hours, Kaltura viewership analytics report", "ZVM OAuth credential setup and channel architecture documented; ZVM channel creation and ownership assignment APIs captured in Jira tickets"], clientOutcomes: ["IFRS migration delivery complete — S3 overwrite behavior, thumbnail misclassification, caption logging gaps, and video ID typo all resolved before Friday report", "Indeed weekly cadence established; six-channel architecture confirmed with starred-clips retention protection and 150–175 collaborators per group", "Citi SFTP server setup advancing; Max to clarify access credential approach and confirm next steps this week"], product: ["S3 same-name file overwrite behavior documented as extraction edge case requiring proactive logging improvements for future migrations", "Zoom content library JSON file support gap escalated to Fan — follow-up on timeline scheduled for Week 18", "ZVM start-time parameter API confirmed targeting July 19 release; IFRS notified with interim messaging plan for affected pages", "Zoom tag 50-character limit confirmed requiring July code change; abbreviated tag workaround applied to four IFRS entries before delivery", "Zoom Contact Center WFM module evaluated as potential OE internal staffing solution to replace Lasso — Annalisa discovery call recommended"], delivery: ["IFRS migration report finalized and delivered Friday with 30-day data retention offer — first end-to-end ZCM delivery close-out protocol established", "ZVM OAuth setup complete and ZVM channel and ownership assignment APIs documented; Indeed and Okta migrations ready for contract execution", "Vault Jump bot file-transfer layer in development; Akash targeting Monday end-to-end ZVM demo via the bot"] } },
   { week: 18, dates: "Jun 15–19", status: "complete", label: "IFRS Closed, Indeed Activated", stats: { pipelineUSD: 0, assetsCreated: 2, rescopings: 0, insightsFiled: 3, formalHandoffs: 1 }, contributions: { revenue: ["Chris Millen ZVM inbound: Panopto EU university (42,000 assets) expected to close within 1–2 months — pricing committed", "Chris Millen ZVM inbound: Big pharma Kaltura 40TB opportunity introduced — pricing and GDPR scope under review", "Indeed contract at edge of signature — security clearance approved, Workday procurement advancing through Austin"], preSales: ["IFRS final migration report delivered to Tudor with livestream-to-Zoom ID mapping, channel assignment, and updated entry counts", "Migration cost calculator and summer education one-pager committed for Chris Millen ZVM pipeline", "OE Support Line staffing kickoff delivered — agent experience demoed to staffing leadership, July 6 pilot date confirmed"], clientOutcomes: ["IFRS: 765 missing livestream recordings identified, migrated, and delivered — Tudor canceled follow-up call confirming completion", "Indeed security clearance approved — technical response accepted, contract execution the final remaining gate", "Zero re-scopings across all active ZVM engagements this week"], product: ["Fan confirmed: tag limit increase targeting July release, JSON file zip upload available June 22, embeddable player in June release", "Zoom embeddable web player enabled on OE sandbox — 20+ enterprise customers requesting feature including IFRS, E&Y, and Carnegie Mellon", "Playlist 100-video limit flagged to Fan as July release ask for IFRS closeout"], delivery: ["IFRS migration formally closed: livestream-to-Zoom mapping delivered, 759 videos added to embed channel, client confirmed receipt", "Indeed ZVM discovery kickoff confirmed for Week 19 — same Kaltura-to-ZVM pipeline as IFRS", "Devin PM workflow documented as Dottie scoping artifact — Central, Stream, Passport, and Salesforce handoff points mapped"] } },
-  { week: 19, dates: "Jun 22–26", status: "complete", label: "Pricing Tool Shipped, Support Line Launch-Ready", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 1 }, contributions: { revenue: ["Big Pharma 40TB Kaltura migration priced at ~$35K and Panopto education customer at ~$25–31K — first OE-originated EMEA CMS deals via Chris at Zoom", "Indeed CMS migration moved into signature at ~$19–20K — OE’s first repeatable Kaltura-to-ZVM migration deal", "Citi reconciliation pricing finalized at $9,500; CrowdStrike comms-team Kaltura displacement opportunity surfaced in early pitch"], preSales: ["Migration pricing calculator built in under 25 minutes and demoed to Zoom’s Chris — AI-driven discovery questionnaire producing fast, caveated quotes", "Pricing calculator logic session mapped cost drivers into technical-overhead, man-hours, and complexity buckets against margin targets", "Coached EMEA and new NA sellers (Peter, Joshua) on the discovery-first migration go-to-market motion"], clientOutcomes: ["IFRS closed out: tags repatch unblocked by Zoom’s 10,000-tag limit, JSON reference files compressed and staged, Citi granted read-only S3 access", "Salesforce authentication blocker resolved (reversed consumer key/secret) — support-line customer lookup now functional", "Zero re-scopings across active ZVM engagements this week"], product: ["Migration bot must pass updated architecture and InfoSec review before touching customer data — near-term migrations kept on proven export/import flow", "Third-party pen test set up against internal S3 bucket with object listing disabled", "Zoom Virtual Agent (consumption SKU, ~$0.40/engagement) identified as path to knowledge-base scraping and intelligent handoff; CVA SKUs flagged as missing from account", "Operator-panel access confirmed permanently unavailable to partners — pilot to run as a normal-client model"], delivery: ["Support-line Contact Center flow v4 published with Salesforce lookup; full agent and supervisor experience demoed to Zoom and OE delivery ahead of July 1 soft launch", "ZVM endpoint tickets (CCM-180/181) prioritized for the Indeed migration on the proven export/import flow", "Citi reconciliation file and $9,500 pricing delivered; ~15 Contact Center licenses requested for pilot staffing"] } },
+  { week: 19, dates: "Jun 22–26", status: "complete", label: "Pricing Tool Shipped, Support Line Launch-Ready", stats: { pipelineUSD: 9500, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 1 }, deals: [{ name: "Citi Veracast reconciliation", amount: 9500, status: "confirmed" }], contributions: { revenue: ["Big Pharma 40TB Kaltura migration priced at ~$35K and Panopto education customer at ~$25–31K — first OE-originated EMEA CMS deals via Chris at Zoom", "Indeed CMS migration moved into signature at ~$19–20K — OE’s first repeatable Kaltura-to-ZVM migration deal", "Citi reconciliation pricing finalized at $9,500; CrowdStrike comms-team Kaltura displacement opportunity surfaced in early pitch"], preSales: ["Migration pricing calculator built in under 25 minutes and demoed to Zoom’s Chris — AI-driven discovery questionnaire producing fast, caveated quotes", "Pricing calculator logic session mapped cost drivers into technical-overhead, man-hours, and complexity buckets against margin targets", "Coached EMEA and new NA sellers (Peter, Joshua) on the discovery-first migration go-to-market motion"], clientOutcomes: ["IFRS closed out: tags repatch unblocked by Zoom’s 10,000-tag limit, JSON reference files compressed and staged, Citi granted read-only S3 access", "Salesforce authentication blocker resolved (reversed consumer key/secret) — support-line customer lookup now functional", "Zero re-scopings across active ZVM engagements this week"], product: ["Migration bot must pass updated architecture and InfoSec review before touching customer data — near-term migrations kept on proven export/import flow", "Third-party pen test set up against internal S3 bucket with object listing disabled", "Zoom Virtual Agent (consumption SKU, ~$0.40/engagement) identified as path to knowledge-base scraping and intelligent handoff; CVA SKUs flagged as missing from account", "Operator-panel access confirmed permanently unavailable to partners — pilot to run as a normal-client model"], delivery: ["Support-line Contact Center flow v4 published with Salesforce lookup; full agent and supervisor experience demoed to Zoom and OE delivery ahead of July 1 soft launch", "ZVM endpoint tickets (CCM-180/181) prioritized for the Indeed migration on the proven export/import flow", "Citi reconciliation file and $9,500 pricing delivered; ~15 Contact Center licenses requested for pilot staffing"] } },
   { week: 20, dates: "Jun 29–Jul 3", status: "current", label: "Support Line Launches, Indeed Kicks Off", stats: { pipelineUSD: 0, assetsCreated: 3, rescopings: 0, insightsFiled: 4, formalHandoffs: 0 }, contributions: { revenue: ["Indeed CMS migration advanced from signed contract to a full Kaltura content audit, keeping OE’s newest repeatable migration deal on track for mid-July execution", "Zoom Support Line officially launched to the full AE and CSM team, opening a lead-generation channel tied to event-services upsell", "LSEG UK pricing calibrated to parity with the US base package (~$3,000), unblocking a Computershare-related opportunity"], preSales: ["Built and finalized the ZCC-to-Freshdesk-to-Salesforce ticketing architecture underpinning the Support Line’s case-management handoff", "Demoed CMS quote calculator and TCO calculator to Devin, Andrew, Amelia, and Zoom AEs, driving interest in a partner-specific pricing tool", "Designed Salesforce lead-scoring logic (click frequency, title, department) for the Support Line-to-BDR handoff"], clientOutcomes: ["Indeed kickoff and Kaltura audit completed with zero scope surprises; ownership-mapping model (creator vs. administrative owner) clarified for channel assignment", "Support Line’s live debut with Zoom reps drew immediate positive reception and unsolicited adoption requests", "Resolved the Zoom Clips license blocker that had stalled both the migration bot and Indeed onboarding"], product: ["Discovered Zoom Clips upload API defaults ownership to uploader credentials with no owner parameter — filed as a key architectural finding for migration bot design", "Surfaced creator-vs-administrative-owner edge case in Kaltura’s ownership model, a new pattern for the ownership-mapping documentation", "Escalated Contact Center licensing shortfall and a Salesforce impersonation blocker with Zoom and internal admins", "Confirmed Zoom’s ‘do not delete’ star feature timeline (mid-July) as the gating dependency for Indeed’s full migration"], delivery: ["Held Indeed’s full-library migration pending Zoom’s star feature release rather than risk data loss, agreeing to a phased pilot-then-full-library rollout", "Established weekly Indeed check-in cadence starting July 13"] } },
 ];
 
-const weeks = [...weeksAsc].reverse();
-
-const categories: { id: string; name: string; oeWeight: number; oeTarget: string; key: ContribKey; statLabel: (v: number) => string; statValue: (ws: WeekData[]) => number; getStatus: (v: number) => "exceeds" | "on-track" | "building"; }[] = [
-  { id: "revenue", name: "Revenue Influence", oeWeight: 35, oeTarget: "ACV set quarterly · Win Rate >x%", key: "revenue", statLabel: (v) => v === 0 ? "$0 pipeline" : `$${(v / 1000).toFixed(1)}K pipeline`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.pipelineUSD, 0), getStatus: (v) => (v >= 40000 ? "on-track" : "building") },
-  { id: "preSales", name: "Pre-Sales Enablement", oeWeight: 15, oeTarget: "2–3 assets per quarter · Demo score ≥4.5", key: "preSales", statLabel: (v) => `${v} assets`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.assetsCreated, 0), getStatus: (v) => (v > 3 ? "exceeds" : v >= 2 ? "on-track" : "building") },
-  { id: "clientOutcomes", name: "Client Outcomes", oeWeight: 25, oeTarget: "≥95% launch without re-scoping · PM satisfaction ≥4.5", key: "clientOutcomes", statLabel: (v) => `${v} re-scopings`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.rescopings, 0), getStatus: (v) => (v === 0 ? "exceeds" : v <= 1 ? "on-track" : "building") },
-  { id: "product", name: "Product & Partner Impact", oeWeight: 15, oeTarget: "3–4 insights · ≥40% adoption rate", key: "product", statLabel: (v) => `${v} insights filed`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.insightsFiled, 0), getStatus: (v) => (v > 4 ? "exceeds" : v >= 3 ? "on-track" : "building") },
-  { id: "delivery", name: "Delivery Readiness", oeWeight: 10, oeTarget: "PM Readiness Score ≥4.5", key: "delivery", statLabel: (v) => `${v} handoff${v !== 1 ? "s" : ""}`, statValue: (ws) => ws.reduce((s, w) => s + w.stats.formalHandoffs, 0), getStatus: (v) => (v >= 2 ? "exceeds" : v === 1 ? "on-track" : "building") },
-];
-
-function StatusChip({ status }: { status: "exceeds" | "on-track" | "building" }) {
-  const cfg = { exceeds: { label: "Exceeds", bg: "#dcfce7", color: "#16a34a", dot: "#16a34a" }, "on-track": { label: "On Track", bg: TEAL_LIGHT, color: TEAL, dot: TEAL }, building: { label: "Building", bg: "#f9fafb", color: MUTED, dot: LIGHT } }[status];
-  return (<span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 600, background: cfg.bg, color: cfg.color, borderRadius: 20, padding: "3px 10px" }}><span style={{ width: 6, height: 6, borderRadius: "50%", background: cfg.dot, display: "inline-block" }} />{cfg.label}</span>);
-}
-
-function DealStatusBadge({ status }: { status: Deal["status"] }) {
-  const cfg = {
-    confirmed:       { label: "✓ Confirmed",  color: "#16a34a", bg: "#dcfce7" },
-    "in-signature":  { label: "In signature",   color: TEAL,      bg: TEAL_LIGHT },
-    "near-close":    { label: "Near close",      color: "#d97706", bg: "#fef3c7" },
-  }[status];
-  return (<span style={{ fontSize: 10, fontWeight: 600, color: cfg.color, background: cfg.bg, borderRadius: 10, padding: "2px 8px", whiteSpace: "nowrap" }}>{cfg.label}</span>);
-}
-
 export default function SEKPIDashboard() {
-  const defaultWeek = weeks.find((w) => w.status === "current")?.week ?? weeks[0].week;
-  const [selectedWeek, setSelectedWeek] = useState<number | null>(defaultWeek);
-  const selected = selectedWeek !== null ? weeks.find((w) => w.week === selectedWeek) : null;
-  const activeWeeks = selected ? [selected] : weeks;
-
-  return (
-    <main style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 24px 72px" }}>
-      <div style={{ marginBottom: 24 }}>
-        <Link href="/reports" style={{ fontSize: 13, color: LIGHT, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>&larr; Back to Reports</Link>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: LIGHT, marginBottom: 6 }}>SE Performance</div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: DARK, marginBottom: 4, letterSpacing: "-0.02em" }}>Q2 KPI Dashboard</h1>
-            <p style={{ fontSize: 13, color: MUTED }}>April – June 2026 · {weeks.length} week{weeks.length !== 1 ? "s" : ""} tracked</p>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <a href="/solutions_engineer_kpi.pdf" target="_blank" rel="noreferrer" style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 6, padding: "7px 12px", textDecoration: "none" }}>↓ Original KPI Plan</a>
-            <a href="/se_kpi_response.pdf" target="_blank" rel="noreferrer" style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 6, padding: "7px 12px", textDecoration: "none" }}>↓ My Q2 Response</a>
-          </div>
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 28 }}>
-        {categories.map((cat) => {
-          const val = cat.statValue(weeks);
-          const status = cat.getStatus(val);
-          return (<div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 16px" }}><div style={{ fontSize: 10, fontWeight: 600, color: MUTED, marginBottom: 6, letterSpacing: "0.03em" }}>{cat.name}</div><div style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 6 }}>{cat.statLabel(val)}</div><StatusChip status={status} /><div style={{ marginTop: 8, fontSize: 10, color: LIGHT }}>Target {cat.oeWeight}%</div></div>);
-        })}
-      </div>
-      <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-        <div style={{ width: 200, flexShrink: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 10 }}>Q2 Weeks</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {weeks.map((w) => (
-              <button key={w.week} onClick={() => setSelectedWeek(selectedWeek === w.week ? null : w.week)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, border: selectedWeek === w.week ? `1.5px solid ${TEAL}` : `1px solid ${BORDER}`, background: selectedWeek === w.week ? TEAL_LIGHT : "#fff", cursor: "pointer", textAlign: "left", width: "100%" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: w.status === "current" ? TEAL : DARK }}>Week {w.week}</span>
-                    {w.status === "current" && <span style={{ fontSize: 9, fontWeight: 700, background: TEAL, color: "#fff", borderRadius: 3, padding: "1px 5px" }}>NOW</span>}
-                  </div>
-                  <div style={{ fontSize: 10, color: LIGHT }}>{w.dates}</div>
-                  <div style={{ fontSize: 10, color: MUTED, marginTop: 1, lineHeight: 1.3 }}>{w.label}</div>
-                </div>
-                <div style={{ flexShrink: 0, marginLeft: 8 }}>
-                  {w.status === "complete" && (<div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ color: "#fff", fontSize: 9 }}>✓</span></div>)}
-                  {w.status === "current" && (<div style={{ width: 16, height: 16, borderRadius: "50%", background: TEAL_LIGHT, border: `2px solid ${TEAL}` }} />)}
-                </div>
-              </button>
-            ))}
-          </div>
-          <div style={{ marginTop: 10, fontSize: 10, color: LIGHT, lineHeight: 1.6 }}>Click a week to filter. Click again for Q2 totals.</div>
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ marginBottom: 14, padding: "10px 16px", background: selected ? TEAL_LIGHT : "#f9fafb", borderRadius: 8, border: `1px solid ${selected ? TEAL_MID : BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            {selected ? (<><span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>Week {selected.week}</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>{selected.dates} — {selected.label}</span></>) : (<><span style={{ fontSize: 12, fontWeight: 600, color: DARK }}>Q2 Cumulative</span><span style={{ fontSize: 12, color: MUTED, marginLeft: 8 }}>All {weeks.length} weeks combined</span></>)}
-            {selected && (<button onClick={() => setSelectedWeek(null)} style={{ fontSize: 11, color: MUTED, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, padding: "3px 8px", cursor: "pointer" }}>× Q2 totals</button>)}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {categories.map((cat) => {
-              const val = cat.statValue(activeWeeks);
-              const status = cat.getStatus(cat.statValue(weeks));
-              const items = activeWeeks.flatMap((w) => w.contributions[cat.key]);
-              const activeDeals = cat.id === "revenue" ? activeWeeks.flatMap(w => (w.deals ?? []).map(d => ({ ...d, weekNum: w.week }))) : [];
-              const dealTotal = activeDeals.reduce((s, d) => s + d.amount, 0);
-              return (
-                <div key={cat.id} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "16px 20px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: DARK }}>{cat.name}</span>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: TEAL, background: TEAL_LIGHT, border: `1px solid ${TEAL_MID}`, borderRadius: 4, padding: "2px 7px" }}>Target {cat.oeWeight}%</span>
-                      <StatusChip status={status} />
-                    </div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: TEAL, flexShrink: 0, marginLeft: 12 }}>{cat.statLabel(val)}</div>
-                  </div>
-                  <div style={{ fontSize: 11, color: LIGHT, fontStyle: "italic", marginBottom: 12 }}>Target: {cat.oeTarget}</div>
-                  {cat.id === "revenue" && activeDeals.length > 0 && (
-                    <div style={{ marginBottom: 16, border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden" }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: LIGHT, padding: "8px 14px", borderBottom: `1px solid ${BORDER}`, background: "#f9fafb" }}>Pipeline Deals</div>
-                      {activeDeals.map((deal, i) => (
-                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderBottom: i < activeDeals.length - 1 ? `1px solid ${BORDER}` : "none", background: "#fff" }}>
-                          <span style={{ fontSize: 13, color: DARK, flex: 1 }}>{deal.name}</span>
-                          <div style={{ display: "flex", gap: 12, alignItems: "center", flexShrink: 0 }}>
-                            <span style={{ fontSize: 11, color: LIGHT }}>W{deal.weekNum}</span>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: TEAL, minWidth: 44, textAlign: "right" }}>${(deal.amount / 1000).toFixed(1)}K</span>
-                            <DealStatusBadge status={deal.status} />
-                          </div>
-                        </div>
-                      ))}
-                      {activeDeals.length > 1 && (
-                        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "8px 14px", background: "#f9fafb", borderTop: `1px solid ${BORDER}` }}>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: DARK }}>Total: ${(dealTotal / 1000).toFixed(1)}K</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                    {items.map((item, i) => (<div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: TEAL, marginTop: 7, flexShrink: 0 }} /><div style={{ fontSize: 12, color: DARK, lineHeight: 1.5 }}>{item}</div></div>))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+  return <KPIDashboard quarterLabel="Q2" dateRangeLabel="April – June 2026" weeksAsc={weeksAsc} backHref="/reports/q2" responsePdfHref="/se_kpi_response.pdf" />;
 }

@@ -7,16 +7,28 @@
       "Bash(npm run type-check)",
       "Bash(npm run build -- --no-lint)",
       "Bash(npx tsc --noEmit)",
-      "Bash(vercel deploy*)",
-      "Bash(vercel env*)",
-      "Bash(vercel logs*)",
-      "Bash(git add*)",
-      "Bash(git commit*)",
-      "Bash(git push*)",
-      "Bash(git pull*)",
+      "Bash(vercel deploy)",
+      "Bash(vercel env ls)",
+      "Bash(git add *)",
+      "Bash(git pull --ff-only*)",
       "Bash(git log*)",
       "Bash(git diff*)",
       "Bash(git status)"
+    ],
+    "deny": [
+      "Bash(git add -A*)",
+      "Bash(git add --all*)",
+      "Bash(git add .)",
+      "Bash(git commit --no-verify*)",
+      "Bash(git commit -n *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push --delete*)",
+      "Bash(vercel deploy --prod*)",
+      "Bash(vercel --prod*)",
+      "Bash(vercel env pull*)",
+      "Bash(vercel env add*)",
+      "Bash(vercel env rm*)"
     ]
   }
 }

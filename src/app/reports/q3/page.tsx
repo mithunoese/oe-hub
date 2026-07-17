@@ -20,7 +20,7 @@ const months: MonthSection[] = [
     month: "July 2026",
     weeks: [
       { href: "/se-kpi/q3", week: "Week 22", date: "Jul 13–17, 2026", summary: "AI10 IAA (American Idol auditions) Zoom infrastructure went live for CastItReach; IFRS reconciliation surfaced entries missing Zoom IDs and unmapped videos; Coupa and Apex Technical proposals drafted.", badge: "Current" },
-      { href: "/se-kpi/q3", week: "Week 21", date: "Jul 6–10, 2026", summary: "ZCC-to-Freshdesk-to-Salesforce ticketing architecture finalized with Max; IFRS migration count audit rebuilt against production data.", badge: "New" },
+      { href: "/reports/week-21", week: "Week 21", date: "Jul 6–10, 2026", summary: "Okta CircleHD migration kicked off with a $15K signed deal; pre-migration report template built live for Indeed; Ash accepted the associate SE offer.", pdf: "/weekly_report_week21.pdf" },
     ],
   },
 ];

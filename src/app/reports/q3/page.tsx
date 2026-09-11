@@ -17,9 +17,15 @@ type MonthSection = { month: string; weeks: WeekEntry[] };
 
 const months: MonthSection[] = [
   {
+    month: "August 2026",
+    weeks: [
+      { href: "/reports/week-25", week: "Week 25", date: "Aug 3–7, 2026", summary: "OmniAB's $51K deal closed while Indeed and City migrations moved into active dry-run execution; Edgar's AI tooling and VPS spend got escalated to leadership for governance; staffing console prototype validated with real operators (Kevin, Annalisa, Emily).", badge: "Current", pdf: "/weekly_report_week25.pdf" },
+    ],
+  },
+  {
     month: "July 2026",
     weeks: [
-      { href: "/reports/week-24", week: "Week 24", date: "Jul 27–31, 2026", summary: "IFRS's migration formally closed out with a fully reconciled discrepancy report; Mithun's role shifted to sit under Joe's engineering-adjacent track; Okta and Indeed both advanced toward dry runs; new revenue threads opened with CVS, DXC, and Zoom's marketplace team.", badge: "Current", pdf: "/weekly_report_week24.pdf" },
+      { href: "/reports/week-24", week: "Week 24", date: "Jul 27–31, 2026", summary: "IFRS's migration formally closed out with a fully reconciled discrepancy report; Mithun's role shifted to sit under Joe's engineering-adjacent track; Okta and Indeed both advanced toward dry runs; new revenue threads opened with CVS, DXC, and Zoom's marketplace team.", pdf: "/weekly_report_week24.pdf" },
       { href: "/reports/week-23", week: "Week 23", date: "Jul 20–24, 2026", summary: "City and IFRS migrations surfaced data-integrity gaps while the Zoom support line's lead-routing automation shipped and produced its first closed deal; Okta's S3-to-S3 migration architecture took shape alongside a real access-gap question for Zoom to resolve.", pdf: "/weekly_report_week23.pdf" },
       { href: "/reports/week-22", week: "Week 22", date: "Jul 13–17, 2026", summary: "Ash declined the associate SE offer, prompting a hiring-process redesign; Okta CircleHD and Apex Technical (Panopto) migrations advanced; Coupa proposal built live. Updated through Thursday.", pdf: "/weekly_report_week22.pdf" },
       { href: "/reports/week-21", week: "Week 21", date: "Jul 6–10, 2026", summary: "Okta CircleHD migration kicked off with a $15K signed deal; pre-migration report template built live for Indeed; Ash accepted the associate SE offer.", pdf: "/weekly_report_week21.pdf" },

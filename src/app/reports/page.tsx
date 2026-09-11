@@ -49,7 +49,7 @@ export default function Reports() {
           <div style={{ padding: "22px 24px", background: "var(--surface)", border: "1.5px solid var(--teal)", borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>Q3 · July–September 2026</div>
-              <div style={{ fontSize: 12, color: "var(--muted)" }}>Weeks 21–24 · narrative weekly reports + SE KPIs</div>
+              <div style={{ fontSize: 12, color: "var(--muted)" }}>Weeks 21–25 · narrative weekly reports + SE KPIs</div>
             </div>
             <span style={{ fontSize: 12, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", padding: "4px 12px", borderRadius: 20, whiteSpace: "nowrap" }}>View →</span>
           </div>
